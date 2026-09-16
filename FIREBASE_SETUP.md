@@ -11,15 +11,15 @@ The app is configured for the existing Firebase project `manskit-23d9f` and now 
 
 ## How cloud backup works
 
-A user first creates an account or signs in with an email address and password. **Forgot Password?** sends a Firebase password-reset email. After signing in, the user enters a Sync Id such as `goa-trip-2026`, saves it, and can back up or restore the complete Split data set.
+A user first creates an account or signs in with an email address and password. **Forgot Password?** sends a Firebase password-reset email. After signing in, the user can back up or restore the complete Split data set. No Sync Id is needed because each account has one private backup slot.
 
 Backups are stored under:
 
 ```text
-manskit_split_backups/{authenticated-user-id}/{sync-id}
+manskit_split_backups/{authenticated-user-id}/default
 ```
 
-The database rules only allow an authenticated user to read or write their own user-id branch. The Sync Id is a label within that private branch; it is not a shared secret. The existing local browser storage and JSON export/import remain available when offline.
+The database rules only allow an authenticated user to read or write their own user-id branch. The existing local browser storage and JSON export/import remain available when offline.
 
 ## Important note
 

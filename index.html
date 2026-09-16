@@ -70,8 +70,26 @@
   }
   .brand-mark{
     display:inline-flex;
-    align-items:baseline;
+    align-items:center;
     gap:8px;
+  }
+  .brand-logo{
+    width:27px; height:27px; display:block;
+    filter:drop-shadow(0 2px 5px rgba(0,0,0,.28));
+    transform-origin:center;
+    animation:logoSpin 8s ease-in-out infinite;
+  }
+  @keyframes logoSpin{
+    /* Clockwise: fast, then slow, then stop. */
+    0%{ transform:rotate(0deg); animation-timing-function:cubic-bezier(.35,0,.55,1); }
+    14%{ transform:rotate(180deg); animation-timing-function:ease-out; }
+    33%{ transform:rotate(360deg); }
+    43%{ transform:rotate(360deg); }
+    /* Anticlockwise: slow, then fast, then slow, then stop. */
+    60%{ transform:rotate(180deg); animation-timing-function:cubic-bezier(.45,0,.65,1); }
+    74%{ transform:rotate(-180deg); animation-timing-function:ease-out; }
+    91%{ transform:rotate(-360deg); }
+    100%{ transform:rotate(-360deg); }
   }
   .brand{
     font-family:var(--serif);
@@ -99,7 +117,7 @@
     margin:16px 14px 10px;
     padding:11px 13px;
     background:var(--panel);
-    border:1px solid var(--line);
+    border:1px solid rgba(127,169,141,.26);
     border-radius:6px;
     display:flex;
     align-items:flex-end;
@@ -135,7 +153,7 @@
   .purpose-box, .currency-box{
     padding:11px 13px;
     background:var(--panel);
-    border:1px solid var(--line);
+    border:1px solid rgba(127,169,141,.22);
     border-radius:6px;
   }
   .purpose-label{
@@ -164,13 +182,13 @@
 
   .panel{
     background:var(--panel);
-    border:1px solid var(--line);
-    border-top:2px solid var(--line);
+    border:1px solid rgba(127,169,141,.22);
+    border-top:2px solid rgba(127,169,141,.34);
     border-radius:6px;
     padding:16px;
     margin-bottom:14px;
   }
-  .panel.accent{ border-top-color:var(--gold-dim); }
+  .panel.accent{ border-color:rgba(198,154,92,.24); border-top-color:var(--gold); }
 
   .panel-title{
     font-family:var(--serif);
@@ -191,7 +209,7 @@
     width:100%;
     min-height:44px;
     padding:10px 12px;
-    border:1px solid var(--line);
+    border:1px solid rgba(127,169,141,.24);
     border-radius:6px;
     outline:none;
     background:var(--ink);
@@ -226,14 +244,14 @@
   .btn-secondary{
     background:transparent;
     color:var(--paper-dim);
-    border:1px solid var(--line);
+    border:1px solid rgba(127,169,141,.25);
   }
   .btn-secondary:hover{ border-color:var(--gold-dim); color:var(--paper); }
 
   .btn-danger{
     background:transparent;
     color:var(--clay);
-    border:1px solid rgba(193,112,79,.35);
+    border:1px solid rgba(193,112,79,.42);
     margin-top:14px;
   }
   .btn-danger:hover{ background:var(--clay-wash); }
@@ -397,6 +415,7 @@
 
   <div class="header">
     <div class="brand-mark">
+      <img class="brand-logo" src="icons/icon.svg" alt="">
       <span class="brand">MANSKIT<span class="brand-accent">.</span></span>
     </div>
     <div class="tagline">Split</div>
@@ -575,11 +594,6 @@
 
     <div class="panel accent">
       <div class="panel-title">Cloud Backup</div>
-      <div class="field">
-        <label>Sync Id <span style="color:var(--muted)">(optional label for this backup)</span></label>
-        <input id="fbSyncId" type="text" placeholder="E.g. goa-trip-2026" autocomplete="off">
-      </div>
-      <button class="btn btn-secondary" id="saveSyncIdBtn">Save Sync Id</button>
       <div id="firebaseStatus" class="notice"></div>
       <button class="btn" id="cloudBackupBtn" style="margin-top:10px;">Back Up To Cloud</button>
       <button class="btn btn-secondary" id="cloudRestoreBtn" style="margin-top:8px;">Restore From Cloud</button>
@@ -872,8 +886,6 @@ const exportBackupBtn = document.getElementById("exportBackupBtn");
 const importBackupBtn = document.getElementById("importBackupBtn");
 const restoreFile = document.getElementById("restoreFile");
 
-const fbSyncIdInput = document.getElementById("fbSyncId");
-const saveSyncIdBtn = document.getElementById("saveSyncIdBtn");
 const firebaseStatus = document.getElementById("firebaseStatus");
 const cloudBackupBtn = document.getElementById("cloudBackupBtn");
 const cloudRestoreBtn = document.getElementById("cloudRestoreBtn");
@@ -1447,45 +1459,19 @@ const firebaseConfig = {
   appId: "1:504036502314:web:87f06fe37d9d5488a3cc53"
 };
 
-const SYNC_SETTINGS_KEY = "manskit_split_sync_v2";
 const CLOUD_PATH = "manskit_split_backups";
-let syncId = "";
 let fbApp = null;
 let fbDb = null;
 let fbAuth = null;
 let fbSdkLoaded = false;
 let currentUser = null;
 
-async function loadSyncSettings() {
-  try { const raw = localStorage.getItem(SYNC_SETTINGS_KEY); if (raw) syncId = JSON.parse(raw).syncId || ""; }
-  catch (error) { /* no saved sync id yet */ }
-}
-async function saveSyncSettings() {
-  try { localStorage.setItem(SYNC_SETTINGS_KEY, JSON.stringify({ syncId })); }
-  catch (error) { showToast("Couldn't Save The Sync Id.", "error"); }
-}
-function renderAuthStatus() {
-  const signedIn = !!currentUser;
-  authStatus.className = "notice" + (signedIn ? " good" : "");
-  authStatus.innerHTML = signedIn
-    ? `Signed in as <strong>${escapeHTML(currentUser.email || "your account")}</strong>`
-    : "Not signed in — cloud backup is locked.";
-  authEmailInput.disabled = signedIn;
-  authPasswordInput.disabled = signedIn;
-  signInBtn.style.display = signedIn ? "none" : "block";
-  signUpBtn.style.display = signedIn ? "none" : "block";
-  signOutBtn.style.display = signedIn ? "block" : "none";
-  cloudBackupBtn.disabled = !signedIn;
-  cloudRestoreBtn.disabled = !signedIn;
-}
 function renderFirebaseStatus() {
-  const connected = !!currentUser && !!syncId.trim();
-  firebaseStatus.className = "notice" + (connected ? " good" : "");
-  firebaseStatus.innerHTML = !currentUser
-    ? "Sign in above to enable private cloud backup."
-    : connected
-      ? `Ready — private backup label <strong>${escapeHTML(syncId)}</strong>`
-      : "Signed in — enter a Sync Id and save it before backing up.";
+  const signedIn = !!currentUser;
+  firebaseStatus.className = "notice" + (signedIn ? " good" : "");
+  firebaseStatus.innerHTML = signedIn
+    ? "Ready — your backup is private to this signed-in account."
+    : "Sign in above to enable private cloud backup.";
 }
 function loadScriptOnce(src) {
   return new Promise((resolve, reject) => {
@@ -1497,7 +1483,6 @@ function loadScriptOnce(src) {
 }
 async function ensureFirebaseReady(requireAuth = true) {
   if (requireAuth && !currentUser) { showToast("Sign in before using cloud backup.", "error"); return false; }
-  if (!syncId.trim()) { showToast("Enter a Sync Id and save it first.", "error"); return false; }
   try {
     if (!fbSdkLoaded) {
       await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
@@ -1511,7 +1496,7 @@ async function ensureFirebaseReady(requireAuth = true) {
     return true;
   } catch (error) { showToast("Couldn't connect to Firebase. Check your internet connection.", "error"); return false; }
 }
-function userCloudRef() { return fbDb.ref(`${CLOUD_PATH}/${currentUser.uid}/${syncId.trim()}`); }
+function userCloudRef() { return fbDb.ref(`${CLOUD_PATH}/${currentUser.uid}/default`); }
 
 signInBtn.addEventListener("click", async () => {
   const email = authEmailInput.value.trim(), password = authPasswordInput.value;
@@ -1535,10 +1520,6 @@ forgotPasswordBtn.addEventListener("click", async () => {
   catch (error) { showToast("Couldn't send the reset email. Check the address and Firebase email settings.", "error"); }
 });
 signOutBtn.addEventListener("click", async () => { try { await fbAuth.signOut(); showToast("Signed out.", "success"); } catch (error) { showToast("Couldn't sign out.", "error"); } });
-saveSyncIdBtn.addEventListener("click", async () => {
-  syncId = fbSyncIdInput.value.trim().replace(/[^a-zA-Z0-9_-]/g, "-").slice(0, 80);
-  fbSyncIdInput.value = syncId; await saveSyncSettings(); renderFirebaseStatus(); showToast("Sync Id saved.", "success");
-});
 cloudBackupBtn.addEventListener("click", async () => {
   if (!(await ensureFirebaseReady())) return;
   try { syncGlobalsIntoActiveProfile(); await userCloudRef().set({ version: "v7", activeProfileId, profiles, updatedAt: new Date().toISOString() }); showToast("Backed up privately to the cloud.", "success"); }
@@ -1548,7 +1529,7 @@ cloudRestoreBtn.addEventListener("click", async () => {
   if (!(await ensureFirebaseReady())) return;
   try {
     const snapshot = await userCloudRef().once("value");
-    if (!snapshot.exists()) { showToast("No cloud backup found for this account and Sync Id.", "error"); return; }
+    if (!snapshot.exists()) { showToast("No cloud backup found for this account.", "error"); return; }
     if (!(await showConfirm("Restoring will replace all current data with this cloud backup.", "Restore From Cloud", "Restore"))) return;
     const data = snapshot.val();
     if (!Array.isArray(data.profiles) || !data.profiles.length) { showToast("That cloud backup looks invalid.", "error"); return; }
@@ -1736,10 +1717,8 @@ function updateAll() {
   contributionDate.value = today();
   expenseDate.value = today();
   await loadAll();
-  await loadSyncSettings();
   purposeInput.value = purpose;
   currencySelect.value = currency;
-  fbSyncIdInput.value = syncId;
   renderAuthStatus();
   renderFirebaseStatus();
   updateAll();
