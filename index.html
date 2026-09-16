@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0c1416">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>MANSKIT — Split</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#0b1315;
+    --panel:#101a1d;
+    --panel-raised:#152124;
+    --line:#22302f;
+    --line-soft:#1a2528;
+    --paper:#ece6d8;
+    --paper-dim:#c9c3b4;
+    --muted:#7f9296;
+    --gold:#c69a5c;
+    --gold-dim:#8a6f45;
+    --gold-wash:rgba(198,154,92,.10);
+    --sage:#7fa98d;
+    --sage-wash:rgba(127,169,141,.12);
+    --clay:#c1704f;
+    --clay-wash:rgba(193,112,79,.12);
+    --serif:'Newsreader', Georgia, serif;
+    --mono:'JetBrains Mono', ui-monospace, Menlo, monospace;
+    --sans:-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  html,body{ height:100%; }
+
+  body{
+    margin:0;
+    font-family:var(--sans);
+    background:var(--ink);
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(198,154,92,.05), transparent 40%),
+      radial-gradient(circle at 85% 8%, rgba(127,169,141,.04), transparent 35%);
+    color:var(--paper);
+    min-height:100vh;
+  }
+
+  button,input,select,textarea{ font:inherit; color:inherit; }
+
+  .app{
+    width:100%;
+    max-width:480px;
+    margin:auto;
+    min-height:100vh;
+    padding-bottom:84px;
+  }
+
+  /* ---------- HEADER ---------- */
+  .header{
+    padding:26px 18px 14px;
+    text-align:center;
+  }
+  .brand-mark{
+    display:inline-flex;
+    align-items:baseline;
+    gap:8px;
+  }
+  .brand{
+    font-family:var(--serif);
+    font-size:26px;
+    font-weight:600;
+    letter-spacing:.2px;
+    color:var(--paper);
+  }
+  .brand-accent{ color:var(--gold); }
+  .tagline{
+    margin-top:4px;
+    font-size:11.5px;
+    color:var(--muted);
+    letter-spacing:.2px;
+  }
+  .header-rule{
+    height:1px;
+    margin:16px auto 0;
+    width:64px;
+    background:linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  }
+
+  /* ---------- PROFILE SWITCHER ---------- */
+  .profile-row{
+    margin:16px 14px 10px;
+    padding:11px 13px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    display:flex;
+    align-items:flex-end;
+    gap:10px;
+    justify-content:space-between;
+  }
+  .profile-box{ flex:1; min-width:0; }
+  .profile-label{
+    display:block;
+    font-size:10.5px;
+    color:var(--muted);
+    margin-bottom:4px;
+  }
+  .profile-select{
+    width:100%;
+    border:0;
+    outline:none;
+    background:transparent;
+    color:var(--paper);
+    font-size:14.5px;
+    font-weight:600;
+    font-family:var(--serif);
+    cursor:pointer;
+  }
+  .profile-actions{ display:flex; gap:6px; flex-shrink:0; }
+
+  .purpose-row{
+    display:grid;
+    grid-template-columns:1fr 96px;
+    gap:8px;
+    margin:0 14px 16px;
+  }
+  .purpose-box, .currency-box{
+    padding:11px 13px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+  }
+  .purpose-label{
+    display:block;
+    font-size:10.5px;
+    color:var(--muted);
+    margin-bottom:4px;
+  }
+  .purpose-input, .currency-select{
+    width:100%;
+    border:0;
+    outline:none;
+    background:transparent;
+    color:var(--paper);
+    font-size:14.5px;
+    font-weight:600;
+    font-family:var(--serif);
+  }
+  .currency-select{ appearance:none; cursor:pointer; }
+  .purpose-input::placeholder{ color:#4d5c5f; font-weight:400; }
+
+  /* ---------- SCREENS ---------- */
+  .screen{ display:none; padding:0 14px; }
+  .screen.active{ display:block; animation:fadein .18s ease; }
+  @keyframes fadein{ from{opacity:0; transform:translateY(3px);} to{opacity:1; transform:none;} }
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-top:2px solid var(--line);
+    border-radius:6px;
+    padding:16px;
+    margin-bottom:14px;
+  }
+  .panel.accent{ border-top-color:var(--gold-dim); }
+
+  .panel-title{
+    font-family:var(--serif);
+    font-size:15px;
+    font-weight:600;
+    color:var(--paper);
+    margin:0 0 13px;
+  }
+
+  .field{ margin-bottom:11px; }
+  .field label{
+    display:block;
+    font-size:11px;
+    color:var(--muted);
+    margin-bottom:5px;
+  }
+  input,select{
+    width:100%;
+    min-height:44px;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    outline:none;
+    background:var(--ink);
+    color:var(--paper);
+    font-size:14.5px;
+  }
+  input:focus,select:focus{
+    border-color:var(--gold-dim);
+    box-shadow:0 0 0 3px var(--gold-wash);
+  }
+  input[type="number"], input[type="date"]{ font-family:var(--mono); font-size:13.5px; }
+  select{ cursor:pointer; }
+
+  .row{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+
+  .btn{
+    width:100%;
+    min-height:44px;
+    border:0;
+    border-radius:6px;
+    background:var(--gold);
+    color:#1a1408;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    margin-top:2px;
+    transition:filter .12s ease, transform .05s ease;
+  }
+  .btn:hover{ filter:brightness(1.06); }
+  .btn:active{ transform:scale(.99); }
+
+  .btn-secondary{
+    background:transparent;
+    color:var(--paper-dim);
+    border:1px solid var(--line);
+  }
+  .btn-secondary:hover{ border-color:var(--gold-dim); color:var(--paper); }
+
+  .btn-danger{
+    background:transparent;
+    color:var(--clay);
+    border:1px solid rgba(193,112,79,.35);
+    margin-top:14px;
+  }
+  .btn-danger:hover{ background:var(--clay-wash); }
+
+  .empty{
+    padding:20px 12px;
+    text-align:center;
+    color:var(--muted);
+    font-size:12.5px;
+    border:1px dashed var(--line);
+    border-radius:6px;
+  }
+
+  .person,.transaction,.expense{
+    padding:12px 0;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .person:last-child,.transaction:last-child,.expense:last-child{ border-bottom:0; }
+
+  .item-top{ display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
+  .item-name{ color:var(--paper); font-weight:600; font-size:13.5px; }
+  .amount{ font-family:var(--mono); font-weight:700; color:var(--paper); white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .amount.pos::before{ content:"+ "; color:var(--sage); }
+  .amount.neg::before{ content:"– "; color:var(--clay); }
+
+  .item-meta{ margin-top:5px; color:var(--muted); font-size:11.5px; line-height:1.55; }
+  .item-meta .mono{ font-family:var(--mono); color:var(--paper-dim); }
+
+  .action-group{ display:flex; gap:6px; margin-top:7px; }
+  .small-btn{
+    border:1px solid var(--line);
+    border-radius:5px;
+    padding:6px 10px;
+    font-size:10.5px;
+    font-weight:600;
+    cursor:pointer;
+    background:transparent;
+    color:var(--paper-dim);
+  }
+  .small-btn.edit:hover{ border-color:var(--gold-dim); color:var(--gold); }
+  .small-btn.delete:hover{ border-color:var(--clay); color:var(--clay); }
+
+  .summary-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+  .summary{
+    padding:13px;
+    background:var(--ink);
+    border:1px solid var(--line);
+    border-radius:6px;
+  }
+  .summary-label{ color:var(--muted); font-size:10.5px; margin-bottom:6px; }
+  .summary-value{ color:var(--paper); font-size:17px; font-weight:700; font-family:var(--mono); font-variant-numeric:tabular-nums; }
+
+  .balance{ padding:11px 0; border-bottom:1px solid var(--line-soft); }
+  .balance:last-child{ border-bottom:0; }
+  .balance-main{ display:flex; justify-content:space-between; gap:10px; align-items:baseline; }
+  .receive{ color:var(--sage); font-family:var(--mono); }
+  .pay{ color:var(--clay); font-family:var(--mono); }
+  .settled-tag{ color:var(--muted); font-family:var(--mono); font-size:12.5px; }
+
+  .settlement-box{
+    margin-top:12px;
+    padding:13px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:var(--ink);
+  }
+
+  .notice{
+    padding:11px 12px;
+    margin-top:10px;
+    border-radius:6px;
+    background:var(--panel-raised);
+    border:1px solid var(--line);
+    color:var(--paper-dim);
+    font-size:11.5px;
+    line-height:1.55;
+  }
+  .notice strong{ font-family:var(--mono); color:var(--paper); }
+  .notice.warning{ background:var(--clay-wash); border-color:rgba(193,112,79,.3); color:#e3b7a4; }
+  .notice.warning strong{ color:var(--clay); }
+  .notice.good{ background:var(--sage-wash); border-color:rgba(127,169,141,.3); }
+  .notice.good strong{ color:var(--sage); }
+
+  .share-text{
+    width:100%; min-height:150px; resize:vertical; margin-top:10px;
+    font-size:11px; line-height:1.6; font-family:var(--mono); background:var(--ink);
+  }
+
+  /* ---------- NAV ---------- */
+  .nav-bar{
+    position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+    width:100%; max-width:480px; height:64px;
+    background:var(--panel);
+    border-top:1px solid var(--line);
+    display:flex; justify-content:space-around; align-items:stretch;
+    z-index:100;
+  }
+  .nav-item{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:transparent; border:0; color:var(--muted); font-size:10.5px; font-weight:600;
+    cursor:pointer; gap:5px; position:relative;
+  }
+  .nav-item.active{ color:var(--paper); }
+  .nav-item.active::before{
+    content:""; position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:26px; height:2px; background:var(--gold); border-radius:2px;
+  }
+  .nav-item svg{ width:19px; height:19px; stroke:currentColor; fill:none; stroke-width:1.6; }
+
+  #restoreFile{ display:none; }
+
+  /* ---------- TOASTS ---------- */
+  .toast-stack{
+    position:fixed; top:14px; left:50%; transform:translateX(-50%);
+    width:calc(100% - 32px); max-width:448px; z-index:300;
+    display:flex; flex-direction:column; gap:8px; pointer-events:none;
+  }
+  .toast{
+    padding:11px 14px; border-radius:6px; font-size:12.5px; line-height:1.5;
+    background:#1a2427; border:1px solid var(--line); color:var(--paper);
+    box-shadow:0 6px 20px rgba(0,0,0,.35);
+    animation:toastin .18s ease;
+  }
+  @keyframes toastin{ from{opacity:0; transform:translateY(-6px);} to{opacity:1; transform:none;} }
+  .toast.error{ border-color:rgba(193,112,79,.4); }
+  .toast.error::before{ content:"⚠ "; color:var(--clay); }
+  .toast.success{ border-color:rgba(127,169,141,.4); }
+  .toast.success::before{ content:"✓ "; color:var(--sage); }
+
+  /* ---------- MODAL ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(4,7,8,.6);
+    display:none; align-items:flex-end; justify-content:center; z-index:400;
+    padding:0;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal-card{
+    width:100%; max-width:480px; background:var(--panel);
+    border:1px solid var(--line); border-top:2px solid var(--gold-dim);
+    border-radius:12px 12px 0 0; padding:20px 18px 22px;
+    animation:modalin .18s ease;
+  }
+  @keyframes modalin{ from{transform:translateY(16px); opacity:0;} to{transform:none; opacity:1;} }
+  .modal-title{ font-family:var(--serif); font-size:16px; font-weight:600; margin:0 0 8px; }
+  .modal-message{ font-size:13px; color:var(--paper-dim); line-height:1.6; margin-bottom:14px; white-space:pre-line; }
+  .modal-input{ margin-bottom:16px; }
+  .modal-actions{ display:flex; gap:8px; }
+  .modal-actions .btn, .modal-actions .btn-secondary{ margin-top:0; }
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="header">
+    <div class="brand-mark">
+      <span class="brand">MANSKIT<span class="brand-accent">.</span></span>
+    </div>
+    <div class="tagline">Split</div>
+    <div class="header-rule"></div>
+  </div>
+
+  <div class="profile-row">
+    <div class="profile-box">
+      <label class="profile-label">Profile</label>
+      <select id="profileSelect" class="profile-select"></select>
+    </div>
+    <div class="profile-actions">
+      <button class="small-btn" id="newProfileBtn">New</button>
+      <button class="small-btn edit" id="renameProfileBtn">Rename</button>
+      <button class="small-btn delete" id="deleteProfileBtn">Delete</button>
+    </div>
+  </div>
+
+  <div class="purpose-row">
+    <div class="purpose-box">
+      <label class="purpose-label">What's This Collection For?</label>
+      <input id="purposeInput" class="purpose-input" type="text" placeholder="E.g. Manali Trip" autocomplete="off">
+    </div>
+    <div class="currency-box">
+      <label class="purpose-label">Currency</label>
+      <select id="currencySelect" class="currency-select">
+        <option value="₹">₹ INR</option>
+        <option value="$">$ USD</option>
+        <option value="€">€ EUR</option>
+        <option value="£">£ GBP</option>
+        <option value="﷼">﷼ SAR</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- SCREEN 1: PARTICIPANTS & CONTRIBUTIONS -->
+  <div class="screen active" id="screen1">
+
+    <div class="panel accent">
+      <div class="panel-title" id="personFormTitle">Add Participant</div>
+      <div class="field">
+        <label>Name</label>
+        <input id="personName" type="text" placeholder="Enter Name" autocomplete="off">
+      </div>
+      <button class="btn" id="addPersonBtn">Add Participant</button>
+      <button class="btn btn-secondary" id="cancelPersonEditBtn" style="display:none; margin-top:8px;">Cancel Edit</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Participants</div>
+      <div id="peopleList"></div>
+    </div>
+
+    <div class="panel accent">
+      <div class="panel-title" id="contributionFormTitle">Add Contribution</div>
+      <div class="field">
+        <label>Participant</label>
+        <select id="contributionPerson"></select>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Amount</label>
+          <input id="contributionAmount" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00">
+        </div>
+        <div class="field">
+          <label>Date</label>
+          <input id="contributionDate" type="date">
+        </div>
+      </div>
+      <button class="btn" id="addContributionBtn">Add Contribution</button>
+      <button class="btn btn-secondary" id="cancelContributionEditBtn" style="display:none; margin-top:8px;">Cancel Edit</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Contribution History</div>
+      <div id="contributionList"></div>
+    </div>
+
+  </div>
+
+  <!-- SCREEN 2: EXPENSES -->
+  <div class="screen" id="screen2">
+
+    <div class="panel accent">
+      <div class="panel-title" id="expenseFormTitle">Log Expense</div>
+      <div class="field">
+        <label>What Was It For?</label>
+        <input id="expenseTitle" type="text" placeholder="E.g. Hotel, Fuel, Dinner" autocomplete="off">
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Amount</label>
+          <input id="expenseAmount" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00">
+        </div>
+        <div class="field">
+          <label>Date</label>
+          <input id="expenseDate" type="date">
+        </div>
+      </div>
+      <div class="field">
+        <label>Paid By</label>
+        <select id="expensePayer">
+          <option value="fund">Common Fund</option>
+        </select>
+      </div>
+
+      <div id="fundStatus" class="notice"></div>
+
+      <button class="btn" id="addExpenseBtn">Add Expense</button>
+      <button class="btn btn-secondary" id="cancelExpenseEditBtn" style="display:none; margin-top:8px;">Cancel Edit</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Expense History</div>
+      <div id="expenseList"></div>
+    </div>
+
+  </div>
+
+  <!-- SCREEN 3: SETTLEMENT & BACKUP -->
+  <div class="screen" id="screen3">
+
+    <div class="panel">
+      <div class="panel-title">Overview</div>
+      <div class="summary-grid">
+        <div class="summary">
+          <div class="summary-label">Total Contributions</div>
+          <div class="summary-value" id="totalContributions">0.00</div>
+        </div>
+        <div class="summary">
+          <div class="summary-label">Total Expenses</div>
+          <div class="summary-value" id="totalExpenses">0.00</div>
+        </div>
+        <div class="summary">
+          <div class="summary-label">Fund Spent</div>
+          <div class="summary-value" id="fundSpent">0.00</div>
+        </div>
+        <div class="summary">
+          <div class="summary-label">Fund Balance</div>
+          <div class="summary-value" id="fundBalance">0.00</div>
+        </div>
+      </div>
+      <div id="settlementNotice"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Participant Breakdown</div>
+      <div id="balanceList"></div>
+    </div>
+
+    <div class="panel accent">
+      <div class="panel-title">Who Pays Whom</div>
+      <div id="settlementList"></div>
+    </div>
+
+    <div class="panel accent">
+      <div class="panel-title">Cloud Backup</div>
+      <div class="field">
+        <label>Sync Id</label>
+        <input id="fbSyncId" type="text" placeholder="A Code Only Your Group Knows" autocomplete="off">
+      </div>
+      <button class="btn btn-secondary" id="saveSyncIdBtn">Save Sync Id</button>
+      <div id="firebaseStatus" class="notice"></div>
+      <button class="btn" id="cloudBackupBtn" style="margin-top:10px;">Back Up To Cloud</button>
+      <button class="btn btn-secondary" id="cloudRestoreBtn" style="margin-top:8px;">Restore From Cloud</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Offline Copy</div>
+      <button class="btn btn-secondary" id="exportBackupBtn">Export Backup (JSON)</button>
+      <button class="btn btn-secondary" id="importBackupBtn" style="margin-top:8px;">Restore From Backup</button>
+      <input type="file" id="restoreFile" accept=".json">
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Share Report</div>
+      <textarea id="shareText" class="share-text" readonly></textarea>
+      <button class="btn" id="shareBtn">Share Report</button>
+      <button class="btn btn-danger" id="resetBtn">Reset All Data</button>
+    </div>
+
+  </div>
+
+  <nav class="nav-bar">
+    <button class="nav-item active" data-target="screen1">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c0-4.1 3.4-6.5 7.5-6.5s7.5 2.4 7.5 6.5"/></svg>
+      <span>People</span>
+    </button>
+    <button class="nav-item" data-target="screen2">
+      <svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>
+      <span>Expenses</span>
+    </button>
+    <button class="nav-item" data-target="screen3">
+      <svg viewBox="0 0 24 24"><path d="M4 19V10M11 19V5M18 19v-7"/></svg>
+      <span>Settlement</span>
+    </button>
+  </nav>
+
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-card">
+    <div class="modal-title" id="modalTitle">Confirm</div>
+    <div class="modal-message" id="modalMessage"></div>
+    <input type="text" id="modalPromptInput" class="modal-input" style="display:none;" placeholder="Enter A Name">
+    <div class="modal-actions">
+      <button class="btn-secondary" id="modalCancelBtn" style="flex:1; border-radius:6px; min-height:44px; cursor:pointer;">Cancel</button>
+      <button class="btn" id="modalConfirmBtn" style="flex:1;">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+const STORAGE_KEY = "manskit_split_profiles_v1";
+
+let profiles = [];
+let activeProfileId = null;
+
+let people = [];
+let contributions = [];
+let expenses = [];
+let purpose = "";
+let currency = "₹";
+
+let editingPersonId = null;
+let editingContributionId = null;
+let editingExpenseId = null;
+
+/* ---------------- STORAGE (persistent, per-user) ---------------- */
+function loadActiveProfileIntoGlobals() {
+  let profile = profiles.find(p => p.id === activeProfileId);
+  if (!profile) profile = profiles[0];
+  activeProfileId = profile.id;
+  purpose = profile.purpose || "";
+  currency = profile.currency || "₹";
+  people = Array.isArray(profile.people) ? profile.people : [];
+  contributions = Array.isArray(profile.contributions) ? profile.contributions : [];
+  expenses = Array.isArray(profile.expenses) ? profile.expenses : [];
+}
+
+function syncGlobalsIntoActiveProfile() {
+  const profile = profiles.find(p => p.id === activeProfileId);
+  if (!profile) return;
+  profile.purpose = purpose;
+  profile.currency = currency;
+  profile.people = people;
+  profile.contributions = contributions;
+  profile.expenses = expenses;
+}
+
+async function loadAll() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (Array.isArray(data.profiles) && data.profiles.length > 0) {
+        profiles = data.profiles;
+        activeProfileId = data.activeProfileId || profiles[0].id;
+      }
+    }
+  } catch (error) {
+    // No saved ledger yet — start fresh.
+  }
+  if (profiles.length === 0) {
+    const fresh = { id: makeId(), name: "My Collection", purpose: "", currency: "₹", people: [], contributions: [], expenses: [] };
+    profiles = [fresh];
+    activeProfileId = fresh.id;
+  }
+  loadActiveProfileIntoGlobals();
+}
+
+async function saveAll() {
+  syncGlobalsIntoActiveProfile();
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ activeProfileId, profiles }));
+  } catch (error) {
+    showToast("Could Not Save — Your Last Change May Not Persist.", "error");
+  }
+}
+
+async function clearAllStorage() {
+  try { localStorage.removeItem(STORAGE_KEY); } catch (error) { /* nothing to clear */ }
+}
+
+/* ---------------- HELPERS ---------------- */
+function makeId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+
+function today() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function money(value) {
+  const number = Number(value) || 0;
+  return currency + number.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function escapeHTML(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function titleCase(text) {
+  return String(text || "").trim().toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function liveTitleCase(text) {
+  return String(text || "").toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function applyLiveTitleCase(inputEl) {
+  const pos = inputEl.selectionStart;
+  const transformed = liveTitleCase(inputEl.value);
+  if (transformed !== inputEl.value) {
+    inputEl.value = transformed;
+    inputEl.setSelectionRange(pos, pos);
+  }
+}
+
+function formatDate(dateString) {
+  if (!dateString) return "No Date Recorded";
+  const parts = dateString.split("-");
+  if (parts.length !== 3) return dateString;
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+
+/* ---------------- TOASTS ---------------- */
+function showToast(message, type = "info") {
+  const stack = document.getElementById("toastStack");
+  const toast = document.createElement("div");
+  toast.className = "toast " + type;
+  toast.textContent = message;
+  stack.appendChild(toast);
+  setTimeout(() => {
+    toast.style.transition = "opacity .2s ease";
+    toast.style.opacity = "0";
+    setTimeout(() => toast.remove(), 200);
+  }, 3200);
+}
+
+/* ---------------- MODAL (confirm / prompt dialog) ---------------- */
+const modalOverlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalMessage = document.getElementById("modalMessage");
+const modalPromptInput = document.getElementById("modalPromptInput");
+const modalCancelBtn = document.getElementById("modalCancelBtn");
+const modalConfirmBtn = document.getElementById("modalConfirmBtn");
+let modalResolve = null;
+let modalIsPrompt = false;
+
+function showConfirm(message, title = "Please Confirm", confirmLabel = "Confirm") {
+  modalIsPrompt = false;
+  modalPromptInput.style.display = "none";
+  modalTitle.textContent = title;
+  modalMessage.textContent = message;
+  modalConfirmBtn.textContent = confirmLabel;
+  modalOverlay.classList.add("open");
+  return new Promise(resolve => { modalResolve = resolve; });
+}
+
+function showPrompt(message, title = "Enter A Name", defaultValue = "", confirmLabel = "Save", placeholder = "Enter A Name") {
+  modalIsPrompt = true;
+  modalPromptInput.style.display = "block";
+  modalPromptInput.value = defaultValue;
+  modalPromptInput.placeholder = placeholder;
+  modalTitle.textContent = title;
+  modalMessage.textContent = message;
+  modalConfirmBtn.textContent = confirmLabel;
+  modalOverlay.classList.add("open");
+  setTimeout(() => { modalPromptInput.focus(); modalPromptInput.select(); }, 60);
+  return new Promise(resolve => { modalResolve = resolve; });
+}
+
+function closeModal(result) {
+  modalOverlay.classList.remove("open");
+  if (modalResolve) {
+    if (modalIsPrompt) modalResolve(result ? modalPromptInput.value.trim() : null);
+    else modalResolve(result);
+    modalResolve = null;
+  }
+}
+
+modalCancelBtn.addEventListener("click", () => closeModal(false));
+modalConfirmBtn.addEventListener("click", () => closeModal(true));
+modalOverlay.addEventListener("click", e => { if (e.target === modalOverlay) closeModal(false); });
+modalPromptInput.addEventListener("keydown", e => { if (e.key === "Enter") closeModal(true); });
+
+/* ---------------- NAVIGATION ---------------- */
+document.querySelectorAll(".nav-item").forEach(button => {
+  button.addEventListener("click", () => {
+    const target = button.dataset.target;
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+    document.getElementById(target).classList.add("active");
+    button.classList.add("active");
+    window.scrollTo(0, 0);
+  });
+});
+
+/* ---------------- DOM REFERENCES ---------------- */
+const profileSelect = document.getElementById("profileSelect");
+const newProfileBtn = document.getElementById("newProfileBtn");
+const renameProfileBtn = document.getElementById("renameProfileBtn");
+const deleteProfileBtn = document.getElementById("deleteProfileBtn");
+
+const purposeInput = document.getElementById("purposeInput");
+const currencySelect = document.getElementById("currencySelect");
+
+const personName = document.getElementById("personName");
+const addPersonBtn = document.getElementById("addPersonBtn");
+const cancelPersonEditBtn = document.getElementById("cancelPersonEditBtn");
+const personFormTitle = document.getElementById("personFormTitle");
+const peopleList = document.getElementById("peopleList");
+
+const contributionPerson = document.getElementById("contributionPerson");
+const contributionAmount = document.getElementById("contributionAmount");
+const contributionDate = document.getElementById("contributionDate");
+const addContributionBtn = document.getElementById("addContributionBtn");
+const cancelContributionEditBtn = document.getElementById("cancelContributionEditBtn");
+const contributionFormTitle = document.getElementById("contributionFormTitle");
+const contributionList = document.getElementById("contributionList");
+
+const expenseTitle = document.getElementById("expenseTitle");
+const expenseAmount = document.getElementById("expenseAmount");
+const expenseDate = document.getElementById("expenseDate");
+const expensePayer = document.getElementById("expensePayer");
+const addExpenseBtn = document.getElementById("addExpenseBtn");
+const cancelExpenseEditBtn = document.getElementById("cancelExpenseEditBtn");
+const expenseFormTitle = document.getElementById("expenseFormTitle");
+const expenseList = document.getElementById("expenseList");
+
+const fundStatus = document.getElementById("fundStatus");
+const totalContributionsEl = document.getElementById("totalContributions");
+const totalExpensesEl = document.getElementById("totalExpenses");
+const fundSpentEl = document.getElementById("fundSpent");
+const fundBalanceEl = document.getElementById("fundBalance");
+const balanceList = document.getElementById("balanceList");
+const settlementList = document.getElementById("settlementList");
+const settlementNotice = document.getElementById("settlementNotice");
+const shareText = document.getElementById("shareText");
+const shareBtn = document.getElementById("shareBtn");
+const resetBtn = document.getElementById("resetBtn");
+
+const exportBackupBtn = document.getElementById("exportBackupBtn");
+const importBackupBtn = document.getElementById("importBackupBtn");
+const restoreFile = document.getElementById("restoreFile");
+
+const fbSyncIdInput = document.getElementById("fbSyncId");
+const saveSyncIdBtn = document.getElementById("saveSyncIdBtn");
+const firebaseStatus = document.getElementById("firebaseStatus");
+const cloudBackupBtn = document.getElementById("cloudBackupBtn");
+const cloudRestoreBtn = document.getElementById("cloudRestoreBtn");
+
+/* ---------------- LIVE CAPITALIZATION ---------------- */
+[personName, expenseTitle, modalPromptInput].forEach(el => {
+  el.addEventListener("input", () => applyLiveTitleCase(el));
+});
+
+/* ---------------- PROFILES ---------------- */
+function renderProfileSelect() {
+  profileSelect.innerHTML = "";
+  profiles.forEach(profile => {
+    const option = document.createElement("option");
+    option.value = profile.id;
+    option.textContent = profile.name;
+    profileSelect.appendChild(option);
+  });
+  profileSelect.value = activeProfileId;
+}
+
+profileSelect.addEventListener("change", async () => {
+  await saveAll();
+  activeProfileId = profileSelect.value;
+  loadActiveProfileIntoGlobals();
+  clearPersonEdit();
+  clearContributionEdit();
+  clearExpenseEdit();
+  purposeInput.value = purpose;
+  currencySelect.value = currency;
+  updateAll();
+});
+
+newProfileBtn.addEventListener("click", async () => {
+  const raw = await showPrompt("Name One Or More Collections, Separated By Commas.", "New Profile", "", "Create", "E.g. Goa Trip, Flat Rent");
+  if (!raw) return;
+  const names = raw.split(",").map(n => n.trim()).filter(Boolean);
+  if (names.length === 0) return;
+  await saveAll();
+  let lastCreated = null;
+  names.forEach(name => {
+    const fresh = { id: makeId(), name: titleCase(name), purpose: "", currency: "₹", people: [], contributions: [], expenses: [] };
+    profiles.push(fresh);
+    lastCreated = fresh;
+  });
+  activeProfileId = lastCreated.id;
+  loadActiveProfileIntoGlobals();
+  clearPersonEdit(); clearContributionEdit(); clearExpenseEdit();
+  purposeInput.value = purpose;
+  currencySelect.value = currency;
+  await saveAll();
+  updateAll();
+  showToast(names.length > 1 ? `${names.length} Profiles Created.` : "Profile Created.", "success");
+});
+
+renameProfileBtn.addEventListener("click", async () => {
+  const profile = profiles.find(p => p.id === activeProfileId);
+  if (!profile) return;
+  const name = await showPrompt("Rename This Collection.", "Rename Profile", profile.name, "Save");
+  if (!name) return;
+  profile.name = titleCase(name);
+  await saveAll();
+  renderProfileSelect();
+  showToast("Profile Renamed.", "success");
+});
+
+deleteProfileBtn.addEventListener("click", async () => {
+  if (profiles.length <= 1) {
+    showToast("Keep At Least One Profile.", "error");
+    return;
+  }
+  const profile = profiles.find(p => p.id === activeProfileId);
+  if (!profile) return;
+  const ok = await showConfirm(`This Permanently Deletes "${profile.name}" And Everything In It.`, "Delete Profile", "Delete");
+  if (!ok) return;
+  profiles = profiles.filter(p => p.id !== activeProfileId);
+  activeProfileId = profiles[0].id;
+  loadActiveProfileIntoGlobals();
+  clearPersonEdit(); clearContributionEdit(); clearExpenseEdit();
+  purposeInput.value = purpose;
+  currencySelect.value = currency;
+  await saveAll();
+  updateAll();
+  showToast("Profile Deleted.", "success");
+});
+
+purposeInput.addEventListener("input", () => {
+  applyLiveTitleCase(purposeInput);
+  purpose = purposeInput.value;
+  saveAll();
+  updateShareText();
+});
+
+purposeInput.addEventListener("blur", () => {
+  const capitalized = titleCase(purposeInput.value);
+  purposeInput.value = capitalized;
+  purpose = capitalized;
+  saveAll();
+  updateShareText();
+});
+
+currencySelect.addEventListener("change", () => {
+  currency = currencySelect.value;
+  saveAll();
+  updateAll();
+});
+
+/* ---------------- PARTICIPANTS ---------------- */
+addPersonBtn.addEventListener("click", async () => {
+  const name = personName.value.trim();
+  if (!name) { showToast("Enter A Participant Name.", "error"); personName.focus(); return; }
+
+  if (editingPersonId) {
+    const person = people.find(p => p.id === editingPersonId);
+    if (person) person.name = titleCase(name);
+    clearPersonEdit();
+    showToast("Participant Updated.", "success");
+  } else {
+    if (people.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+      showToast("This Participant Already Exists.", "error");
+      return;
+    }
+    people.push({ id: makeId(), name: titleCase(name) });
+    personName.value = "";
+    showToast("Participant Added.", "success");
+  }
+  await saveAll();
+  updateAll();
+});
+
+function editPerson(id) {
+  const person = people.find(p => p.id === id);
+  if (!person) return;
+  editingPersonId = id;
+  personName.value = person.name;
+  personFormTitle.textContent = "Edit Participant";
+  addPersonBtn.textContent = "Save Changes";
+  cancelPersonEditBtn.style.display = "block";
+  personName.focus();
+}
+
+cancelPersonEditBtn.addEventListener("click", clearPersonEdit);
+function clearPersonEdit() {
+  editingPersonId = null;
+  personName.value = "";
+  personFormTitle.textContent = "Add Participant";
+  addPersonBtn.textContent = "Add Participant";
+  cancelPersonEditBtn.style.display = "none";
+}
+
+async function deletePerson(id) {
+  const person = people.find(p => p.id === id);
+  if (!person) return;
+  if (contributions.some(c => c.personId === id) || expenses.some(e => e.payerType === "person" && e.payerId === id)) {
+    showToast("Remove This Participant's Contributions And Expenses First.", "error");
+    return;
+  }
+  const ok = await showConfirm(`This Removes ${person.name} From The Ledger.`, "Remove Participant", "Remove");
+  if (!ok) return;
+  people = people.filter(p => p.id !== id);
+  await saveAll();
+  updateAll();
+  showToast("Participant Removed.", "success");
+}
+
+/* ---------------- CONTRIBUTIONS ---------------- */
+addContributionBtn.addEventListener("click", async () => {
+  if (people.length === 0) { showToast("Add Participants First.", "error"); return; }
+  const personId = contributionPerson.value;
+  const amount = Number(contributionAmount.value);
+  const date = contributionDate.value;
+
+  if (!personId) { showToast("Select A Participant.", "error"); return; }
+  if (!amount || amount <= 0) { showToast("Enter A Valid Amount.", "error"); return; }
+  if (!date) { showToast("Select A Date.", "error"); return; }
+
+  if (editingContributionId) {
+    const contribution = contributions.find(c => c.id === editingContributionId);
+    if (contribution) { contribution.personId = personId; contribution.amount = amount; contribution.date = date; }
+    clearContributionEdit();
+    showToast("Contribution Updated.", "success");
+  } else {
+    contributions.push({ id: makeId(), personId, amount, date });
+    contributionAmount.value = "";
+    contributionDate.value = today();
+    showToast("Contribution Recorded.", "success");
+  }
+  await saveAll();
+  updateAll();
+});
+
+function editContribution(id) {
+  const contribution = contributions.find(c => c.id === id);
+  if (!contribution) return;
+  editingContributionId = id;
+  contributionPerson.value = contribution.personId;
+  contributionAmount.value = contribution.amount;
+  contributionDate.value = contribution.date || today();
+  contributionFormTitle.textContent = "Edit Contribution";
+  addContributionBtn.textContent = "Save Changes";
+  cancelContributionEditBtn.style.display = "block";
+}
+
+cancelContributionEditBtn.addEventListener("click", clearContributionEdit);
+function clearContributionEdit() {
+  editingContributionId = null;
+  contributionAmount.value = "";
+  contributionDate.value = today();
+  contributionFormTitle.textContent = "Add Contribution";
+  addContributionBtn.textContent = "Add Contribution";
+  cancelContributionEditBtn.style.display = "none";
+}
+
+async function deleteContribution(id) {
+  const ok = await showConfirm("This Contribution Will Be Permanently Removed.", "Delete Contribution", "Delete");
+  if (!ok) return;
+  contributions = contributions.filter(c => c.id !== id);
+  await saveAll();
+  updateAll();
+  showToast("Contribution Deleted.", "success");
+}
+
+/* ---------------- EXPENSES ---------------- */
+addExpenseBtn.addEventListener("click", async () => {
+  const title = expenseTitle.value.trim();
+  const amount = Number(expenseAmount.value);
+  const date = expenseDate.value;
+  const payer = expensePayer.value;
+
+  if (!title) { showToast("Describe What The Expense Was For.", "error"); return; }
+  if (!amount || amount <= 0) { showToast("Enter A Valid Amount.", "error"); return; }
+  if (!date) { showToast("Select A Date.", "error"); return; }
+  if (!payer) { showToast("Select Who Paid.", "error"); return; }
+
+  let payerType = "fund", payerId = null;
+  if (payer.startsWith("person:")) { payerType = "person"; payerId = payer.replace("person:", ""); }
+
+  if (payerType === "fund") {
+    let currentFund = calculateFundBalance();
+    if (editingExpenseId) {
+      const oldExp = expenses.find(e => e.id === editingExpenseId);
+      if (oldExp && oldExp.payerType === "fund") currentFund += Number(oldExp.amount);
+    }
+    if (amount > currentFund + 0.000001) {
+      showToast(`Common Fund Only Has ${money(currentFund)} Available.`, "error");
+      return;
+    }
+  }
+
+  if (editingExpenseId) {
+    const expense = expenses.find(e => e.id === editingExpenseId);
+    if (expense) {
+      expense.title = titleCase(title); expense.amount = amount; expense.date = date;
+      expense.payerType = payerType; expense.payerId = payerId;
+    }
+    clearExpenseEdit();
+    showToast("Expense Updated.", "success");
+  } else {
+    expenses.push({ id: makeId(), title: titleCase(title), amount, date, payerType, payerId });
+    expenseTitle.value = ""; expenseAmount.value = ""; expenseDate.value = today(); expensePayer.value = "fund";
+    showToast("Expense Logged.", "success");
+  }
+  await saveAll();
+  updateAll();
+});
+
+function editExpense(id) {
+  const expense = expenses.find(e => e.id === id);
+  if (!expense) return;
+  editingExpenseId = id;
+  expenseTitle.value = expense.title;
+  expenseAmount.value = expense.amount;
+  expenseDate.value = expense.date || today();
+  expensePayer.value = expense.payerType === "person" ? "person:" + expense.payerId : "fund";
+  expenseFormTitle.textContent = "Edit Expense";
+  addExpenseBtn.textContent = "Save Changes";
+  cancelExpenseEditBtn.style.display = "block";
+}
+
+cancelExpenseEditBtn.addEventListener("click", clearExpenseEdit);
+function clearExpenseEdit() {
+  editingExpenseId = null;
+  expenseTitle.value = ""; expenseAmount.value = ""; expenseDate.value = today(); expensePayer.value = "fund";
+  expenseFormTitle.textContent = "Log Expense";
+  addExpenseBtn.textContent = "Add Expense";
+  cancelExpenseEditBtn.style.display = "none";
+}
+
+async function deleteExpense(id) {
+  const ok = await showConfirm("This Expense Will Be Permanently Removed.", "Delete Expense", "Delete");
+  if (!ok) return;
+  expenses = expenses.filter(e => e.id !== id);
+  await saveAll();
+  updateAll();
+  showToast("Expense Deleted.", "success");
+}
+
+/* ---------------- CALCULATIONS ---------------- */
+function getTotalContributions() { return contributions.reduce((t, c) => t + Number(c.amount || 0), 0); }
+function getFundSpent() { return expenses.filter(e => e.payerType === "fund").reduce((t, e) => t + Number(e.amount || 0), 0); }
+function getPersonalPaid(personId) { return expenses.filter(e => e.payerType === "person" && e.payerId === personId).reduce((t, e) => t + Number(e.amount || 0), 0); }
+function getPersonContribution(personId) { return contributions.filter(c => c.personId === personId).reduce((t, c) => t + Number(c.amount || 0), 0); }
+function calculateFundBalance() { return getTotalContributions() - getFundSpent(); }
+function getTotalExpenses() { return expenses.reduce((t, e) => t + Number(e.amount || 0), 0); }
+
+/* ---------------- RENDERING ---------------- */
+function renderParticipantSelect() {
+  const currentValue = contributionPerson.value;
+  contributionPerson.innerHTML = "";
+  if (people.length === 0) {
+    const option = document.createElement("option");
+    option.value = ""; option.textContent = "Add Participants First";
+    contributionPerson.appendChild(option);
+    return;
+  }
+  people.forEach(person => {
+    const option = document.createElement("option");
+    option.value = person.id; option.textContent = person.name;
+    contributionPerson.appendChild(option);
+  });
+  if (people.some(p => p.id === currentValue)) contributionPerson.value = currentValue;
+}
+
+function renderPayerSelect() {
+  const currentValue = expensePayer.value || "fund";
+  expensePayer.innerHTML = "";
+  const fundOption = document.createElement("option");
+  fundOption.value = "fund"; fundOption.textContent = "Common Fund";
+  expensePayer.appendChild(fundOption);
+  people.forEach(person => {
+    const option = document.createElement("option");
+    option.value = "person:" + person.id; option.textContent = person.name;
+    expensePayer.appendChild(option);
+  });
+  const exists = Array.from(expensePayer.options).some(o => o.value === currentValue);
+  expensePayer.value = exists ? currentValue : "fund";
+}
+
+function renderPeople() {
+  if (people.length === 0) {
+    peopleList.innerHTML = `<div class="empty">No Participants Yet — Add The First One Above.</div>`;
+    return;
+  }
+  peopleList.innerHTML = people.map(person => {
+    const contribution = getPersonContribution(person.id);
+    const personalPaid = getPersonalPaid(person.id);
+    return `
+      <div class="person">
+        <div class="item-top">
+          <div class="item-name">${escapeHTML(person.name)}</div>
+          <div class="action-group">
+            <button class="small-btn edit" data-edit-person="${person.id}">Edit</button>
+            <button class="small-btn delete" data-delete-person="${person.id}">Remove</button>
+          </div>
+        </div>
+        <div class="item-meta">Contributed <span class="mono">${money(contribution)}</span> &nbsp;·&nbsp; Paid Directly <span class="mono">${money(personalPaid)}</span></div>
+      </div>`;
+  }).join("");
+
+  peopleList.querySelectorAll("[data-edit-person]").forEach(b => b.addEventListener("click", () => editPerson(b.dataset.editPerson)));
+  peopleList.querySelectorAll("[data-delete-person]").forEach(b => b.addEventListener("click", () => deletePerson(b.dataset.deletePerson)));
+}
+
+function renderContributions() {
+  if (contributions.length === 0) {
+    contributionList.innerHTML = `<div class="empty">No Contributions Recorded Yet.</div>`;
+    return;
+  }
+  const sorted = [...contributions].sort((a, b) => (!a.date ? 1 : !b.date ? -1 : b.date.localeCompare(a.date)));
+  contributionList.innerHTML = sorted.map(c => {
+    const person = people.find(p => p.id === c.personId);
+    const name = person ? person.name : "Unknown Participant";
+    return `
+      <div class="transaction">
+        <div class="item-top">
+          <div class="item-name">${escapeHTML(name)}</div>
+          <div class="amount pos">${money(c.amount)}</div>
+        </div>
+        <div class="item-meta">${formatDate(c.date)}</div>
+        <div class="action-group">
+          <button class="small-btn edit" data-edit-contribution="${c.id}">Edit</button>
+          <button class="small-btn delete" data-delete-contribution="${c.id}">Delete</button>
+        </div>
+      </div>`;
+  }).join("");
+
+  contributionList.querySelectorAll("[data-edit-contribution]").forEach(b => b.addEventListener("click", () => editContribution(b.dataset.editContribution)));
+  contributionList.querySelectorAll("[data-delete-contribution]").forEach(b => b.addEventListener("click", () => deleteContribution(b.dataset.deleteContribution)));
+}
+
+function renderExpenses() {
+  if (expenses.length === 0) {
+    expenseList.innerHTML = `<div class="empty">No Expenses Logged Yet.</div>`;
+    return;
+  }
+  const sorted = [...expenses].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+  expenseList.innerHTML = sorted.map(e => {
+    let payerName = "Common Fund";
+    if (e.payerType === "person") {
+      const person = people.find(p => p.id === e.payerId);
+      payerName = person ? person.name : "Unknown Participant";
+    }
+    return `
+      <div class="expense">
+        <div class="item-top">
+          <div class="item-name">${escapeHTML(e.title)}</div>
+          <div class="amount neg">${money(e.amount)}</div>
+        </div>
+        <div class="item-meta">${formatDate(e.date)} &nbsp;·&nbsp; Paid By ${escapeHTML(payerName)}</div>
+        <div class="action-group">
+          <button class="small-btn edit" data-edit-expense="${e.id}">Edit</button>
+          <button class="small-btn delete" data-delete-expense="${e.id}">Delete</button>
+        </div>
+      </div>`;
+  }).join("");
+
+  expenseList.querySelectorAll("[data-edit-expense]").forEach(b => b.addEventListener("click", () => editExpense(b.dataset.editExpense)));
+  expenseList.querySelectorAll("[data-delete-expense]").forEach(b => b.addEventListener("click", () => deleteExpense(b.dataset.deleteExpense)));
+}
+
+function calculateBalances() {
+  const totalExp = getTotalExpenses();
+  const count = people.length;
+  if (count === 0) return [];
+  const share = totalExp / count;
+  return people.map(person => {
+    const contribution = getPersonContribution(person.id);
+    const personalPaid = getPersonalPaid(person.id);
+    const totalPaid = contribution + personalPaid;
+    return { personId: person.id, name: person.name, contribution, personalPaid, totalPaid, share, balance: totalPaid - share };
+  });
+}
+
+function calculateFundAction() {
+  const fundB = calculateFundBalance();
+  if (Math.abs(fundB) <= 0.005 || people.length === 0) return [];
+  const amount = Math.abs(fundB);
+  const totalC = getTotalContributions();
+  if (totalC <= 0.005) {
+    const evenShare = amount / people.length;
+    return people.map(p => ({ name: p.name, amount: evenShare }));
+  }
+  return people
+    .map(p => ({ name: p.name, amount: (getPersonContribution(p.id) / totalC) * amount }))
+    .filter(entry => entry.amount > 0.005);
+}
+
+function createSettlementTransactions() {
+  const balances = calculateBalances();
+  const fundBal = calculateFundBalance();
+  if (Math.abs(fundBal) > 0.005) return [];
+
+  const debtors = balances.filter(b => b.balance < -0.005).map(b => ({ ...b, amount: Math.abs(b.balance) })).sort((a, b) => b.amount - a.amount);
+  const creditors = balances.filter(b => b.balance > 0.005).map(b => ({ ...b, amount: b.balance })).sort((a, b) => b.amount - a.amount);
+
+  const transactions = [];
+  let i = 0, j = 0;
+  while (i < debtors.length && j < creditors.length) {
+    const amount = Math.min(debtors[i].amount, creditors[j].amount);
+    transactions.push({ from: debtors[i].name, to: creditors[j].name, amount });
+    debtors[i].amount -= amount; creditors[j].amount -= amount;
+    if (debtors[i].amount <= 0.005) i++;
+    if (creditors[j].amount <= 0.005) j++;
+  }
+  return transactions;
+}
+
+function renderSettlement() {
+  const totalC = getTotalContributions();
+  const totalE = getTotalExpenses();
+  const fundS = getFundSpent();
+  const fundB = calculateFundBalance();
+
+  totalContributionsEl.textContent = money(totalC);
+  totalExpensesEl.textContent = money(totalE);
+  fundSpentEl.textContent = money(fundS);
+  fundBalanceEl.textContent = money(fundB);
+
+  if (Math.abs(fundB) <= 0.005) {
+    fundStatus.className = "notice";
+    fundStatus.innerHTML = `Common Fund Available: <strong>${money(0)}</strong>`;
+  } else if (fundB > 0) {
+    fundStatus.className = "notice";
+    fundStatus.innerHTML = `Common Fund Available: <strong>${money(fundB)}</strong>`;
+  } else {
+    fundStatus.className = "notice warning";
+    fundStatus.innerHTML = `Common Fund Is Overdrawn By <strong>${money(Math.abs(fundB))}</strong>`;
+  }
+
+  const balances = calculateBalances();
+  if (balances.length === 0) {
+    balanceList.innerHTML = `<div class="empty">Add Participants To See The Breakdown.</div>`;
+  } else {
+    balanceList.innerHTML = balances.map(b => {
+      let statusHTML;
+      if (b.balance > 0.005) statusHTML = `<strong class="receive">Receives ${money(Math.abs(b.balance))}</strong>`;
+      else if (b.balance < -0.005) statusHTML = `<strong class="pay">Pays ${money(Math.abs(b.balance))}</strong>`;
+      else statusHTML = `<span class="settled-tag">Settled</span>`;
+      return `
+        <div class="balance">
+          <div class="balance-main">
+            <span class="item-name">${escapeHTML(b.name)}</span>
+            ${statusHTML}
+          </div>
+          <div class="item-meta">Fair Share <span class="mono">${money(b.share)}</span> &nbsp;·&nbsp; Contributed <span class="mono">${money(b.contribution)}</span> &nbsp;·&nbsp; Paid Directly <span class="mono">${money(b.personalPaid)}</span></div>
+        </div>`;
+    }).join("");
+  }
+
+  const transactions = createSettlementTransactions();
+  if (people.length < 2) {
+    settlementList.innerHTML = `<div class="empty">Add At Least Two Participants To Calculate A Settlement.</div>`;
+  } else if (Math.abs(fundB) > 0.005) {
+    const fundAction = calculateFundAction();
+    const verb = fundB > 0 ? "Return" : "Collect";
+    const reason = fundB > 0
+      ? `The Common Fund Has <strong>${money(fundB)}</strong> Left Over. Return It By Each Person's Contribution Share Before The Final Settlement.`
+      : `The Common Fund Is Short By <strong>${money(Math.abs(fundB))}</strong>. Collect It By Each Person's Contribution Share Before The Final Settlement.`;
+    settlementList.innerHTML = `
+      <div class="notice warning">${reason}</div>
+      <div class="settlement-box">
+        ${fundAction.map(entry => `
+          <div class="balance">
+            <div class="balance-main">
+              <span class="item-name">${verb} ${escapeHTML(entry.name)}</span>
+              <strong class="mono" style="color:var(--paper)">${money(entry.amount)}</strong>
+            </div>
+          </div>`).join("")}
+      </div>`;
+  } else if (transactions.length === 0) {
+    settlementList.innerHTML = `<div class="empty">Everyone Is Settled — No Payments Needed.</div>`;
+  } else {
+    settlementList.innerHTML = `
+      <div class="settlement-box">
+        ${transactions.map(t => `
+          <div class="balance">
+            <div class="balance-main">
+              <span class="item-name">${escapeHTML(t.from)} Pays ${escapeHTML(t.to)}</span>
+              <strong class="mono" style="color:var(--paper)">${money(t.amount)}</strong>
+            </div>
+          </div>`).join("")}
+      </div>`;
+  }
+
+  if (people.length > 0 && totalE > 0) {
+    if (Math.abs(fundB) > 0.005) {
+      settlementNotice.innerHTML = `<div class="notice warning">There's Still Money In The Common Fund. Use It For Remaining Expenses Or Return It Before Final Settlement.</div>`;
+    } else {
+      settlementNotice.innerHTML = `<div class="notice good">The Common Fund Has Been Fully Used. Personal Expenses And Contributions Are Included Below.</div>`;
+    }
+  } else {
+    settlementNotice.innerHTML = "";
+  }
+}
+
+/* ---------------- CLOUD BACKUP (FIREBASE REALTIME DATABASE) ---------------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyCtAv-26Sg-L4DQNd02_hBa47tvrny8pSU",
+  authDomain: "manskit-23d9f.firebaseapp.com",
+  databaseURL: "https://manskit-23d9f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "manskit-23d9f",
+  storageBucket: "manskit-23d9f.firebasestorage.app",
+  messagingSenderId: "504036502314",
+  appId: "1:504036502314:web:87f06fe37d9d5488a3cc53"
+};
+
+const SYNC_SETTINGS_KEY = "manskit_split_sync_v1";
+const CLOUD_PATH = "manskit_split_backups";
+
+let syncId = "";
+let fbApp = null;
+let fbDb = null;
+let fbSdkLoaded = false;
+
+async function loadSyncSettings() {
+  try {
+    const raw = localStorage.getItem(SYNC_SETTINGS_KEY);
+    if (raw) {
+      const data = JSON.parse(raw);
+      syncId = data.syncId || "";
+    }
+  } catch (error) { /* no saved sync id yet */ }
+}
+
+async function saveSyncSettings() {
+  try {
+    localStorage.setItem(SYNC_SETTINGS_KEY, JSON.stringify({ syncId }));
+  } catch (error) {
+    showToast("Couldn't Save The Sync Id.", "error");
+  }
+}
+
+function renderFirebaseStatus() {
+  const connected = !!syncId.trim();
+  firebaseStatus.className = "notice" + (connected ? " good" : "");
+  firebaseStatus.innerHTML = connected
+    ? `Connected — Syncing Under <strong>${escapeHTML(syncId)}</strong>`
+    : `Not Connected — Enter A Sync Id And Save It Above.`;
+}
+
+function loadScriptOnce(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Failed To Load " + src));
+    document.head.appendChild(script);
+  });
+}
+
+async function ensureFirebaseReady() {
+  if (!syncId.trim()) {
+    showToast("Enter A Sync Id And Save It First.", "error");
+    return false;
+  }
+  try {
+    if (!fbSdkLoaded) {
+      await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
+      await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js");
+      fbSdkLoaded = true;
+    }
+    if (!fbApp) {
+      fbApp = firebase.apps.length ? firebase.apps[0] : firebase.initializeApp(firebaseConfig);
+      fbDb = firebase.database();
+    }
+    return true;
+  } catch (error) {
+    showToast("Couldn't Connect To The Cloud. Try Again.", "error");
+    fbApp = null; fbDb = null; fbSdkLoaded = false;
+    return false;
+  }
+}
+
+saveSyncIdBtn.addEventListener("click", async () => {
+  syncId = fbSyncIdInput.value.trim();
+  fbApp = null; fbDb = null; fbSdkLoaded = false;
+  await saveSyncSettings();
+  renderFirebaseStatus();
+  showToast("Sync Id Saved.", "success");
+});
+
+cloudBackupBtn.addEventListener("click", async () => {
+  const ready = await ensureFirebaseReady();
+  if (!ready) return;
+  try {
+    syncGlobalsIntoActiveProfile();
+    const payload = { activeProfileId, profiles, updatedAt: new Date().toISOString() };
+    await fbDb.ref(CLOUD_PATH + "/" + syncId.trim()).set(payload);
+    showToast("Backed Up To The Cloud.", "success");
+  } catch (error) {
+    showToast("Cloud Backup Failed. Check Your Sync Id And Rules.", "error");
+  }
+});
+
+cloudRestoreBtn.addEventListener("click", async () => {
+  const ready = await ensureFirebaseReady();
+  if (!ready) return;
+  try {
+    const snapshot = await fbDb.ref(CLOUD_PATH + "/" + syncId.trim()).once("value");
+    if (!snapshot.exists()) { showToast("No Cloud Backup Found For This Sync Id.", "error"); return; }
+    const ok = await showConfirm("Restoring Will Replace All Current Data With The Cloud Backup.", "Restore From Cloud", "Restore");
+    if (!ok) return;
+
+    const data = snapshot.val();
+    let restoredProfiles = null;
+    let restoredActiveId = null;
+
+    if (Array.isArray(data.profiles) && data.profiles.length > 0) {
+      restoredProfiles = data.profiles;
+      restoredActiveId = data.activeProfileId || restoredProfiles[0].id;
+    } else if (Array.isArray(data.people)) {
+      const wrapped = {
+        id: makeId(), name: "Restored Collection",
+        purpose: data.purpose || "", currency: data.currency || "₹",
+        people: data.people || [], contributions: data.contributions || [], expenses: data.expenses || []
+      };
+      restoredProfiles = [wrapped];
+      restoredActiveId = wrapped.id;
+    } else {
+      showToast("That Cloud Backup Looks Invalid.", "error");
+      return;
+    }
+
+    profiles = restoredProfiles;
+    activeProfileId = restoredActiveId;
+    loadActiveProfileIntoGlobals();
+    purposeInput.value = purpose;
+    currencySelect.value = currency;
+    clearPersonEdit(); clearContributionEdit(); clearExpenseEdit();
+    await saveAll();
+    updateAll();
+    showToast("Restored From The Cloud.", "success");
+  } catch (error) {
+    showToast("Cloud Restore Failed. Check Your Sync Id And Rules.", "error");
+  }
+});
+
+/* ---------------- BACKUP & RESTORE (LOCAL) ---------------- */
+exportBackupBtn.addEventListener("click", () => {
+  syncGlobalsIntoActiveProfile();
+  const data = { version: "v6", activeProfileId, profiles, exportedAt: new Date().toISOString() };
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+  const a = document.createElement("a");
+  a.setAttribute("href", dataStr);
+  a.setAttribute("download", `manskit-backup-${today()}.json`);
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  showToast("Backup Downloaded.", "success");
+});
+
+importBackupBtn.addEventListener("click", () => restoreFile.click());
+
+restoreFile.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async (event) => {
+    try {
+      const backup = JSON.parse(event.target.result);
+      let restoredProfiles = null;
+      let restoredActiveId = null;
+
+      if (Array.isArray(backup.profiles) && backup.profiles.length > 0) {
+        restoredProfiles = backup.profiles;
+        restoredActiveId = backup.activeProfileId || restoredProfiles[0].id;
+      } else if (Array.isArray(backup.people)) {
+        const wrapped = {
+          id: makeId(), name: "Restored Collection",
+          purpose: backup.purpose || "", currency: backup.currency || "₹",
+          people: backup.people || [], contributions: backup.contributions || [], expenses: backup.expenses || []
+        };
+        restoredProfiles = [wrapped];
+        restoredActiveId = wrapped.id;
+      } else {
+        showToast("That File Isn't A Valid MANSKIT Backup.", "error");
+        return;
+      }
+
+      const ok = await showConfirm("Restoring Will Replace All Current Data With This Backup.", "Restore From Backup", "Restore");
+      if (!ok) return;
+
+      profiles = restoredProfiles;
+      activeProfileId = restoredActiveId;
+      loadActiveProfileIntoGlobals();
+      purposeInput.value = purpose;
+      currencySelect.value = currency;
+      clearPersonEdit(); clearContributionEdit(); clearExpenseEdit();
+      await saveAll();
+      updateAll();
+      showToast("Data Restored.", "success");
+    } catch (err) {
+      showToast("Couldn't Read That Backup File.", "error");
+    }
+  };
+  reader.readAsText(file);
+  restoreFile.value = "";
+});
+
+/* ---------------- SHARE REPORT ---------------- */
+function buildShareReport() {
+  const totalC = getTotalContributions();
+  const totalE = getTotalExpenses();
+  const fundS = getFundSpent();
+  const fundB = calculateFundBalance();
+  const balances = calculateBalances();
+  const transactions = createSettlementTransactions();
+  const profile = profiles.find(p => p.id === activeProfileId);
+
+  let text = "MANSKIT SPLIT\n==============================\n";
+  text += purpose.trim() ? `${purpose.trim().toUpperCase()}\n==============================\n\n` : "\n";
+  text += `Profile: ${profile ? profile.name : "My Collection"}\n`;
+  text += "\n";
+
+  text += "Participants\n------------------------------\n";
+  text += people.length === 0 ? "No Participants\n" : people.map((p, i) => `${i + 1}. ${p.name}`).join("\n") + "\n";
+  text += "\n";
+
+  text += "Contributions\n------------------------------\n";
+  if (contributions.length === 0) text += "No Contributions\n";
+  else contributions.forEach(c => {
+    const person = people.find(p => p.id === c.personId);
+    text += `${person ? person.name : "Unknown"} — ${money(c.amount)} — ${formatDate(c.date)}\n`;
+  });
+  text += "\n";
+
+  text += "Expenses\n------------------------------\n";
+  if (expenses.length === 0) text += "No Expenses\n";
+  else expenses.forEach(e => {
+    let payer = "Common Fund";
+    if (e.payerType === "person") { const person = people.find(p => p.id === e.payerId); payer = person ? person.name : "Unknown"; }
+    text += `${e.title} — ${money(e.amount)}\nDate: ${formatDate(e.date)}\nPaid By: ${payer}\n\n`;
+  });
+
+  text += "Summary\n------------------------------\n";
+  text += `Total Contributions: ${money(totalC)}\nTotal Expenses: ${money(totalE)}\nFund Spent: ${money(fundS)}\nFund Balance: ${money(fundB)}\n\n`;
+
+  text += "Participant Breakdown\n------------------------------\n";
+  balances.forEach(b => {
+    const status = b.balance > 0.005 ? `Receives ${money(b.balance)}` : b.balance < -0.005 ? `Pays ${money(Math.abs(b.balance))}` : "Settled";
+    text += `${b.name}: ${status}\nShare: ${money(b.share)}\nContributions: ${money(b.contribution)}\nPaid Directly: ${money(b.personalPaid)}\n\n`;
+  });
+
+  text += "Settlement\n------------------------------\n";
+  if (Math.abs(fundB) > 0.005) {
+    const fundAction = calculateFundAction();
+    const verb = fundB > 0 ? "Return" : "Collect";
+    text += fundB > 0
+      ? `Common Fund Has ${money(fundB)} Left Over — Return By Contribution Share:\n`
+      : `Common Fund Is Short By ${money(Math.abs(fundB))} — Collect By Contribution Share:\n`;
+    fundAction.forEach(entry => { text += `${verb} ${entry.name}: ${money(entry.amount)}\n`; });
+  }
+  else if (transactions.length === 0) text += "Everyone Is Settled.\n";
+  else transactions.forEach(t => { text += `${t.from} Pays ${t.to}: ${money(t.amount)}\n`; });
+
+  text += "\nGenerated By MANSKIT — Split";
+  return text;
+}
+
+function updateShareText() { shareText.value = buildShareReport(); }
+
+shareBtn.addEventListener("click", async () => {
+  const text = buildShareReport();
+  try {
+    if (navigator.share) { await navigator.share({ title: purpose.trim() ? `MANSKIT — ${purpose.trim()}` : "MANSKIT — Split", text }); return; }
+    await copyText(text);
+    showToast("Report Copied To Clipboard.", "success");
+  } catch (error) {
+    if (error.name !== "AbortError") {
+      try { await copyText(text); showToast("Report Copied To Clipboard.", "success"); }
+      catch { showToast("Couldn't Share Or Copy The Report.", "error"); }
+    }
+  }
+});
+
+async function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return; }
+  const textarea = document.createElement("textarea");
+  textarea.value = text; textarea.style.position = "fixed"; textarea.style.left = "-9999px";
+  document.body.appendChild(textarea); textarea.select();
+  document.execCommand("copy"); textarea.remove();
+}
+
+resetBtn.addEventListener("click", async () => {
+  const ok = await showConfirm("This Permanently Deletes Every Profile, Participant, Contribution And Expense.", "Reset All Data", "Reset");
+  if (!ok) return;
+  const fresh = { id: makeId(), name: "My Collection", purpose: "", currency: "₹", people: [], contributions: [], expenses: [] };
+  profiles = [fresh];
+  activeProfileId = fresh.id;
+  loadActiveProfileIntoGlobals();
+  clearPersonEdit(); clearContributionEdit(); clearExpenseEdit();
+  await clearAllStorage();
+  purposeInput.value = ""; currencySelect.value = "₹";
+  await saveAll();
+  updateAll();
+  showToast("All Data Has Been Reset.", "success");
+});
+
+/* ---------------- BOOTSTRAP ---------------- */
+function updateAll() {
+  renderProfileSelect();
+  renderParticipantSelect();
+  renderPayerSelect();
+  renderPeople();
+  renderContributions();
+  renderExpenses();
+  renderSettlement();
+  updateShareText();
+}
+
+(async function init() {
+  contributionDate.value = today();
+  expenseDate.value = today();
+  await loadAll();
+  await loadSyncSettings();
+  purposeInput.value = purpose;
+  currencySelect.value = currency;
+  fbSyncIdInput.value = syncId;
+  renderFirebaseStatus();
+  updateAll();
+})();
+</script>
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("service-worker.js").catch(() => { /* offline support unavailable */ });
+    });
+  }
+</script>
+
+</body>
+</html>
