@@ -344,6 +344,12 @@
   .nav-item svg{ width:19px; height:19px; stroke:currentColor; fill:none; stroke-width:1.6; }
 
   #restoreFile{ display:none; }
+  .auth-email{ font-size:13px; }
+  .auth-actions{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .auth-actions .btn{ margin-top:0; }
+  .auth-links{ display:flex; justify-content:space-between; gap:10px; margin-top:10px; }
+  .text-btn{ border:0; background:transparent; color:var(--gold); padding:0; cursor:pointer; font-size:11.5px; }
+  .text-btn:hover{ text-decoration:underline; }
 
   /* ---------- TOASTS ---------- */
   .toast-stack{
@@ -547,10 +553,31 @@
     </div>
 
     <div class="panel accent">
+      <div class="panel-title">Cloud Account</div>
+      <div class="field">
+        <label>Email Address</label>
+        <input id="authEmail" class="auth-email" type="email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input id="authPassword" class="auth-email" type="password" placeholder="At least 6 characters" autocomplete="current-password">
+      </div>
+      <div class="auth-actions">
+        <button class="btn" id="signInBtn">Sign In</button>
+        <button class="btn btn-secondary" id="signUpBtn">Create Account</button>
+      </div>
+      <div class="auth-links">
+        <button class="text-btn" id="forgotPasswordBtn">Forgot Password?</button>
+        <button class="text-btn" id="signOutBtn" style="display:none;">Sign Out</button>
+      </div>
+      <div id="authStatus" class="notice">Not signed in — cloud backup is locked.</div>
+    </div>
+
+    <div class="panel accent">
       <div class="panel-title">Cloud Backup</div>
       <div class="field">
-        <label>Sync Id</label>
-        <input id="fbSyncId" type="text" placeholder="A Code Only Your Group Knows" autocomplete="off">
+        <label>Sync Id <span style="color:var(--muted)">(optional label for this backup)</span></label>
+        <input id="fbSyncId" type="text" placeholder="E.g. goa-trip-2026" autocomplete="off">
       </div>
       <button class="btn btn-secondary" id="saveSyncIdBtn">Save Sync Id</button>
       <div id="firebaseStatus" class="notice"></div>
@@ -850,6 +877,13 @@ const saveSyncIdBtn = document.getElementById("saveSyncIdBtn");
 const firebaseStatus = document.getElementById("firebaseStatus");
 const cloudBackupBtn = document.getElementById("cloudBackupBtn");
 const cloudRestoreBtn = document.getElementById("cloudRestoreBtn");
+const authEmailInput = document.getElementById("authEmail");
+const authPasswordInput = document.getElementById("authPassword");
+const signInBtn = document.getElementById("signInBtn");
+const signUpBtn = document.getElementById("signUpBtn");
+const forgotPasswordBtn = document.getElementById("forgotPasswordBtn");
+const signOutBtn = document.getElementById("signOutBtn");
+const authStatus = document.getElementById("authStatus");
 
 /* ---------------- LIVE CAPITALIZATION ---------------- */
 [personName, expenseTitle, modalPromptInput].forEach(el => {
@@ -1402,7 +1436,7 @@ function renderSettlement() {
   }
 }
 
-/* ---------------- CLOUD BACKUP (FIREBASE REALTIME DATABASE) ---------------- */
+/* ---------------- CLOUD ACCOUNT + BACKUP (FIREBASE AUTH + REALTIME DATABASE) ---------------- */
 const firebaseConfig = {
   apiKey: "AIzaSyCtAv-26Sg-L4DQNd02_hBa47tvrny8pSU",
   authDomain: "manskit-23d9f.firebaseapp.com",
@@ -1413,136 +1447,116 @@ const firebaseConfig = {
   appId: "1:504036502314:web:87f06fe37d9d5488a3cc53"
 };
 
-const SYNC_SETTINGS_KEY = "manskit_split_sync_v1";
+const SYNC_SETTINGS_KEY = "manskit_split_sync_v2";
 const CLOUD_PATH = "manskit_split_backups";
-
 let syncId = "";
 let fbApp = null;
 let fbDb = null;
+let fbAuth = null;
 let fbSdkLoaded = false;
+let currentUser = null;
 
 async function loadSyncSettings() {
-  try {
-    const raw = localStorage.getItem(SYNC_SETTINGS_KEY);
-    if (raw) {
-      const data = JSON.parse(raw);
-      syncId = data.syncId || "";
-    }
-  } catch (error) { /* no saved sync id yet */ }
+  try { const raw = localStorage.getItem(SYNC_SETTINGS_KEY); if (raw) syncId = JSON.parse(raw).syncId || ""; }
+  catch (error) { /* no saved sync id yet */ }
 }
-
 async function saveSyncSettings() {
-  try {
-    localStorage.setItem(SYNC_SETTINGS_KEY, JSON.stringify({ syncId }));
-  } catch (error) {
-    showToast("Couldn't Save The Sync Id.", "error");
-  }
+  try { localStorage.setItem(SYNC_SETTINGS_KEY, JSON.stringify({ syncId })); }
+  catch (error) { showToast("Couldn't Save The Sync Id.", "error"); }
 }
-
+function renderAuthStatus() {
+  const signedIn = !!currentUser;
+  authStatus.className = "notice" + (signedIn ? " good" : "");
+  authStatus.innerHTML = signedIn
+    ? `Signed in as <strong>${escapeHTML(currentUser.email || "your account")}</strong>`
+    : "Not signed in — cloud backup is locked.";
+  authEmailInput.disabled = signedIn;
+  authPasswordInput.disabled = signedIn;
+  signInBtn.style.display = signedIn ? "none" : "block";
+  signUpBtn.style.display = signedIn ? "none" : "block";
+  signOutBtn.style.display = signedIn ? "block" : "none";
+  cloudBackupBtn.disabled = !signedIn;
+  cloudRestoreBtn.disabled = !signedIn;
+}
 function renderFirebaseStatus() {
-  const connected = !!syncId.trim();
+  const connected = !!currentUser && !!syncId.trim();
   firebaseStatus.className = "notice" + (connected ? " good" : "");
-  firebaseStatus.innerHTML = connected
-    ? `Connected — Syncing Under <strong>${escapeHTML(syncId)}</strong>`
-    : `Not Connected — Enter A Sync Id And Save It Above.`;
+  firebaseStatus.innerHTML = !currentUser
+    ? "Sign in above to enable private cloud backup."
+    : connected
+      ? `Ready — private backup label <strong>${escapeHTML(syncId)}</strong>`
+      : "Signed in — enter a Sync Id and save it before backing up.";
 }
-
 function loadScriptOnce(src) {
   return new Promise((resolve, reject) => {
     if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
-    const script = document.createElement("script");
-    script.src = src;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Failed To Load " + src));
+    const script = document.createElement("script"); script.src = src;
+    script.onload = () => resolve(); script.onerror = () => reject(new Error("Failed to load Firebase SDK"));
     document.head.appendChild(script);
   });
 }
-
-async function ensureFirebaseReady() {
-  if (!syncId.trim()) {
-    showToast("Enter A Sync Id And Save It First.", "error");
-    return false;
-  }
+async function ensureFirebaseReady(requireAuth = true) {
+  if (requireAuth && !currentUser) { showToast("Sign in before using cloud backup.", "error"); return false; }
+  if (!syncId.trim()) { showToast("Enter a Sync Id and save it first.", "error"); return false; }
   try {
     if (!fbSdkLoaded) {
       await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
+      await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js");
       await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js");
       fbSdkLoaded = true;
     }
-    if (!fbApp) {
-      fbApp = firebase.apps.length ? firebase.apps[0] : firebase.initializeApp(firebaseConfig);
-      fbDb = firebase.database();
-    }
+    if (!fbApp) fbApp = firebase.apps.length ? firebase.apps[0] : firebase.initializeApp(firebaseConfig);
+    fbAuth = firebase.auth();
+    fbDb = firebase.database();
     return true;
-  } catch (error) {
-    showToast("Couldn't Connect To The Cloud. Try Again.", "error");
-    fbApp = null; fbDb = null; fbSdkLoaded = false;
-    return false;
-  }
+  } catch (error) { showToast("Couldn't connect to Firebase. Check your internet connection.", "error"); return false; }
 }
+function userCloudRef() { return fbDb.ref(`${CLOUD_PATH}/${currentUser.uid}/${syncId.trim()}`); }
 
+signInBtn.addEventListener("click", async () => {
+  const email = authEmailInput.value.trim(), password = authPasswordInput.value;
+  if (!email || !password) { showToast("Enter your email and password.", "error"); return; }
+  if (!(await ensureFirebaseReady(false))) return;
+  try { await fbAuth.signInWithEmailAndPassword(email, password); showToast("Signed in successfully.", "success"); }
+  catch (error) { showToast(error.code === "auth/invalid-credential" ? "Email or password is incorrect." : (error.message || "Sign in failed."), "error"); }
+});
+signUpBtn.addEventListener("click", async () => {
+  const email = authEmailInput.value.trim(), password = authPasswordInput.value;
+  if (!email || password.length < 6) { showToast("Use a valid email and a password of at least 6 characters.", "error"); return; }
+  if (!(await ensureFirebaseReady(false))) return;
+  try { await fbAuth.createUserWithEmailAndPassword(email, password); showToast("Account created and signed in.", "success"); }
+  catch (error) { showToast(error.code === "auth/email-already-in-use" ? "That email already has an account. Sign in instead." : (error.message || "Account creation failed."), "error"); }
+});
+forgotPasswordBtn.addEventListener("click", async () => {
+  const email = authEmailInput.value.trim();
+  if (!email) { showToast("Enter your email address first.", "error"); authEmailInput.focus(); return; }
+  if (!(await ensureFirebaseReady(false))) return;
+  try { await fbAuth.sendPasswordResetEmail(email); showToast("Password reset email sent.", "success"); }
+  catch (error) { showToast("Couldn't send the reset email. Check the address and Firebase email settings.", "error"); }
+});
+signOutBtn.addEventListener("click", async () => { try { await fbAuth.signOut(); showToast("Signed out.", "success"); } catch (error) { showToast("Couldn't sign out.", "error"); } });
 saveSyncIdBtn.addEventListener("click", async () => {
-  syncId = fbSyncIdInput.value.trim();
-  fbApp = null; fbDb = null; fbSdkLoaded = false;
-  await saveSyncSettings();
-  renderFirebaseStatus();
-  showToast("Sync Id Saved.", "success");
+  syncId = fbSyncIdInput.value.trim().replace(/[^a-zA-Z0-9_-]/g, "-").slice(0, 80);
+  fbSyncIdInput.value = syncId; await saveSyncSettings(); renderFirebaseStatus(); showToast("Sync Id saved.", "success");
 });
-
 cloudBackupBtn.addEventListener("click", async () => {
-  const ready = await ensureFirebaseReady();
-  if (!ready) return;
-  try {
-    syncGlobalsIntoActiveProfile();
-    const payload = { activeProfileId, profiles, updatedAt: new Date().toISOString() };
-    await fbDb.ref(CLOUD_PATH + "/" + syncId.trim()).set(payload);
-    showToast("Backed Up To The Cloud.", "success");
-  } catch (error) {
-    showToast("Cloud Backup Failed. Check Your Sync Id And Rules.", "error");
-  }
+  if (!(await ensureFirebaseReady())) return;
+  try { syncGlobalsIntoActiveProfile(); await userCloudRef().set({ version: "v7", activeProfileId, profiles, updatedAt: new Date().toISOString() }); showToast("Backed up privately to the cloud.", "success"); }
+  catch (error) { showToast("Cloud backup failed. Check Firebase Realtime Database rules.", "error"); }
 });
-
 cloudRestoreBtn.addEventListener("click", async () => {
-  const ready = await ensureFirebaseReady();
-  if (!ready) return;
+  if (!(await ensureFirebaseReady())) return;
   try {
-    const snapshot = await fbDb.ref(CLOUD_PATH + "/" + syncId.trim()).once("value");
-    if (!snapshot.exists()) { showToast("No Cloud Backup Found For This Sync Id.", "error"); return; }
-    const ok = await showConfirm("Restoring Will Replace All Current Data With The Cloud Backup.", "Restore From Cloud", "Restore");
-    if (!ok) return;
-
+    const snapshot = await userCloudRef().once("value");
+    if (!snapshot.exists()) { showToast("No cloud backup found for this account and Sync Id.", "error"); return; }
+    if (!(await showConfirm("Restoring will replace all current data with this cloud backup.", "Restore From Cloud", "Restore"))) return;
     const data = snapshot.val();
-    let restoredProfiles = null;
-    let restoredActiveId = null;
-
-    if (Array.isArray(data.profiles) && data.profiles.length > 0) {
-      restoredProfiles = data.profiles;
-      restoredActiveId = data.activeProfileId || restoredProfiles[0].id;
-    } else if (Array.isArray(data.people)) {
-      const wrapped = {
-        id: makeId(), name: "Restored Collection",
-        purpose: data.purpose || "", currency: data.currency || "₹",
-        people: data.people || [], contributions: data.contributions || [], expenses: data.expenses || []
-      };
-      restoredProfiles = [wrapped];
-      restoredActiveId = wrapped.id;
-    } else {
-      showToast("That Cloud Backup Looks Invalid.", "error");
-      return;
-    }
-
-    profiles = restoredProfiles;
-    activeProfileId = restoredActiveId;
-    loadActiveProfileIntoGlobals();
-    purposeInput.value = purpose;
-    currencySelect.value = currency;
-    clearPersonEdit(); clearContributionEdit(); clearExpenseEdit();
-    await saveAll();
-    updateAll();
-    showToast("Restored From The Cloud.", "success");
-  } catch (error) {
-    showToast("Cloud Restore Failed. Check Your Sync Id And Rules.", "error");
-  }
+    if (!Array.isArray(data.profiles) || !data.profiles.length) { showToast("That cloud backup looks invalid.", "error"); return; }
+    profiles = data.profiles; activeProfileId = data.activeProfileId || profiles[0].id;
+    loadActiveProfileIntoGlobals(); purposeInput.value = purpose; currencySelect.value = currency;
+    clearPersonEdit(); clearContributionEdit(); clearExpenseEdit(); await saveAll(); updateAll();
+    showToast("Restored from the cloud.", "success");
+  } catch (error) { showToast("Cloud restore failed. Check Firebase Realtime Database rules.", "error"); }
 });
 
 /* ---------------- BACKUP & RESTORE (LOCAL) ---------------- */
@@ -1726,8 +1740,17 @@ function updateAll() {
   purposeInput.value = purpose;
   currencySelect.value = currency;
   fbSyncIdInput.value = syncId;
+  renderAuthStatus();
   renderFirebaseStatus();
   updateAll();
+  try {
+    await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
+    await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js");
+    fbSdkLoaded = true;
+    fbApp = firebase.apps.length ? firebase.apps[0] : firebase.initializeApp(firebaseConfig);
+    fbAuth = firebase.auth();
+    fbAuth.onAuthStateChanged(user => { currentUser = user; renderAuthStatus(); renderFirebaseStatus(); });
+  } catch (error) { /* Firebase is optional until cloud backup is used. */ }
 })();
 </script>
 

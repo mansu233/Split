@@ -1,0 +1,13 @@
+{
+  "rules": {
+    "manskit_split_backups": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        "$syncId": {
+        ".validate": "newData.hasChildren(['version', 'profiles', 'activeProfileId', 'updatedAt']) && newData.child('profiles').isList()"
+        }
+      }
+    }
+  }
+}
