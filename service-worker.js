@@ -1,4 +1,4 @@
-const CACHE_NAME = "manskit-split-v2-ui";
+const CACHE_NAME = "manskit-split-v3-login";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -25,6 +25,24 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+
+  const isAppDocument = event.request.mode === "navigate" ||
+    new URL(event.request.url).pathname.endsWith("/index.html");
+
+  if (isAppDocument) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200 && response.type === "basic") {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put("./index.html", copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request).then((cached) => cached || caches.match("./index.html")))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
