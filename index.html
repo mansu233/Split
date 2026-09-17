@@ -182,13 +182,18 @@
 
   .panel{
     background:var(--panel);
-    border:1px solid rgba(127,169,141,.22);
-    border-top:2px solid rgba(127,169,141,.34);
+    border:1px solid rgba(127,169,141,.20);
+    border-left:2px solid rgba(127,169,141,.42);
+    border-top:1px solid rgba(127,169,141,.30);
     border-radius:6px;
     padding:16px;
     margin-bottom:14px;
   }
-  .panel.accent{ border-color:rgba(198,154,92,.24); border-top-color:var(--gold); }
+  .panel.accent{
+    border-color:rgba(198,154,92,.22);
+    border-left-color:var(--gold);
+    border-top-color:rgba(198,154,92,.48);
+  }
 
   .panel-title{
     font-family:var(--serif);
@@ -199,6 +204,15 @@
   }
 
   .field{ margin-bottom:11px; }
+  .password-wrap{ position:relative; }
+  .password-wrap input{ padding-right:68px; }
+  .show-password-btn{
+    position:absolute; right:8px; top:50%; transform:translateY(-50%);
+    min-height:30px; padding:4px 8px; border:1px solid rgba(198,154,92,.38);
+    border-radius:5px; background:rgba(198,154,92,.08); color:var(--gold);
+    font-size:10.5px; font-weight:700; cursor:pointer;
+  }
+  .show-password-btn:hover{ background:var(--gold-wash); }
   .field label{
     display:block;
     font-size:11px;
@@ -579,7 +593,10 @@
       </div>
       <div class="field" id="authPasswordField">
         <label>Password</label>
-        <input id="authPassword" class="auth-email" type="password" placeholder="At least 6 characters" autocomplete="current-password">
+        <div class="password-wrap">
+          <input id="authPassword" class="auth-email" type="password" placeholder="At least 6 characters" autocomplete="current-password">
+          <button type="button" class="show-password-btn" id="togglePasswordBtn" aria-label="Show password">Show</button>
+        </div>
       </div>
       <div class="auth-actions">
         <button class="btn" id="signInBtn">Sign In</button>
@@ -891,6 +908,7 @@ const cloudBackupBtn = document.getElementById("cloudBackupBtn");
 const cloudRestoreBtn = document.getElementById("cloudRestoreBtn");
 const authEmailInput = document.getElementById("authEmail");
 const authPasswordInput = document.getElementById("authPassword");
+const togglePasswordBtn = document.getElementById("togglePasswordBtn");
 const authEmailField = document.getElementById("authEmailField");
 const authPasswordField = document.getElementById("authPasswordField");
 const signInBtn = document.getElementById("signInBtn");
@@ -898,6 +916,13 @@ const signUpBtn = document.getElementById("signUpBtn");
 const forgotPasswordBtn = document.getElementById("forgotPasswordBtn");
 const signOutBtn = document.getElementById("signOutBtn");
 const authStatus = document.getElementById("authStatus");
+
+togglePasswordBtn.addEventListener("click", () => {
+  const showing = authPasswordInput.type === "text";
+  authPasswordInput.type = showing ? "password" : "text";
+  togglePasswordBtn.textContent = showing ? "Show" : "Hide";
+  togglePasswordBtn.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+});
 
 function renderAuthStatus() {
   const signedIn = !!currentUser;
@@ -1040,6 +1065,9 @@ addPersonBtn.addEventListener("click", async () => {
   }
   await saveAll();
   updateAll();
+  contributionPerson.value = "";
+  contributionAmount.value = "";
+  contributionDate.value = today();
 });
 
 function editPerson(id) {
@@ -1485,6 +1513,10 @@ let fbAuth = null;
 let fbSdkLoaded = false;
 let currentUser = null;
 
+function normalizeAuthEmail(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
 function renderFirebaseStatus() {
   const signedIn = !!currentUser;
   firebaseStatus.className = "notice" + (signedIn ? " good" : "");
@@ -1510,6 +1542,7 @@ async function ensureFirebaseReady(requireAuth = true) {
     }
     if (!fbApp) fbApp = firebase.apps.length ? firebase.apps[0] : firebase.initializeApp(firebaseConfig);
     fbAuth = firebase.auth();
+    await fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     fbDb = firebase.database();
     if (!fbDb) throw new Error("Firebase Realtime Database SDK is unavailable");
     if (!currentUser && fbAuth.currentUser) {
@@ -1524,7 +1557,7 @@ async function ensureFirebaseReady(requireAuth = true) {
 function userCloudRef() { return fbDb.ref(`${CLOUD_PATH}/${currentUser.uid}/default`); }
 
 signInBtn.addEventListener("click", async () => {
-  const email = authEmailInput.value.trim(), password = authPasswordInput.value;
+  const email = normalizeAuthEmail(authEmailInput.value), password = authPasswordInput.value;
   if (!email || !password) { showToast("Enter your email and password.", "error"); return; }
   if (!(await ensureFirebaseReady(false))) return;
   try {
@@ -1534,10 +1567,13 @@ signInBtn.addEventListener("click", async () => {
     renderFirebaseStatus();
     showToast("Signed in successfully.", "success");
   }
-  catch (error) { showToast(error.code === "auth/invalid-credential" ? "Email or password is incorrect." : (error.message || "Sign in failed."), "error"); }
+  catch (error) {
+    const known = ["auth/invalid-credential", "auth/user-not-found", "auth/wrong-password"];
+    showToast(known.includes(error.code) ? "Email or password is incorrect. Confirm this account exists in the same Firebase project." : (error.message || "Sign in failed."), "error");
+  }
 });
 signUpBtn.addEventListener("click", async () => {
-  const email = authEmailInput.value.trim(), password = authPasswordInput.value;
+  const email = normalizeAuthEmail(authEmailInput.value), password = authPasswordInput.value;
   if (!email || password.length < 6) { showToast("Use a valid email and a password of at least 6 characters.", "error"); return; }
   if (!(await ensureFirebaseReady(false))) return;
   try {
@@ -1550,7 +1586,7 @@ signUpBtn.addEventListener("click", async () => {
   catch (error) { showToast(error.code === "auth/email-already-in-use" ? "That email already has an account. Sign in instead." : (error.message || "Account creation failed."), "error"); }
 });
 forgotPasswordBtn.addEventListener("click", async () => {
-  const email = authEmailInput.value.trim();
+  const email = normalizeAuthEmail(authEmailInput.value);
   if (!email) { showToast("Enter your email address first.", "error"); authEmailInput.focus(); return; }
   if (!(await ensureFirebaseReady(false))) return;
   try { await fbAuth.sendPasswordResetEmail(email); showToast("Password reset email sent.", "success"); }
