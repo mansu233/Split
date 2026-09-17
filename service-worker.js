@@ -1,4 +1,4 @@
-const CACHE_NAME = "manskit-split-v1";
+const CACHE_NAME = "manskit-split-v2-ui";
 const APP_SHELL = [
   "./",
   "./index.html",
