@@ -1501,14 +1501,8 @@ function loadScriptOnce(src) {
   });
 }
 async function ensureFirebaseReady(requireAuth = true) {
-  if (!currentUser && fbAuth && fbAuth.currentUser) {
-    currentUser = fbAuth.currentUser;
-    renderAuthStatus();
-    renderFirebaseStatus();
-  }
-  if (requireAuth && !currentUser) { showToast("Sign in before using cloud backup.", "error"); return false; }
   try {
-    if (!fbSdkLoaded) {
+    if (!fbSdkLoaded || !window.firebase || !firebase.database) {
       await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
       await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js");
       await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js");
@@ -1517,6 +1511,13 @@ async function ensureFirebaseReady(requireAuth = true) {
     if (!fbApp) fbApp = firebase.apps.length ? firebase.apps[0] : firebase.initializeApp(firebaseConfig);
     fbAuth = firebase.auth();
     fbDb = firebase.database();
+    if (!fbDb) throw new Error("Firebase Realtime Database SDK is unavailable");
+    if (!currentUser && fbAuth.currentUser) {
+      currentUser = fbAuth.currentUser;
+      renderAuthStatus();
+      renderFirebaseStatus();
+    }
+    if (requireAuth && !currentUser) { showToast("Sign in before using cloud backup.", "error"); return false; }
     return true;
   } catch (error) { showToast("Couldn't connect to Firebase. Check your internet connection.", "error"); return false; }
 }
@@ -1761,7 +1762,7 @@ function updateAll() {
   try {
     await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
     await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js");
-    fbSdkLoaded = true;
+    fbSdkLoaded = false;
     fbApp = firebase.apps.length ? firebase.apps[0] : firebase.initializeApp(firebaseConfig);
     fbAuth = firebase.auth();
     fbAuth.onAuthStateChanged(user => { currentUser = user; renderAuthStatus(); renderFirebaseStatus(); });
