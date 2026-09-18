@@ -441,6 +441,11 @@
   .member-date-row{ gap:6px; }
   .member-date-row input{ font-size:12px; padding-left:7px; padding-right:7px; }
   .optional-label{ color:var(--gold-dim); font-size:9px; }
+  .unexpected-leave-option{ display:flex; align-items:center; gap:7px; margin:-1px 0 7px; color:var(--muted); font-size:11px; }
+  .unexpected-leave-option input{ width:15px; min-height:15px; accent-color:var(--gold); }
+  .unexpected-badge{ color:var(--clay); }
+  .leave-calculation-row{ gap:6px; }
+  .leave-calculation-row input,.leave-calculation-row select{ font-size:12px; padding-left:7px; padding-right:7px; }
   input,select{ min-height:38px; padding:7px 10px; font-size:13.5px; }
   .btn{ min-height:38px; font-size:12.5px; }
   .btn-danger{ margin-top:7px; }

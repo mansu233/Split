@@ -112,6 +112,23 @@
           <input id="personLeaveDate" type="date">
         </div>
       </div>
+      <label class="unexpected-leave-option">
+        <input id="personUnexpectedLeave" type="checkbox">
+        <span>Unexpected leave</span>
+      </label>
+      <div class="row leave-calculation-row">
+        <div class="field">
+          <label>Leave-Day Calculation</label>
+          <select id="personLeaveMode">
+            <option value="full">Full day</option>
+            <option value="partial">Partial day</option>
+          </select>
+        </div>
+        <div class="field" id="personLeaveTimeField" style="display:none;">
+          <label>Leave Time</label>
+          <input id="personLeaveTime" type="time">
+        </div>
+      </div>
       <button class="btn" id="addPersonBtn">Add Participant</button>
       <button class="btn btn-secondary" id="cancelPersonEditBtn" style="display:none; margin-top:8px;">Cancel Edit</button>
     </div>
@@ -524,6 +541,10 @@ const currencySelect = document.getElementById("currencySelect");
 const personName = document.getElementById("personName");
 const personJoinDate = document.getElementById("personJoinDate");
 const personLeaveDate = document.getElementById("personLeaveDate");
+const personUnexpectedLeave = document.getElementById("personUnexpectedLeave");
+const personLeaveMode = document.getElementById("personLeaveMode");
+const personLeaveTime = document.getElementById("personLeaveTime");
+const personLeaveTimeField = document.getElementById("personLeaveTimeField");
 const addPersonBtn = document.getElementById("addPersonBtn");
 const cancelPersonEditBtn = document.getElementById("cancelPersonEditBtn");
 const personFormTitle = document.getElementById("personFormTitle");
@@ -732,12 +753,31 @@ currencySelect.addEventListener("change", () => {
 });
 
 /* ---------------- PARTICIPANTS ---------------- */
+function updateLeaveModeUI() {
+  const partial = personLeaveMode.value === "partial";
+  personLeaveTimeField.style.display = partial ? "block" : "none";
+  personLeaveTime.required = partial;
+}
+personLeaveMode.addEventListener("change", updateLeaveModeUI);
+
+function leaveDayFraction(mode, time) {
+  if (mode !== "partial" || !time) return 1;
+  const [hours, minutes] = time.split(":").map(Number);
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return 1;
+  return Math.max(0, Math.min(1, (hours + minutes / 60) / 24));
+}
+
 addPersonBtn.addEventListener("click", async () => {
   const name = personName.value.trim();
   const joinDate = personJoinDate.value || today();
-  const leaveDate = personLeaveDate.value || "";
+  const unexpectedLeave = personUnexpectedLeave.checked;
+  const leaveDate = personLeaveDate.value || (unexpectedLeave ? today() : "");
+  const leaveMode = personLeaveMode.value || "full";
+  const leaveTime = leaveMode === "partial" ? personLeaveTime.value : "";
   if (!name) { showToast("Enter A Participant Name.", "error"); personName.focus(); return; }
   if (leaveDate && leaveDate < joinDate) { showToast("Leave Date Cannot Be Before Join Date.", "error"); personLeaveDate.focus(); return; }
+  if (leaveMode === "partial" && !leaveDate) { showToast("Select A Leave Date For Partial-Day Calculation.", "error"); personLeaveDate.focus(); return; }
+  if (leaveMode === "partial" && !leaveTime) { showToast("Select The Leave Time For Partial-Day Calculation.", "error"); personLeaveTime.focus(); return; }
 
   if (editingPersonId) {
     const person = people.find(p => p.id === editingPersonId);
@@ -745,6 +785,9 @@ addPersonBtn.addEventListener("click", async () => {
       person.name = titleCase(name);
       person.joinDate = joinDate;
       person.leaveDate = leaveDate;
+      person.unexpectedLeave = unexpectedLeave;
+      person.leaveMode = leaveMode;
+      person.leaveTime = leaveTime;
     }
     clearPersonEdit();
     showToast("Participant Updated.", "success");
@@ -753,7 +796,7 @@ addPersonBtn.addEventListener("click", async () => {
       showToast("This Participant Already Exists.", "error");
       return;
     }
-    people.push({ id: makeId(), name: titleCase(name), joinDate, leaveDate });
+    people.push({ id: makeId(), name: titleCase(name), joinDate, leaveDate, unexpectedLeave, leaveMode, leaveTime });
     personName.value = "";
     showToast("Participant Added.", "success");
   }
@@ -771,6 +814,10 @@ function editPerson(id) {
   personName.value = person.name;
   personJoinDate.value = person.joinDate || today();
   personLeaveDate.value = person.leaveDate || "";
+  personUnexpectedLeave.checked = Boolean(person.unexpectedLeave);
+  personLeaveMode.value = person.leaveMode || "full";
+  personLeaveTime.value = person.leaveTime || "";
+  updateLeaveModeUI();
   personFormTitle.textContent = "Edit Participant";
   addPersonBtn.textContent = "Save Changes";
   cancelPersonEditBtn.style.display = "block";
@@ -783,6 +830,10 @@ function clearPersonEdit() {
   personName.value = "";
   personJoinDate.value = today();
   personLeaveDate.value = "";
+  personUnexpectedLeave.checked = false;
+  personLeaveMode.value = "full";
+  personLeaveTime.value = "";
+  updateLeaveModeUI();
   personFormTitle.textContent = "Add Participant";
   addPersonBtn.textContent = "Add Participant";
   cancelPersonEditBtn.style.display = "none";
@@ -997,7 +1048,8 @@ function renderPeople() {
             <button class="small-btn delete" data-delete-person="${person.id}">Remove</button>
           </div>
         </div>
-        <div class="item-meta">${person.joinDate ? `Active ${formatDate(person.joinDate)}${person.leaveDate ? ` – ${formatDate(person.leaveDate)}` : " – Present"}` : "Dates not recorded"}</div>
+        <div class="item-meta">${person.joinDate ? `Active ${formatDate(person.joinDate)}${person.leaveDate ? ` – ${formatDate(person.leaveDate)}` : " – Present"}` : "Dates not recorded"}${person.unexpectedLeave ? ` &nbsp;·&nbsp; <span class="unexpected-badge">Unexpected Leave</span>` : ""}</div>
+        ${person.leaveDate && person.leaveMode === "partial" ? `<div class="item-meta">Partial day until <span class="mono">${person.leaveTime || "time not set"}</span> (${Math.round(leaveDayFraction(person.leaveMode, person.leaveTime) * 100)}% of leave day)</div>` : ""}
         <div class="item-meta">Contributed <span class="mono">${money(contribution)}</span> &nbsp;·&nbsp; Paid Directly <span class="mono">${money(personalPaid)}</span></div>
       </div>`;
   }).join("");
@@ -1538,6 +1590,7 @@ function updateAll() {
 (async function init() {
   personJoinDate.value = today();
   personLeaveDate.value = "";
+  updateLeaveModeUI();
   contributionDate.value = today();
   expenseDate.value = today();
   await loadAll();
