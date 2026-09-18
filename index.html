@@ -4,1907 +4,457 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0c1416">
-
 <title>MANSKIT SPLIT</title>
-
 <style>
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-
-body {
-    margin: 0;
-    padding: 0;
-    background: #0c1416;
-    color: #f2f5f5;
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-}
-
-.app {
-    max-width: 650px;
-    margin: auto;
-    min-height: 100vh;
-    background: #101b1e;
-}
-
-header {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    background: #0c1416;
-    border-bottom: 1px solid #26383c;
-    padding: 15px;
-}
-
-.header-title {
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: .5px;
-}
-
-.header-sub {
-    font-size: 11px;
-    color: #8fa2a6;
-    margin-top: 3px;
-}
-
-main {
-    padding: 14px;
-    padding-bottom: 40px;
-}
-
-.card {
-    background: #152326;
-    border: 1px solid #26383c;
-    border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 12px;
-}
-
-.section-title {
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 12px;
-}
-
-label {
-    display: block;
-    color: #9fb0b4;
-    font-size: 12px;
-    margin-bottom: 5px;
-}
-
-input,
-select,
-button {
-    width: 100%;
-    min-height: 42px;
-    border-radius: 8px;
-    border: 1px solid #344b50;
-    background: #0e181a;
-    color: #f4f7f7;
-    padding: 9px 11px;
-    font-size: 14px;
-    outline: none;
-}
-
-input:focus,
-select:focus {
-    border-color: #6f9299;
-}
-
-button {
-    background: #dce9ea;
-    color: #0d1719;
-    border: none;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-button.secondary {
-    background: #25373b;
-    color: #e8eeee;
-}
-
-button.danger {
-    background: #4a292d;
-    color: #ffdadd;
-}
-
-button.small {
-    width: auto;
-    min-height: 34px;
-    padding: 6px 10px;
-    font-size: 12px;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 9px;
-}
-
-.full {
-    grid-column: 1 / -1;
-}
-
-.row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.row > * {
-    flex: 1;
-}
-
-.muted {
-    color: #91a4a8;
-}
-
-.hint {
-    color: #8da0a4;
-    font-size: 11px;
-    line-height: 1.5;
-    margin-top: 7px;
-}
-
-.item {
-    background: #0f191b;
-    border: 1px solid #2b4044;
-    border-radius: 10px;
-    padding: 11px;
-    margin-bottom: 8px;
-}
-
-.item:last-child {
-    margin-bottom: 0;
-}
-
-.item-top {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    align-items: flex-start;
-}
-
-.item-name {
-    font-weight: 700;
-}
-
-.amount {
-    font-weight: 700;
-    white-space: nowrap;
-}
-
-.meta {
-    color: #91a4a8;
-    font-size: 11px;
-    margin-top: 5px;
-    line-height: 1.5;
-}
-
-.actions {
-    display: flex;
-    gap: 6px;
-    margin-top: 9px;
-}
-
-.actions button {
-    flex: 0 0 auto;
-}
-
-.participant-dates {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 7px;
-    margin-top: 9px;
-}
-
-.stat-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-}
-
-.stat {
-    background: #0e181a;
-    border: 1px solid #293e42;
-    border-radius: 9px;
-    padding: 11px;
-}
-
-.stat-label {
-    font-size: 10px;
-    color: #8fa3a7;
-}
-
-.stat-value {
-    margin-top: 5px;
-    font-size: 16px;
-    font-weight: 800;
-}
-
-.breakdown {
-    border-top: 1px solid #293e42;
-    padding-top: 11px;
-    margin-top: 11px;
-}
-
-.breakdown:first-child {
-    border-top: none;
-    padding-top: 0;
-    margin-top: 0;
-}
-
-.status-receive {
-    color: #bfe8c5;
-    font-weight: 700;
-}
-
-.status-pay {
-    color: #ffd0d0;
-    font-weight: 700;
-}
-
-.status-settled {
-    color: #c9d9dc;
-    font-weight: 700;
-}
-
-.badge {
-    display: inline-block;
-    font-size: 10px;
-    padding: 4px 7px;
-    border-radius: 20px;
-    background: #263a3e;
-    color: #b8cacc;
-    margin-top: 5px;
-}
-
-.empty {
-    color: #7f9296;
-    text-align: center;
-    padding: 14px 5px;
-    font-size: 12px;
-}
-
-.share-box {
-    white-space: pre-wrap;
-    word-break: break-word;
-    background: #0b1315;
-    border: 1px solid #293e42;
-    border-radius: 9px;
-    padding: 12px;
-    font-family: monospace;
-    font-size: 12px;
-    line-height: 1.55;
-    max-height: 500px;
-    overflow: auto;
-}
-
-.note {
-    background: #1d3034;
-    border-left: 3px solid #8da9ae;
-    padding: 9px 10px;
-    border-radius: 5px;
-    font-size: 11px;
-    line-height: 1.5;
-    color: #c2d0d2;
-}
-
-hr {
-    border: 0;
-    border-top: 1px solid #293e42;
-    margin: 12px 0;
-}
-
-@media (max-width: 430px) {
-    body {
-        font-size: 13px;
-    }
-
-    .grid,
-    .stat-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .participant-dates {
-        grid-template-columns: 1fr 1fr;
-    }
-}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;padding:0;background:#0c1416;color:#f2f5f5;font-family:Arial,sans-serif;font-size:14px}
+.app{max-width:650px;margin:auto;min-height:100vh;background:#101b1e}
+header{position:sticky;top:0;z-index:20;background:#0c1416;border-bottom:1px solid #26383c;padding:15px}
+.header-title{font-size:20px;font-weight:800;letter-spacing:.5px}.header-sub{font-size:11px;color:#8fa2a6;margin-top:3px}
+main{padding:14px;padding-bottom:40px}.card{background:#152326;border:1px solid #26383c;border-radius:12px;padding:14px;margin-bottom:12px}
+.section-title{font-size:15px;font-weight:700;margin-bottom:12px}label{display:block;color:#9fb0b4;font-size:12px;margin-bottom:5px}
+input,select,button{width:100%;min-height:42px;border-radius:8px;border:1px solid #344b50;background:#0e181a;color:#f4f7f7;padding:9px 11px;font-size:14px;outline:none}
+input:focus,select:focus{border-color:#6f9299}button{background:#dce9ea;color:#0d1719;border:none;font-weight:700;cursor:pointer}button.secondary{background:#25373b;color:#e8eeee}button.danger{background:#4a292d;color:#ffdadd}button.small{width:auto;min-height:34px;padding:6px 10px;font-size:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.full{grid-column:1/-1}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
+.muted{color:#91a4a8}.hint{color:#8da0a4;font-size:11px;line-height:1.5;margin-top:7px}.item{background:#0f191b;border:1px solid #2b4044;border-radius:10px;padding:11px;margin-bottom:8px}.item:last-child{margin-bottom:0}
+.item-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.item-name{font-weight:700}.amount{font-weight:700;white-space:nowrap}.meta{color:#91a4a8;font-size:11px;margin-top:5px;line-height:1.5}.actions{display:flex;gap:6px;margin-top:9px}.actions button{flex:0 0 auto}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stat{background:#0e181a;border:1px solid #293e42;border-radius:9px;padding:11px}.stat-label{font-size:10px;color:#8fa3a7}.stat-value{margin-top:5px;font-size:16px;font-weight:800}
+.breakdown{border-top:1px solid #293e42;padding-top:11px;margin-top:11px}.breakdown:first-child{border-top:none;padding-top:0;margin-top:0}
+.status-receive{color:#bfe8c5;font-weight:700}.status-pay{color:#ffd0d0;font-weight:700}.status-settled{color:#c9d9dc;font-weight:700}
+.badge{display:inline-block;font-size:10px;padding:4px 7px;border-radius:20px;background:#263a3e;color:#b8cacc;margin-top:5px}.badge-left{background:#3b2e30;color:#ffd4d4}.badge-active{background:#263a3e;color:#c5d8dc}
+.empty{color:#7f9296;text-align:center;padding:14px 5px;font-size:12px}.share-box{white-space:pre-wrap;word-break:break-word;background:#0b1315;border:1px solid #293e42;border-radius:9px;padding:12px;font-family:monospace;font-size:12px;line-height:1.55;max-height:500px;overflow:auto}
+.note{background:#1d3034;border-left:3px solid #8da9ae;padding:9px 10px;border-radius:5px;font-size:11px;line-height:1.5;color:#c2d0d2}.warning{background:#3a3020;border-left-color:#c6a56a;color:#eadbbd}.success{background:#1c3223;border-left-color:#7fb38a;color:#cfe7d2}
+hr{border:0;border-top:1px solid #293e42;margin:12px 0}.lock{font-size:11px;color:#b8cacc}.small-gap{margin-top:8px}.hidden{display:none!important}
+@media(max-width:430px){body{font-size:13px}.grid,.stat-grid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
-
 <body>
-
 <div class="app">
-
-<header>
-    <div class="header-title">MANSKIT SPLIT</div>
-    <div class="header-sub">Collection & Settlement</div>
-</header>
-
+<header><div class="header-title">MANSKIT SPLIT</div><div class="header-sub">Collection & Settlement</div></header>
 <main>
 
-<!-- COLLECTION -->
 <div class="card">
-    <div class="section-title">Collection</div>
-
-    <div class="grid">
-        <div class="full">
-            <label>What Are We Collecting Money For?</label>
-            <input id="headline" type="text" placeholder="Example: Manali Trip">
-        </div>
-
-        <div>
-            <label>Profile</label>
-            <select id="profile">
-                <option value="My Collection">My Collection</option>
-            </select>
-        </div>
-    </div>
-
-    <div style="margin-top:10px">
-        <button onclick="saveCollection()">Save Collection</button>
-    </div>
+<div class="section-title">Collection</div>
+<div class="grid">
+<div class="full"><label>What Are We Collecting Money For?</label><input id="headline" type="text" placeholder="Example: Manali Trip"></div>
+<div><label>Profile</label><select id="profile"><option value="My Collection">My Collection</option></select></div>
+</div>
+<div style="margin-top:10px"><button onclick="saveCollection()">Save Collection</button></div>
 </div>
 
-
-<!-- PARTICIPANTS -->
 <div class="card">
-    <div class="section-title">Participants</div>
-
-    <div class="grid">
-        <div>
-            <label>Name</label>
-            <input id="participantName" type="text" placeholder="Participant Name">
-        </div>
-
-        <div>
-            <label>Join Date</label>
-            <input id="participantJoinDate" type="date">
-        </div>
-
-        <div class="full">
-            <label>Leave Date</label>
-            <input id="participantLeaveDate" type="date">
-        </div>
-    </div>
-
-    <div class="hint">
-        Leave Date is optional. If a participant leaves on a particular date,
-        expenses after that date are not included in their fair share.
-    </div>
-
-    <div style="margin-top:10px">
-        <button onclick="addParticipant()">Add Participant</button>
-    </div>
-
-    <div id="participantsList" style="margin-top:12px"></div>
+<div class="section-title">Participants</div>
+<div class="grid">
+<div><label>Name</label><input id="participantName" type="text" placeholder="Participant Name"></div>
+<div><label>Join Date</label><input id="participantJoinDate" type="date"></div>
+<div class="full"><label>Leave Date <span class="muted">(Optional — Can Be Added Later)</span></label><input id="participantLeaveDate" type="date"></div>
+</div>
+<div class="hint">A New Person Can Join At Any Time By Adding Them With Their Actual Join Date. A Leave Date Can Be Added Later. An Expense Includes A Participant Only When: Join Date ≤ Expense Date ≤ Leave Date. If Leave Date Is Blank, The Participant Remains Active.</div>
+<div style="margin-top:10px"><button id="participantSaveBtn" onclick="addParticipant()">Add Participant</button></div>
+<div id="participantCancelWrap" class="hidden" style="margin-top:8px"><button class="secondary" onclick="cancelParticipantEdit()">Cancel Edit</button></div>
+<div id="participantsList" style="margin-top:12px"></div>
 </div>
 
-
-<!-- CONTRIBUTIONS -->
 <div class="card">
-    <div class="section-title">Contributions</div>
-
-    <div class="grid">
-
-        <div>
-            <label>Participant</label>
-            <select id="contributionParticipant"></select>
-        </div>
-
-        <div>
-            <label>Amount</label>
-            <input id="contributionAmount" type="number" min="0" step="0.01" placeholder="100">
-        </div>
-
-        <div class="full">
-            <label>Contribution Date</label>
-            <input id="contributionDate" type="date">
-        </div>
-
-    </div>
-
-    <div style="margin-top:10px">
-        <button onclick="addContribution()">Add Contribution</button>
-    </div>
-
-    <div class="hint">
-        A participant can contribute any number of times on different dates.
-    </div>
-
-    <div id="contributionsList" style="margin-top:12px"></div>
+<div class="section-title">Contributions</div>
+<div class="grid">
+<div><label>Participant</label><select id="contributionParticipant"></select></div>
+<div><label>Amount</label><input id="contributionAmount" type="number" min="0" step="0.01" placeholder="100"></div>
+<div class="full"><label>Contribution Date</label><input id="contributionDate" type="date"></div>
+</div>
+<div style="margin-top:10px"><button onclick="addContribution()">Add Contribution</button></div>
+<div class="hint">A Participant Can Contribute Any Number Of Times. Existing Contribution Logs Cannot Be Directly Deleted.</div>
+<div id="contributionsList" style="margin-top:12px"></div>
 </div>
 
-
-<!-- EXPENSES -->
 <div class="card">
-    <div class="section-title">Expenses</div>
-
-    <div class="grid">
-
-        <div>
-            <label>Expense Name</label>
-            <input id="expenseName" type="text" placeholder="Food">
-        </div>
-
-        <div>
-            <label>Amount</label>
-            <input id="expenseAmount" type="number" min="0" step="0.01" placeholder="100">
-        </div>
-
-        <div>
-            <label>Expense Date</label>
-            <input id="expenseDate" type="date">
-        </div>
-
-        <div>
-            <label>Paid By</label>
-            <select id="expensePaidBy">
-                <option value="common">From Advance / Common Fund</option>
-            </select>
-        </div>
-
-    </div>
-
-    <div style="margin-top:10px">
-        <button onclick="addExpense()">Add Expense</button>
-    </div>
-
-    <div id="expensesList" style="margin-top:12px"></div>
+<div class="section-title">Expenses</div>
+<div class="grid">
+<div><label>Expense Name</label><input id="expenseName" type="text" placeholder="Food"></div>
+<div><label>Amount</label><input id="expenseAmount" type="number" min="0" step="0.01" placeholder="100"></div>
+<div><label>Expense Date</label><input id="expenseDate" type="date"></div>
+<div><label>Paid By</label><select id="expensePaidBy"><option value="common">From Advance / Common Fund</option></select></div>
+</div>
+<div style="margin-top:10px"><button onclick="addExpense()">Add Expense</button></div>
+<div class="hint">The Expense Date Controls Who Shares The Expense. Existing Expense Logs Cannot Be Directly Deleted.</div>
+<div id="expensesList" style="margin-top:12px"></div>
 </div>
 
-
-<!-- CALCULATION -->
 <div class="card">
-    <div class="section-title">Summary</div>
-
-    <div class="stat-grid">
-        <div class="stat">
-            <div class="stat-label">Total Contributions</div>
-            <div class="stat-value" id="totalContributions">₹0.00</div>
-        </div>
-
-        <div class="stat">
-            <div class="stat-label">Total Expenses</div>
-            <div class="stat-value" id="totalExpenses">₹0.00</div>
-        </div>
-
-        <div class="stat">
-            <div class="stat-label">Fund Spent</div>
-            <div class="stat-value" id="fundSpent">₹0.00</div>
-        </div>
-
-        <div class="stat">
-            <div class="stat-label">Fund Balance</div>
-            <div class="stat-value" id="fundBalance">₹0.00</div>
-        </div>
-    </div>
+<div class="section-title">Security</div>
+<div id="securityStatus" class="note"></div>
+<div style="margin-top:10px" class="grid">
+<div><label>Security PIN</label><input id="securityPin" type="password" inputmode="numeric" maxlength="8" placeholder="4–8 Digits"></div>
+<div><label>Confirm PIN</label><input id="securityPinConfirm" type="password" inputmode="numeric" maxlength="8" placeholder="Repeat PIN"></div>
+</div>
+<div class="hint">The PIN Protects Participant Corrections And Financial Log Corrections. There Is No Normal Delete Button For Historical Contributions Or Expenses.</div>
+<div style="margin-top:10px"><button class="secondary" onclick="setSecurityPin()">Set / Change PIN</button></div>
 </div>
 
-
-<!-- PARTICIPANT BREAKDOWN -->
 <div class="card">
-    <div class="section-title">Participant Breakdown</div>
-
-    <div id="breakdown"></div>
+<div class="section-title">Summary</div>
+<div id="calculationWarnings"></div>
+<div class="stat-grid">
+<div class="stat"><div class="stat-label">Total Contributions</div><div class="stat-value" id="totalContributions">₹0.00</div></div>
+<div class="stat"><div class="stat-label">Total Expenses</div><div class="stat-value" id="totalExpenses">₹0.00</div></div>
+<div class="stat"><div class="stat-label">Fund Spent</div><div class="stat-value" id="fundSpent">₹0.00</div></div>
+<div class="stat"><div class="stat-label">Fund Balance</div><div class="stat-value" id="fundBalance">₹0.00</div></div>
+</div>
 </div>
 
-
-<!-- SETTLEMENT -->
 <div class="card">
-    <div class="section-title">Settlement</div>
-
-    <div id="settlement"></div>
+<div class="section-title">Participant Breakdown</div>
+<div id="breakdown"></div>
 </div>
 
-
-<!-- SHARE -->
 <div class="card">
-    <div class="section-title">Share Summary</div>
+<div class="section-title">Settlement</div>
+<div id="settlement"></div>
+</div>
 
-    <div id="shareText" class="share-box"></div>
-
-    <div style="margin-top:10px">
-        <button onclick="copySummary()">Copy Summary</button>
-    </div>
+<div class="card">
+<div class="section-title">Share Summary</div>
+<div id="shareText" class="share-box"></div>
+<div style="margin-top:10px" class="row"><button onclick="copySummary()">Copy Summary</button><button class="secondary" onclick="shareSummary()">Share</button></div>
 </div>
 
 </main>
 </div>
 
-
 <script>
 /* =========================================================
-   MANSKIT SPLIT
+   MANSKIT SPLIT — DATE-BASED PARTICIPATION + PROTECTED LOGS
    ========================================================= */
+const STORAGE_KEY = "manskit_split_data_v2";
+const OLD_STORAGE_KEY = "manskit_split_data";
+let data = {headline:"", profile:"My Collection", participants:[], contributions:[], expenses:[], security:{pinHash:""}};
+let participantEditId = null;
 
-let data = {
-    headline: "",
-    profile: "My Collection",
-    participants: [],
-    contributions: [],
-    expenses: []
-};
+function moneyCents(cents){return "₹"+(Number(cents||0)/100).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function toCents(value){const n=Number(value);return Number.isFinite(n)&&n>0?Math.round(n*100):0;}
+function dateText(date){if(!date)return "Not Set";const p=date.split("-");return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:date;}
+function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
+function escapeHtml(text){return String(text??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+function uid(prefix="id"){return prefix+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function participantById(id){return data.participants.find(p=>p.id===id);}
 
-
-/* =========================================================
-   BASIC HELPERS
-   ========================================================= */
-
-function money(value) {
-    return "₹" + Number(value || 0).toLocaleString("en-IN", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
+function saveData(){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}
+function loadData(){
+  let saved=localStorage.getItem(STORAGE_KEY);
+  if(!saved) saved=localStorage.getItem(OLD_STORAGE_KEY);
+  if(!saved) return;
+  try{
+    const parsed=JSON.parse(saved);
+    if(parsed&&typeof parsed==="object"){
+      data={
+        headline:parsed.headline||"",
+        profile:parsed.profile||"My Collection",
+        participants:Array.isArray(parsed.participants)?parsed.participants:[],
+        contributions:Array.isArray(parsed.contributions)?parsed.contributions:[],
+        expenses:Array.isArray(parsed.expenses)?parsed.expenses:[],
+        security:parsed.security&&typeof parsed.security==="object"?parsed.security:{pinHash:""}
+      };
+      data.participants=data.participants.map(p=>({id:p.id||uid("p"),name:p.name||"",joinDate:p.joinDate||today(),leaveDate:p.leaveDate||""}));
+      data.contributions=data.contributions.map(c=>({id:c.id||uid("c"),participantId:c.participantId,amount:Number(c.amount||0),date:c.date||today(),createdAt:c.createdAt||Date.now()}));
+      data.expenses=data.expenses.map(e=>({id:e.id||uid("e"),name:e.name||"Expense",amount:Number(e.amount||0),date:e.date||today(),paidBy:e.paidBy||"common",createdAt:e.createdAt||Date.now()}));
+    }
+  }catch(e){console.error(e);}
 }
 
-function dateText(date) {
-    if (!date) return "Not Set";
-
-    const parts = date.split("-");
-    if (parts.length !== 3) return date;
-
-    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+/* ---------- Security ---------- */
+function simpleHash(text){
+  let h=2166136261;
+  for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619);}
+  return (h>>>0).toString(16);
+}
+function hasPin(){return !!(data.security&&data.security.pinHash);}
+function setSecurityPin(){
+  const pin=document.getElementById("securityPin").value.trim();
+  const confirmPin=document.getElementById("securityPinConfirm").value.trim();
+  if(!/^\d{4,8}$/.test(pin)){alert("PIN Must Be 4 To 8 Digits.");return;}
+  if(pin!==confirmPin){alert("PIN Confirmation Does Not Match.");return;}
+  data.security={pinHash:simpleHash(pin)};saveData();
+  document.getElementById("securityPin").value="";document.getElementById("securityPinConfirm").value="";
+  renderSecurity();alert("Security PIN Saved.");
+}
+function verifyPin(){
+  if(!hasPin()){alert("Set A Security PIN First.");return false;}
+  const pin=prompt("Enter Security PIN To Continue:");
+  if(pin===null)return false;
+  if(simpleHash(pin.trim())!==data.security.pinHash){alert("Incorrect Security PIN.");return false;}
+  return true;
+}
+function renderSecurity(){
+  document.getElementById("securityStatus").innerHTML=hasPin()?"🔐 <strong>Protected:</strong> Security PIN Is Active. Historical Financial Logs Cannot Be Directly Deleted.":"🔓 <strong>PIN Not Set:</strong> Set A Security PIN Before Making Participant Corrections.";
 }
 
-function escapeHtml(text) {
-    return String(text || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+/* ---------- Collection ---------- */
+function saveCollection(){
+  data.headline=document.getElementById("headline").value.trim();
+  data.profile=document.getElementById("profile").value;
+  saveData();renderAll();
 }
 
-function today() {
-    const d = new Date();
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
+/* ---------- Participants ---------- */
+function addParticipant(){
+  const name=document.getElementById("participantName").value.trim();
+  const joinDate=document.getElementById("participantJoinDate").value;
+  const leaveDate=document.getElementById("participantLeaveDate").value;
+  if(!name){alert("Please Enter Participant Name.");return;}
+  if(!joinDate){alert("Please Select Join Date.");return;}
+  if(leaveDate&&leaveDate<joinDate){alert("Leave Date Cannot Be Before Join Date.");return;}
 
-    return `${d.getFullYear()}-${month}-${day}`;
+  if(participantEditId){
+    if(!verifyPin())return;
+    const p=participantById(participantEditId);if(!p)return;
+    p.name=name;p.joinDate=joinDate;p.leaveDate=leaveDate||"";
+    participantEditId=null;
+    document.getElementById("participantSaveBtn").textContent="Add Participant";
+    document.getElementById("participantCancelWrap").classList.add("hidden");
+  }else{
+    data.participants.push({id:uid("p"),name,joinDate,leaveDate:leaveDate||"",createdAt:Date.now()});
+  }
+  saveData();
+  document.getElementById("participantName").value="";
+  document.getElementById("participantJoinDate").value=today();
+  document.getElementById("participantLeaveDate").value="";
+  renderAll();
+}
+function editParticipant(id){
+  if(!verifyPin())return;
+  const p=participantById(id);if(!p)return;
+  participantEditId=id;
+  document.getElementById("participantName").value=p.name;
+  document.getElementById("participantJoinDate").value=p.joinDate||"";
+  document.getElementById("participantLeaveDate").value=p.leaveDate||"";
+  document.getElementById("participantSaveBtn").textContent="Update Participant";
+  document.getElementById("participantCancelWrap").classList.remove("hidden");
+  document.getElementById("participantName").scrollIntoView({behavior:"smooth",block:"center"});
+}
+function cancelParticipantEdit(){
+  participantEditId=null;
+  document.getElementById("participantName").value="";
+  document.getElementById("participantJoinDate").value=today();
+  document.getElementById("participantLeaveDate").value="";
+  document.getElementById("participantSaveBtn").textContent="Add Participant";
+  document.getElementById("participantCancelWrap").classList.add("hidden");
+}
+function participantActiveOnDate(p,date){
+  if(!p||!date||!p.joinDate)return false;
+  if(date<p.joinDate)return false;
+  if(p.leaveDate&&date>p.leaveDate)return false;
+  return true;
+}
+function markParticipantLeft(id){
+  if(!verifyPin())return;
+  const p=participantById(id);if(!p)return;
+  const chosen=prompt(`Leave Date For ${p.name} (YYYY-MM-DD):`,p.leaveDate||today());
+  if(chosen===null)return;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(chosen)){alert("Please Enter A Valid Date In YYYY-MM-DD Format.");return;}
+  if(chosen<p.joinDate){alert("Leave Date Cannot Be Before Join Date.");return;}
+  p.leaveDate=chosen;saveData();renderAll();
+}
+function reopenParticipant(id){
+  if(!verifyPin())return;
+  const p=participantById(id);if(!p)return;
+  p.leaveDate="";saveData();renderAll();
 }
 
-
-/* =========================================================
-   SAVE / LOAD
-   ========================================================= */
-
-function saveData() {
-    localStorage.setItem(
-        "manskit_split_data",
-        JSON.stringify(data)
-    );
+/* ---------- Contributions ---------- */
+function addContribution(){
+  const participantId=document.getElementById("contributionParticipant").value;
+  const amount=toCents(document.getElementById("contributionAmount").value);
+  const date=document.getElementById("contributionDate").value;
+  const p=participantById(participantId);
+  if(!p){alert("Please Add A Participant First.");return;}
+  if(amount<=0){alert("Please Enter A Valid Contribution Amount.");return;}
+  if(!date){alert("Please Select Contribution Date.");return;}
+  if(!participantActiveOnDate(p,date)){alert(`${p.name} Was Not An Active Participant On ${dateText(date)}.`);return;}
+  data.contributions.push({id:uid("c"),participantId,amount:amount/100,date,createdAt:Date.now()});
+  saveData();document.getElementById("contributionAmount").value="";document.getElementById("contributionDate").value=today();renderAll();
 }
 
-function loadData() {
-
-    const saved = localStorage.getItem("manskit_split_data");
-
-    if (!saved) return;
-
-    try {
-        const parsed = JSON.parse(saved);
-
-        if (parsed && typeof parsed === "object") {
-            data = {
-                headline: parsed.headline || "",
-                profile: parsed.profile || "My Collection",
-                participants: Array.isArray(parsed.participants)
-                    ? parsed.participants
-                    : [],
-                contributions: Array.isArray(parsed.contributions)
-                    ? parsed.contributions
-                    : [],
-                expenses: Array.isArray(parsed.expenses)
-                    ? parsed.expenses
-                    : []
-            };
-        }
-
-    } catch (error) {
-        console.error(error);
-    }
+/* ---------- Expenses ---------- */
+function addExpense(){
+  const name=document.getElementById("expenseName").value.trim();
+  const amount=toCents(document.getElementById("expenseAmount").value);
+  const date=document.getElementById("expenseDate").value;
+  const paidBy=document.getElementById("expensePaidBy").value;
+  if(!name){alert("Please Enter Expense Name.");return;}
+  if(amount<=0){alert("Please Enter A Valid Expense Amount.");return;}
+  if(!date){alert("Please Select Expense Date.");return;}
+  if(paidBy!=="common"&&!participantById(paidBy)){alert("Selected Payer Is No Longer Available.");return;}
+  data.expenses.push({id:uid("e"),name,amount:amount/100,date,paidBy,createdAt:Date.now()});
+  saveData();document.getElementById("expenseName").value="";document.getElementById("expenseAmount").value="";document.getElementById("expenseDate").value=today();document.getElementById("expensePaidBy").value="common";renderAll();
 }
 
-
-/* =========================================================
-   COLLECTION
-   ========================================================= */
-
-function saveCollection() {
-
-    data.headline =
-        document.getElementById("headline").value.trim();
-
-    data.profile =
-        document.getElementById("profile").value;
-
-    saveData();
-
-    renderAll();
+/* ---------- Protected logs: NO DELETE ---------- */
+function requestLogCorrection(type,id){
+  if(!verifyPin())return;
+  alert("Historical Financial Logs Are Protected From Direct Deletion. A Correction Workflow Can Be Added Here Without Destroying The Original Log.");
 }
 
-
-/* =========================================================
-   PARTICIPANTS
-   ========================================================= */
-
-function addParticipant() {
-
-    const name =
-        document.getElementById("participantName").value.trim();
-
-    const joinDate =
-        document.getElementById("participantJoinDate").value;
-
-    const leaveDate =
-        document.getElementById("participantLeaveDate").value;
-
-    if (!name) {
-        alert("Please Enter Participant Name.");
-        return;
-    }
-
-    if (!joinDate) {
-        alert("Please Select Join Date.");
-        return;
-    }
-
-    if (leaveDate && leaveDate < joinDate) {
-        alert("Leave Date Cannot Be Before Join Date.");
-        return;
-    }
-
-    data.participants.push({
-        id: Date.now().toString(),
-        name: name,
-        joinDate: joinDate,
-        leaveDate: leaveDate || ""
-    });
-
-    saveData();
-
-    document.getElementById("participantName").value = "";
-    document.getElementById("participantJoinDate").value = today();
-    document.getElementById("participantLeaveDate").value = "";
-
-    renderAll();
+/* ---------- Exact rounding ---------- */
+function balanceRounded(rawValues,targetInteger){
+  const base=rawValues.map(v=>Math.floor(v));
+  let diff=Math.round(targetInteger-base.reduce((a,b)=>a+b,0));
+  const order=rawValues.map((v,i)=>({i,frac:v-Math.floor(v),value:v})).sort((a,b)=>b.frac-a.frac||b.value-a.value||a.i-b.i);
+  for(let k=0;k<diff;k++){base[order[k%order.length].i]++;}
+  return base;
 }
 
+/* ---------- Calculation engine ---------- */
+function calculate(){
+  const n=data.participants.length;
+  const ids=data.participants.map(p=>p.id);
+  const contributionCents={};const directPaidCents={};const commonShareRaw={};const directShareRaw={};const fairShareRaw={};
+  ids.forEach(id=>{contributionCents[id]=0;directPaidCents[id]=0;commonShareRaw[id]=0;directShareRaw[id]=0;fairShareRaw[id]=0;});
 
-function removeParticipant(id) {
+  let totalContributions=0,totalExpenses=0,commonFundExpenses=0,directExpenses=0,allocatedCommon=0,allocatedDirect=0;
+  data.contributions.forEach(c=>{const cents=toCents(c.amount);totalContributions+=cents;if(contributionCents[c.participantId]!==undefined)contributionCents[c.participantId]+=cents;});
+  data.expenses.forEach(e=>{
+    const cents=toCents(e.amount);totalExpenses+=cents;
+    if(e.paidBy==="common")commonFundExpenses+=cents;else{directExpenses+=cents;if(directPaidCents[e.paidBy]!==undefined)directPaidCents[e.paidBy]+=cents;}
+    const active=data.participants.filter(p=>participantActiveOnDate(p,e.date));
+    if(!active.length)return;
+    const each=cents/active.length;
+    active.forEach(p=>{fairShareRaw[p.id]+=each;if(e.paidBy==="common")commonShareRaw[p.id]+=each;else directShareRaw[p.id]+=each;});
+    if(e.paidBy==="common")allocatedCommon+=cents;else allocatedDirect+=cents;
+  });
 
-    const participant =
-        data.participants.find(p => p.id === id);
+  const commonRounded=balanceRounded(ids.map(id=>commonShareRaw[id]),allocatedCommon);
+  const directRounded=balanceRounded(ids.map(id=>directShareRaw[id]),allocatedDirect);
+  const fairRounded=ids.map((id,i)=>commonRounded[i]+directRounded[i]);
+  const commonPositionRaw=ids.map(id=>contributionCents[id]-commonShareRaw[id]);
+  const directPositionRaw=ids.map(id=>directPaidCents[id]-directShareRaw[id]);
+  const fundBalance=totalContributions-commonFundExpenses;
+  const allAllocated=(allocatedCommon===commonFundExpenses&&allocatedDirect===directExpenses);
+  const commonPositionRounded=allAllocated?balanceRounded(commonPositionRaw,fundBalance):commonPositionRaw.map(v=>Math.round(v));
+  const directPositionRounded=allAllocated?balanceRounded(directPositionRaw,0):directPositionRaw.map(v=>Math.round(v));
+  const netRaw=ids.map((id,i)=>commonPositionRaw[i]+directPositionRaw[i]);
+  const netRounded=allAllocated?balanceRounded(netRaw,fundBalance):netRaw.map(v=>Math.round(v));
 
-    if (!participant) return;
-
-    const used =
-        data.contributions.some(c => c.participantId === id);
-
-    if (used) {
-        alert(
-            "This Participant Has Contributions. " +
-            "Remove Their Contributions First."
-        );
-        return;
-    }
-
-    data.participants =
-        data.participants.filter(p => p.id !== id);
-
-    saveData();
-    renderAll();
+  const warnings=[];
+  data.expenses.forEach(e=>{if(!data.participants.some(p=>participantActiveOnDate(p,e.date)))warnings.push(`${e.name} On ${dateText(e.date)} Has No Active Participants And Is Not Included In Anyone's Fair Share.`);});
+  return {ids,totalContributions,totalExpenses,commonFundExpenses,directExpenses,allocatedCommon,allocatedDirect,fundBalance,contributionCents,directPaidCents,commonShareRaw,directShareRaw,fairShareRaw,commonRounded,directRounded,fairRounded,commonPositionRounded,directPositionRounded,netRaw,netRounded,warnings,allAllocated};
 }
 
-
-/* =========================================================
-   PARTICIPANT ACTIVE CHECK
-   =========================================================
-
-   IMPORTANT RULE:
-
-   Join Date <= Expense Date <= Leave Date
-
-   If Leave Date is empty:
-   Join Date <= Expense Date
-*/
-
-function participantActiveOnDate(participant, expenseDate) {
-
-    if (!expenseDate) return false;
-
-    if (expenseDate < participant.joinDate) {
-        return false;
-    }
-
-    if (
-        participant.leaveDate &&
-        expenseDate > participant.leaveDate
-    ) {
-        return false;
-    }
-
-    return true;
+/* ---------- Render participants ---------- */
+function renderParticipants(){
+  const box=document.getElementById("participantsList");
+  if(!data.participants.length){box.innerHTML='<div class="empty">No Participants Added.</div>';return;}
+  box.innerHTML=data.participants.map((p,i)=>{
+    const left=!!p.leaveDate;
+    return `<div class="item"><div class="item-top"><div><div class="item-name">${i+1}. ${escapeHtml(p.name)}</div><div class="meta">Join Date: ${dateText(p.joinDate)}<br>${left?`Leave Date: ${dateText(p.leaveDate)}`:"Leave Date: Still Active"}</div><span class="badge ${left?"badge-left":"badge-active"}">${left?"Left":"Active"}</span></div></div><div class="actions"><button class="small secondary" onclick="editParticipant('${p.id}')">Edit Dates</button>${left?`<button class="small secondary" onclick="reopenParticipant('${p.id}')">Reopen</button>`:`<button class="small" onclick="markParticipantLeft('${p.id}')">Mark As Left</button>`}</div><div class="hint">Participant History Is Kept. There Is No Delete Participant Button.</div></div>`;
+  }).join("");
 }
 
-
-/* =========================================================
-   CONTRIBUTIONS
-   ========================================================= */
-
-function addContribution() {
-
-    const participantId =
-        document.getElementById("contributionParticipant").value;
-
-    const amount =
-        Number(document.getElementById("contributionAmount").value);
-
-    const date =
-        document.getElementById("contributionDate").value;
-
-    if (!participantId) {
-        alert("Please Add A Participant First.");
-        return;
-    }
-
-    if (!(amount > 0)) {
-        alert("Please Enter A Valid Contribution Amount.");
-        return;
-    }
-
-    if (!date) {
-        alert("Please Select Contribution Date.");
-        return;
-    }
-
-    const participant =
-        data.participants.find(p => p.id === participantId);
-
-    if (!participant) return;
-
-    if (date < participant.joinDate) {
-        alert(
-            participant.name +
-            " Cannot Contribute Before Their Join Date."
-        );
-        return;
-    }
-
-    if (
-        participant.leaveDate &&
-        date > participant.leaveDate
-    ) {
-        alert(
-            participant.name +
-            " Cannot Contribute After Their Leave Date."
-        );
-        return;
-    }
-
-    data.contributions.push({
-        id: Date.now().toString(),
-        participantId: participantId,
-        amount: amount,
-        date: date
-    });
-
-    saveData();
-
-    document.getElementById("contributionAmount").value = "";
-    document.getElementById("contributionDate").value = today();
-
-    renderAll();
+function renderContributions(){
+  const box=document.getElementById("contributionsList");
+  if(!data.contributions.length){box.innerHTML='<div class="empty">No Contributions Added.</div>';return;}
+  box.innerHTML=[...data.contributions].sort((a,b)=>a.date.localeCompare(b.date)||a.createdAt-b.createdAt).map(c=>{const p=participantById(c.participantId);return `<div class="item"><div class="item-top"><div><div class="item-name">${escapeHtml(p?p.name:"Unknown Participant")}</div><div class="meta">Contribution Date: ${dateText(c.date)}</div></div><div class="amount">${moneyCents(toCents(c.amount))}</div></div><div class="actions"><button class="small secondary" onclick="requestLogCorrection('contribution','${c.id}')">🔐 Correction</button></div></div>`;}).join("");
+}
+function renderExpenses(){
+  const box=document.getElementById("expensesList");
+  if(!data.expenses.length){box.innerHTML='<div class="empty">No Expenses Added.</div>';return;}
+  box.innerHTML=[...data.expenses].sort((a,b)=>a.date.localeCompare(b.date)||a.createdAt-b.createdAt).map(e=>{let payer="From Advance / Common Fund";if(e.paidBy!=="common"){const p=participantById(e.paidBy);payer=p?p.name:"Unknown Participant";}const active=data.participants.filter(p=>participantActiveOnDate(p,e.date));return `<div class="item"><div class="item-top"><div><div class="item-name">${escapeHtml(e.name)}</div><div class="meta">Date: ${dateText(e.date)}<br>Paid By: ${escapeHtml(payer)}<br>Active Participants: ${active.length?active.map(p=>escapeHtml(p.name)).join(", "):"None"}</div></div><div class="amount">${moneyCents(toCents(e.amount))}</div></div><div class="actions"><button class="small secondary" onclick="requestLogCorrection('expense','${e.id}')">🔐 Correction</button></div></div>`;}).join("");
 }
 
-
-function removeContribution(id) {
-
-    data.contributions =
-        data.contributions.filter(c => c.id !== id);
-
-    saveData();
-    renderAll();
+function renderParticipantDropdowns(){
+  const c=document.getElementById("contributionParticipant"),e=document.getElementById("expensePaidBy");
+  const oldC=c.value,oldE=e.value;
+  c.innerHTML=data.participants.map(p=>`<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
+  if(data.participants.some(p=>p.id===oldC))c.value=oldC;
+  e.innerHTML=`<option value="common">From Advance / Common Fund</option>${data.participants.map(p=>`<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("")}`;
+  if(oldE==="common"||data.participants.some(p=>p.id===oldE))e.value=oldE;
 }
 
-
-/* =========================================================
-   EXPENSES
-   ========================================================= */
-
-function addExpense() {
-
-    const name =
-        document.getElementById("expenseName").value.trim();
-
-    const amount =
-        Number(document.getElementById("expenseAmount").value);
-
-    const date =
-        document.getElementById("expenseDate").value;
-
-    const paidBy =
-        document.getElementById("expensePaidBy").value;
-
-    if (!name) {
-        alert("Please Enter Expense Name.");
-        return;
-    }
-
-    if (!(amount > 0)) {
-        alert("Please Enter A Valid Expense Amount.");
-        return;
-    }
-
-    if (!date) {
-        alert("Please Select Expense Date.");
-        return;
-    }
-
-    if (paidBy !== "common") {
-
-        const participant =
-            data.participants.find(p => p.id === paidBy);
-
-        if (!participant) return;
-
-        if (!participantActiveOnDate(participant, date)) {
-            alert(
-                participant.name +
-                " Was Not An Active Participant On This Expense Date."
-            );
-            return;
-        }
-    }
-
-    data.expenses.push({
-        id: Date.now().toString(),
-        name: name,
-        amount: amount,
-        date: date,
-        paidBy: paidBy
-    });
-
-    saveData();
-
-    document.getElementById("expenseName").value = "";
-    document.getElementById("expenseAmount").value = "";
-    document.getElementById("expenseDate").value = today();
-
-    renderAll();
+function renderSummary(){
+  const r=calculate();
+  document.getElementById("totalContributions").textContent=moneyCents(r.totalContributions);
+  document.getElementById("totalExpenses").textContent=moneyCents(r.totalExpenses);
+  document.getElementById("fundSpent").textContent=moneyCents(r.commonFundExpenses);
+  document.getElementById("fundBalance").textContent=moneyCents(r.fundBalance);
+  document.getElementById("calculationWarnings").innerHTML=r.warnings.length?`<div class="note warning"><strong>Calculation Warning</strong><br>${r.warnings.map(escapeHtml).join("<br>")}</div><div style="height:8px"></div>`:"";
 }
 
-
-function removeExpense(id) {
-
-    data.expenses =
-        data.expenses.filter(e => e.id !== id);
-
-    saveData();
-    renderAll();
+function renderBreakdown(){
+  const r=calculate(),box=document.getElementById("breakdown");
+  if(!data.participants.length){box.innerHTML='<div class="empty">Add Participants To See Calculation.</div>';return;}
+  box.innerHTML=data.participants.map((p,i)=>{
+    const share=r.fairRounded[i]||0,contribution=r.contributionCents[p.id]||0,direct=r.directPaidCents[p.id]||0,net=r.netRounded[i]||0;
+    const commonPos=r.commonPositionRounded[i]||0,directPos=r.directPositionRounded[i]||0;
+    let status=net>0?`<div class="status-receive">Receives ${moneyCents(net)}</div>`:net<0?`<div class="status-pay">Pays ${moneyCents(Math.abs(net))}</div>`:`<div class="status-settled">Settled</div>`;
+    return `<div class="breakdown">${status}<div class="item-name" style="margin-top:6px">${i+1}. ${escapeHtml(p.name)}</div><div class="meta">Join Date: ${dateText(p.joinDate)}<br>Leave Date: ${p.leaveDate?dateText(p.leaveDate):"Still Active"}<br>Fair Share: ${moneyCents(share)}<br>Contributions: ${moneyCents(contribution)}<br>Paid Directly: ${moneyCents(direct)}<br>Common Fund Position: ${moneyCents(commonPos)}<br>Direct Expense Position: ${moneyCents(directPos)}</div></div>`;
+  }).join("");
 }
 
-
-/* =========================================================
-   CALCULATION ENGINE
-   ========================================================= */
-
-function calculate() {
-
-    const totalContributions =
-        data.contributions.reduce(
-            (sum, c) => sum + Number(c.amount || 0),
-            0
-        );
-
-    const totalExpenses =
-        data.expenses.reduce(
-            (sum, e) => sum + Number(e.amount || 0),
-            0
-        );
-
-    /*
-       Common fund expenses.
-    */
-
-    const commonFundExpenses =
-        data.expenses
-            .filter(e => e.paidBy === "common")
-            .reduce(
-                (sum, e) => sum + Number(e.amount || 0),
-                0
-            );
-
-    /*
-       Direct expenses.
-
-       These are expenses paid personally by a participant.
-    */
-
-    const directPayments = {};
-
-    data.participants.forEach(p => {
-        directPayments[p.id] = 0;
-    });
-
-    data.expenses
-        .filter(e => e.paidBy !== "common")
-        .forEach(e => {
-
-            if (directPayments[e.paidBy] !== undefined) {
-                directPayments[e.paidBy] +=
-                    Number(e.amount || 0);
-            }
-
-        });
-
-
-    /*
-       Fair share calculation.
-
-       Each expense is divided only among participants
-       who were active on that expense date.
-
-       Example:
-
-       C leaves 11/09.
-
-       Food 02/09:
-       A + B + C
-
-       Room Rent 10/09:
-       A + B + C
-
-       Fuel 18/09:
-       A + B
-    */
-
-    const fairShares = {};
-
-    data.participants.forEach(p => {
-        fairShares[p.id] = 0;
-    });
-
-    data.expenses.forEach(expense => {
-
-        const activeParticipants =
-            data.participants.filter(
-                p => participantActiveOnDate(p, expense.date)
-            );
-
-        if (activeParticipants.length === 0) {
-            return;
-        }
-
-        const amount =
-            Number(expense.amount || 0);
-
-        const eachShare =
-            amount / activeParticipants.length;
-
-        activeParticipants.forEach(p => {
-
-            fairShares[p.id] += eachShare;
-
-        });
-
-    });
-
-
-    /*
-       Contributions per participant.
-    */
-
-    const participantContributions = {};
-
-    data.participants.forEach(p => {
-        participantContributions[p.id] = 0;
-    });
-
-    data.contributions.forEach(c => {
-
-        if (
-            participantContributions[c.participantId]
-            !== undefined
-        ) {
-            participantContributions[c.participantId] +=
-                Number(c.amount || 0);
-        }
-
-    });
-
-
-    /*
-       Net position.
-
-       Positive = receives.
-       Negative = pays.
-
-       Net =
-       Contributions
-       + Direct Payments
-       - Fair Share
-    */
-
-    const net = {};
-
-    data.participants.forEach(p => {
-
-        net[p.id] =
-            participantContributions[p.id]
-            + directPayments[p.id]
-            - fairShares[p.id];
-
-    });
-
-
-    /*
-       Fund balance.
-
-       Contributions deposited into common fund
-       minus expenses paid from common fund.
-    */
-
-    const fundBalance =
-        totalContributions - commonFundExpenses;
-
-
-    return {
-        totalContributions,
-        totalExpenses,
-        commonFundExpenses,
-        fundBalance,
-        directPayments,
-        fairShares,
-        participantContributions,
-        net
-    };
+function matchTransfers(balances){
+  const receivers=[],payers=[];
+  balances.forEach((c,i)=>{if(c>0)receivers.push({i,c});else if(c<0)payers.push({i,c:-c});});
+  const transfers=[];let a=0,b=0;
+  while(a<receivers.length&&b<payers.length){const receive=receivers[a],pay=payers[b],amt=Math.min(receive.c,pay.c);transfers.push({from:data.participants[pay.i].name,to:data.participants[receive.i].name,amount:amt});receive.c-=amt;pay.c-=amt;if(receive.c===0)a++;if(pay.c===0)b++;}
+  return transfers;
+}
+function renderSettlement(){
+  const r=calculate(),box=document.getElementById("settlement");
+  if(!data.participants.length){box.innerHTML='<div class="empty">Add Participants To See Settlement.</div>';return;}
+  let html="";
+  if(!r.allAllocated){html+=`<div class="note warning">Some Expenses Have No Active Participants. Settlement Cannot Be Fully Reconciled Until Every Expense Has At Least One Active Participant.</div><div style="height:8px"></div>`;}
+  if(r.fundBalance===0){
+    const transfers=matchTransfers(r.netRounded);
+    if(!transfers.length)html+='<div class="note success">Everyone Is Settled.</div>';
+    else{html+='<div class="meta" style="margin-bottom:8px">Participant Transfers</div>';transfers.forEach(t=>{html+=`<div class="item"><div class="item-top"><div class="item-name">${escapeHtml(t.from)} Pays ${escapeHtml(t.to)}</div><div class="amount">${moneyCents(t.amount)}</div></div></div>`;});}
+  }else{
+    html+=`<div class="note">${r.fundBalance>0?`Common Fund Has ${moneyCents(r.fundBalance)} Left Over.`:`Common Fund Is Short By ${moneyCents(Math.abs(r.fundBalance))}.`}</div><div style="height:10px"></div>`;
+    r.commonPositionRounded.forEach((v,i)=>{if(v>0)html+=`<div class="item"><div class="item-top"><div><div class="item-name">${escapeHtml(data.participants[i].name)}</div><div class="meta">Return From Common Fund</div></div><div class="amount">${moneyCents(v)}</div></div></div>`;else if(v<0)html+=`<div class="item"><div class="item-top"><div><div class="item-name">${escapeHtml(data.participants[i].name)}</div><div class="meta">Pay Into Common Fund</div></div><div class="amount">${moneyCents(Math.abs(v))}</div></div></div>`;});
+    const directTransfers=matchTransfers(r.directPositionRounded);
+    if(directTransfers.length){html+='<div class="meta" style="margin:12px 0 8px">Direct Expense Transfers</div>';directTransfers.forEach(t=>{html+=`<div class="item"><div class="item-top"><div class="item-name">${escapeHtml(t.from)} Pays ${escapeHtml(t.to)}</div><div class="amount">${moneyCents(t.amount)}</div></div></div>`;});}
+  }
+  box.innerHTML=html||'<div class="note success">Everyone Is Settled.</div>';
 }
 
-
-/* =========================================================
-   DISPLAY PARTICIPANTS
-   ========================================================= */
-
-function renderParticipants() {
-
-    const box =
-        document.getElementById("participantsList");
-
-    if (data.participants.length === 0) {
-        box.innerHTML =
-            '<div class="empty">No Participants Added.</div>';
-        return;
-    }
-
-    box.innerHTML =
-        data.participants.map((p, index) => {
-
-            const leave =
-                p.leaveDate
-                    ? dateText(p.leaveDate)
-                    : "Still Active";
-
-            return `
-                <div class="item">
-
-                    <div class="item-top">
-
-                        <div>
-                            <div class="item-name">
-                                ${index + 1}. ${escapeHtml(p.name)}
-                            </div>
-
-                            <div class="meta">
-                                Joined: ${dateText(p.joinDate)}<br>
-                                Leaves: ${leave}
-                            </div>
-                        </div>
-
-                        <button
-                            class="small danger"
-                            onclick="removeParticipant('${p.id}')">
-                            Remove
-                        </button>
-
-                    </div>
-
-                </div>
-            `;
-
-        }).join("");
+function generateShareSummary(){
+  const r=calculate();let text="";
+  text+="MANSKIT SPLIT\n==============================\n";
+  text+=(data.headline||"Collection")+"\n==============================\n\n";
+  text+="Profile: "+data.profile+"\n\n";
+  text+="Participants\n------------------------------\n";
+  if(!data.participants.length)text+="No Participants\n";
+  data.participants.forEach((p,i)=>{text+=`${i+1}. ${p.name} — Joined ${dateText(p.joinDate)} — ${p.leaveDate?`Left ${dateText(p.leaveDate)}`:"Still Active"}\n`;});
+  text+="\nContributions\n------------------------------\n";
+  if(!data.contributions.length)text+="No Contributions\n";
+  [...data.contributions].sort((a,b)=>a.date.localeCompare(b.date)||a.createdAt-b.createdAt).forEach(c=>{const p=participantById(c.participantId);text+=`${p?p.name:"Unknown"} — ${moneyCents(toCents(c.amount))} — ${dateText(c.date)}\n`;});
+  text+="\nExpenses\n------------------------------\n";
+  if(!data.expenses.length)text+="No Expenses\n";
+  [...data.expenses].sort((a,b)=>a.date.localeCompare(b.date)||a.createdAt-b.createdAt).forEach(e=>{let payer="From Advance / Common Fund";if(e.paidBy!=="common"){const p=participantById(e.paidBy);payer=p?p.name:"Unknown";}text+=`${e.name} — ${moneyCents(toCents(e.amount))}\nDate: ${dateText(e.date)}\nPaid By: ${payer}\n`;const active=data.participants.filter(p=>participantActiveOnDate(p,e.date));text+=`Shared By: ${active.length?active.map(p=>p.name).join(", "):"No Active Participants"}\n\n`;});
+  text+="Summary\n------------------------------\n";
+  text+=`Total Contributions: ${moneyCents(r.totalContributions)}\nTotal Expenses: ${moneyCents(r.totalExpenses)}\nFund Spent: ${moneyCents(r.commonFundExpenses)}\nFund Balance: ${moneyCents(r.fundBalance)}\n\n`;
+  text+="Participant Breakdown\n------------------------------\n";
+  data.participants.forEach((p,i)=>{const net=r.netRounded[i]||0;text+=`${p.name}: ${net>0?`Receives ${moneyCents(net)}`:net<0?`Pays ${moneyCents(Math.abs(net))}`:"Settled"}\nFair Share: ${moneyCents(r.fairRounded[i]||0)}\nContributions: ${moneyCents(r.contributionCents[p.id]||0)}\nPaid Directly: ${moneyCents(r.directPaidCents[p.id]||0)}\nJoin Date: ${dateText(p.joinDate)}\nLeave Date: ${p.leaveDate?dateText(p.leaveDate):"Still Active"}\n\n`;});
+  text+="Settlement\n------------------------------\n";
+  if(r.fundBalance===0){const transfers=matchTransfers(r.netRounded);if(!transfers.length)text+="Everyone Is Settled.\n";else transfers.forEach(t=>text+=`${t.from} Pays ${t.to} ${moneyCents(t.amount)}\n`);}
+  else{ text+=(r.fundBalance>0?`Common Fund Has ${moneyCents(r.fundBalance)} Left Over.\n`:`Common Fund Is Short By ${moneyCents(Math.abs(r.fundBalance))}.\n`);r.commonPositionRounded.forEach((v,i)=>{if(v>0)text+=`${data.participants[i].name} Receives From Common Fund ${moneyCents(v)}\n`;else if(v<0)text+=`${data.participants[i].name} Pays Into Common Fund ${moneyCents(Math.abs(v))}\n`;});const dt=matchTransfers(r.directPositionRounded);dt.forEach(t=>text+=`${t.from} Pays ${t.to} ${moneyCents(t.amount)}\n`);}
+  if(r.warnings.length)text+=`\nWarnings\n------------------------------\n${r.warnings.join("\n")}\n`;
+  text+="\nGenerated By MANSKIT — Split";
+  return text;
 }
+function renderShareSummary(){document.getElementById("shareText").textContent=generateShareSummary();}
+async function copySummary(){const text=generateShareSummary();try{await navigator.clipboard.writeText(text);alert("Summary Copied.");}catch(e){const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();alert("Summary Copied.");}}
+async function shareSummary(){const text=generateShareSummary();if(navigator.share){try{await navigator.share({title:"MANSKIT SPLIT",text});}catch(e){}}else copySummary();}
 
-
-/* =========================================================
-   DISPLAY CONTRIBUTIONS
-   ========================================================= */
-
-function renderContributions() {
-
-    const box =
-        document.getElementById("contributionsList");
-
-    if (data.contributions.length === 0) {
-        box.innerHTML =
-            '<div class="empty">No Contributions Added.</div>';
-        return;
-    }
-
-    box.innerHTML =
-        data.contributions.map(c => {
-
-            const p =
-                data.participants.find(
-                    x => x.id === c.participantId
-                );
-
-            return `
-                <div class="item">
-
-                    <div class="item-top">
-
-                        <div>
-                            <div class="item-name">
-                                ${escapeHtml(p ? p.name : "Unknown")}
-                            </div>
-
-                            <div class="meta">
-                                ${dateText(c.date)}
-                            </div>
-                        </div>
-
-                        <div class="amount">
-                            ${money(c.amount)}
-                        </div>
-
-                    </div>
-
-                    <div class="actions">
-                        <button
-                            class="small danger"
-                            onclick="removeContribution('${c.id}')">
-                            Remove
-                        </button>
-                    </div>
-
-                </div>
-            `;
-
-        }).join("");
+function renderAll(){
+  document.getElementById("headline").value=data.headline||"";document.getElementById("profile").value=data.profile||"My Collection";
+  renderParticipantDropdowns();renderParticipants();renderContributions();renderExpenses();renderSecurity();renderSummary();renderBreakdown();renderSettlement();renderShareSummary();
 }
-
-
-/* =========================================================
-   DISPLAY EXPENSES
-   ========================================================= */
-
-function renderExpenses() {
-
-    const box =
-        document.getElementById("expensesList");
-
-    if (data.expenses.length === 0) {
-        box.innerHTML =
-            '<div class="empty">No Expenses Added.</div>';
-        return;
-    }
-
-    box.innerHTML =
-        data.expenses.map(e => {
-
-            let payer = "From Advance / Common Fund";
-
-            if (e.paidBy !== "common") {
-
-                const p =
-                    data.participants.find(
-                        x => x.id === e.paidBy
-                    );
-
-                payer =
-                    p ? p.name : "Unknown";
-
-            }
-
-            return `
-                <div class="item">
-
-                    <div class="item-top">
-
-                        <div>
-                            <div class="item-name">
-                                ${escapeHtml(e.name)}
-                            </div>
-
-                            <div class="meta">
-                                Date: ${dateText(e.date)}<br>
-                                Paid By: ${escapeHtml(payer)}
-                            </div>
-                        </div>
-
-                        <div class="amount">
-                            ${money(e.amount)}
-                        </div>
-
-                    </div>
-
-                    <div class="actions">
-                        <button
-                            class="small danger"
-                            onclick="removeExpense('${e.id}')">
-                            Remove
-                        </button>
-                    </div>
-
-                </div>
-            `;
-
-        }).join("");
+function init(){
+  loadData();
+  if(!document.getElementById("participantJoinDate").value)document.getElementById("participantJoinDate").value=today();
+  if(!document.getElementById("contributionDate").value)document.getElementById("contributionDate").value=today();
+  if(!document.getElementById("expenseDate").value)document.getElementById("expenseDate").value=today();
+  renderAll();
 }
-
-
-/* =========================================================
-   UPDATE DROPDOWNS
-   ========================================================= */
-
-function renderParticipantDropdowns() {
-
-    const contributionSelect =
-        document.getElementById("contributionParticipant");
-
-    const expenseSelect =
-        document.getElementById("expensePaidBy");
-
-    const currentContribution =
-        contributionSelect.value;
-
-    const currentExpense =
-        expenseSelect.value;
-
-    contributionSelect.innerHTML =
-        data.participants.map(p => `
-            <option value="${p.id}">
-                ${escapeHtml(p.name)}
-            </option>
-        `).join("");
-
-    if (
-        data.participants.some(
-            p => p.id === currentContribution
-        )
-    ) {
-        contributionSelect.value =
-            currentContribution;
-    }
-
-
-    expenseSelect.innerHTML = `
-        <option value="common">
-            From Advance / Common Fund
-        </option>
-
-        ${data.participants.map(p => `
-            <option value="${p.id}">
-                ${escapeHtml(p.name)}
-            </option>
-        `).join("")}
-    `;
-
-    if (
-        currentExpense === "common" ||
-        data.participants.some(
-            p => p.id === currentExpense
-        )
-    ) {
-        expenseSelect.value = currentExpense;
-    }
-}
-
-
-/* =========================================================
-   SUMMARY
-   ========================================================= */
-
-function renderSummary() {
-
-    const result = calculate();
-
-    document.getElementById("totalContributions").textContent =
-        money(result.totalContributions);
-
-    document.getElementById("totalExpenses").textContent =
-        money(result.totalExpenses);
-
-    document.getElementById("fundSpent").textContent =
-        money(result.commonFundExpenses);
-
-    document.getElementById("fundBalance").textContent =
-        money(result.fundBalance);
-}
-
-
-/* =========================================================
-   PARTICIPANT BREAKDOWN
-   ========================================================= */
-
-function renderBreakdown() {
-
-    const result = calculate();
-
-    const box =
-        document.getElementById("breakdown");
-
-    if (data.participants.length === 0) {
-
-        box.innerHTML =
-            '<div class="empty">Add Participants To See Calculation.</div>';
-
-        return;
-    }
-
-
-    box.innerHTML =
-        data.participants.map(p => {
-
-            const share =
-                result.fairShares[p.id] || 0;
-
-            const contribution =
-                result.participantContributions[p.id] || 0;
-
-            const direct =
-                result.directPayments[p.id] || 0;
-
-            const net =
-                result.net[p.id] || 0;
-
-
-            let statusHtml = "";
-
-            if (net > 0.005) {
-
-                statusHtml = `
-                    <div class="status-receive">
-                        Receives ${money(net)}
-                    </div>
-                `;
-
-            } else if (net < -0.005) {
-
-                statusHtml = `
-                    <div class="status-pay">
-                        Pays ${money(Math.abs(net))}
-                    </div>
-                `;
-
-            } else {
-
-                statusHtml = `
-                    <div class="status-settled">
-                        Settled
-                    </div>
-                `;
-
-            }
-
-
-            return `
-                <div class="breakdown">
-
-                    ${statusHtml}
-
-                    <div class="meta">
-                        Fair Share: ${money(share)}<br>
-                        Contributions: ${money(contribution)}<br>
-                        Paid Directly: ${money(direct)}
-                    </div>
-
-                    ${
-                        p.leaveDate
-                        ? `<span class="badge">
-                             Leaves ${dateText(p.leaveDate)}
-                           </span>`
-                        : ""
-                    }
-
-                </div>
-            `;
-
-        }).join("");
-}
-
-
-/* =========================================================
-   SETTLEMENT
-   ========================================================= */
-
-function renderSettlement() {
-
-    const result = calculate();
-
-    const box =
-        document.getElementById("settlement");
-
-    const receivers =
-        data.participants.filter(
-            p => result.net[p.id] > 0.005
-        );
-
-    const payers =
-        data.participants.filter(
-            p => result.net[p.id] < -0.005
-        );
-
-
-    if (
-        receivers.length === 0 &&
-        payers.length === 0
-    ) {
-
-        if (Math.abs(result.fundBalance) < 0.005) {
-
-            box.innerHTML = `
-                <div class="note">
-                    Everyone Is Settled.
-                </div>
-            `;
-
-        } else if (result.fundBalance > 0) {
-
-            box.innerHTML = `
-                <div class="note">
-                    Common Fund Has ${money(result.fundBalance)}
-                    Left Over.
-                </div>
-            `;
-
-        } else {
-
-            box.innerHTML = `
-                <div class="note">
-                    Common Fund Is Short By
-                    ${money(Math.abs(result.fundBalance))}.
-                </div>
-            `;
-        }
-
-        return;
-    }
-
-
-    let html = "";
-
-
-    if (payers.length > 0) {
-
-        html += `
-            <div class="meta" style="margin-bottom:8px">
-                Participants Who Need To Pay
-            </div>
-        `;
-
-        payers.forEach(p => {
-
-            html += `
-                <div class="item">
-                    <div class="item-top">
-                        <div>
-                            <div class="item-name">
-                                ${escapeHtml(p.name)}
-                            </div>
-                        </div>
-
-                        <div class="amount">
-                            ${money(
-                                Math.abs(result.net[p.id])
-                            )}
-                        </div>
-                    </div>
-                </div>
-            `;
-
-        });
-
-    }
-
-
-    if (receivers.length > 0) {
-
-        html += `
-            <div class="meta"
-                 style="margin-top:12px;margin-bottom:8px">
-                Participants Who Should Receive
-            </div>
-        `;
-
-        receivers.forEach(p => {
-
-            html += `
-                <div class="item">
-                    <div class="item-top">
-                        <div>
-                            <div class="item-name">
-                                ${escapeHtml(p.name)}
-                            </div>
-                        </div>
-
-                        <div class="amount">
-                            ${money(result.net[p.id])}
-                        </div>
-                    </div>
-                </div>
-            `;
-
-        });
-
-    }
-
-
-    box.innerHTML = html;
-}
-
-
-/* =========================================================
-   SHARE SUMMARY
-   ========================================================= */
-
-function generateShareSummary() {
-
-    const result = calculate();
-
-    let text = "";
-
-    text += "MANSKIT SPLIT\n";
-    text += "==============================\n";
-
-    text +=
-        (data.headline || "Collection") +
-        "\n";
-
-    text += "==============================\n\n";
-
-    text +=
-        "Profile: " +
-        data.profile +
-        "\n\n";
-
-
-    /* PARTICIPANTS */
-
-    text += "Participants\n";
-    text += "------------------------------\n";
-
-    if (data.participants.length === 0) {
-
-        text += "No Participants\n";
-
-    } else {
-
-        data.participants.forEach((p, i) => {
-
-            text +=
-                `${i + 1}. ${p.name}`;
-
-            text +=
-                ` — Joined ${dateText(p.joinDate)}`;
-
-            if (p.leaveDate) {
-
-                text +=
-                    ` — Leaves ${dateText(p.leaveDate)}`;
-
-            }
-
-            text += "\n";
-
-        });
-
-    }
-
-    text += "\n";
-
-
-    /* CONTRIBUTIONS */
-
-    text += "Contributions\n";
-    text += "------------------------------\n";
-
-    if (data.contributions.length === 0) {
-
-        text += "No Contributions\n";
-
-    } else {
-
-        data.contributions.forEach(c => {
-
-            const p =
-                data.participants.find(
-                    x => x.id === c.participantId
-                );
-
-            text +=
-                `${p ? p.name : "Unknown"} — ` +
-                `${money(c.amount)} — ` +
-                `${dateText(c.date)}\n`;
-
-        });
-
-    }
-
-    text += "\n";
-
-
-    /* EXPENSES */
-
-    text += "Expenses\n";
-    text += "------------------------------\n";
-
-    if (data.expenses.length === 0) {
-
-        text += "No Expenses\n";
-
-    } else {
-
-        data.expenses.forEach(e => {
-
-            let payer =
-                "From Advance / Common Fund";
-
-            if (e.paidBy !== "common") {
-
-                const p =
-                    data.participants.find(
-                        x => x.id === e.paidBy
-                    );
-
-                payer =
-                    p ? p.name : "Unknown";
-
-            }
-
-            text +=
-                `${e.name} — ${money(e.amount)}\n`;
-
-            text +=
-                `Date: ${dateText(e.date)}\n`;
-
-            text +=
-                `Paid By: ${payer}\n\n`;
-
-        });
-
-    }
-
-
-    /* SUMMARY */
-
-    text += "Summary\n";
-    text += "------------------------------\n";
-
-    text +=
-        `Total Contributions: ` +
-        `${money(result.totalContributions)}\n`;
-
-    text +=
-        `Total Expenses: ` +
-        `${money(result.totalExpenses)}\n`;
-
-    text +=
-        `Fund Spent: ` +
-        `${money(result.commonFundExpenses)}\n`;
-
-    text +=
-        `Fund Balance: ` +
-        `${money(result.fundBalance)}\n\n`;
-
-
-    /* BREAKDOWN */
-
-    text += "Participant Breakdown\n";
-    text += "------------------------------\n";
-
-    data.participants.forEach(p => {
-
-        const net =
-            result.net[p.id] || 0;
-
-        let status = "Settled";
-
-        if (net > 0.005) {
-
-            status =
-                `Receives ${money(net)}`;
-
-        } else if (net < -0.005) {
-
-            status =
-                `Pays ${money(Math.abs(net))}`;
-
-        }
-
-
-        text +=
-            `${p.name}: ${status}\n`;
-
-        text +=
-            `Fair Share: ` +
-            `${money(result.fairShares[p.id])}\n`;
-
-        text +=
-            `Contributions: ` +
-            `${money(result.participantContributions[p.id])}\n`;
-
-        text +=
-            `Paid Directly: ` +
-            `${money(result.directPayments[p.id])}\n`;
-
-        if (p.leaveDate) {
-
-            text +=
-                `Leave Date: ` +
-                `${dateText(p.leaveDate)}\n`;
-
-        }
-
-        text += "\n";
-
-    });
-
-
-    /* SETTLEMENT */
-
-    text += "Settlement\n";
-    text += "------------------------------\n";
-
-    const receivers =
-        data.participants.filter(
-            p => result.net[p.id] > 0.005
-        );
-
-    const payers =
-        data.participants.filter(
-            p => result.net[p.id] < -0.005
-        );
-
-
-    if (
-        receivers.length === 0 &&
-        payers.length === 0
-    ) {
-
-        text += "Everyone Is Settled.\n";
-
-    } else {
-
-        payers.forEach(p => {
-
-            text +=
-                `${p.name} Pays ` +
-                `${money(Math.abs(result.net[p.id]))}\n`;
-
-        });
-
-        receivers.forEach(p => {
-
-            text +=
-                `${p.name} Receives ` +
-                `${money(result.net[p.id])}\n`;
-
-        });
-
-    }
-
-
-    text += "\n";
-    text += "Generated By MANSKIT — Split";
-
-    return text;
-}
-
-
-function renderShareSummary() {
-
-    document.getElementById("shareText").textContent =
-        generateShareSummary();
-}
-
-
-async function copySummary() {
-
-    const text =
-        generateShareSummary();
-
-    try {
-
-        await navigator.clipboard.writeText(text);
-
-        alert("Summary Copied.");
-
-    } catch (error) {
-
-        const textarea =
-            document.createElement("textarea");
-
-        textarea.value = text;
-
-        document.body.appendChild(textarea);
-
-        textarea.select();
-
-        document.execCommand("copy");
-
-        textarea.remove();
-
-        alert("Summary Copied.");
-
-    }
-}
-
-
-/* =========================================================
-   RENDER EVERYTHING
-   ========================================================= */
-
-function renderAll() {
-
-    document.getElementById("headline").value =
-        data.headline || "";
-
-    document.getElementById("profile").value =
-        data.profile || "My Collection";
-
-    renderParticipantDropdowns();
-    renderParticipants();
-    renderContributions();
-    renderExpenses();
-    renderSummary();
-    renderBreakdown();
-    renderSettlement();
-    renderShareSummary();
-}
-
-
-/* =========================================================
-   INITIALIZE
-   ========================================================= */
-
-function init() {
-
-    loadData();
-
-    /*
-       Default dates.
-    */
-
-    if (!document.getElementById("participantJoinDate").value) {
-        document.getElementById("participantJoinDate").value =
-            today();
-    }
-
-    if (!document.getElementById("contributionDate").value) {
-        document.getElementById("contributionDate").value =
-            today();
-    }
-
-    if (!document.getElementById("expenseDate").value) {
-        document.getElementById("expenseDate").value =
-            today();
-    }
-
-    renderAll();
-}
-
 init();
-
 </script>
-
 </body>
 </html>
