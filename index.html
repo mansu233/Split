@@ -93,7 +93,7 @@
 
     <div class="tagline">Split</div>
 
-    <div class="app-version">v1.1.0</div>
+    <div class="app-version">v1.1.1</div>
 
     <div class="header-rule"></div>
   </div>
@@ -162,27 +162,20 @@
                autocomplete="off">
       </div>
 
-      <div class="row member-date-row">
-
-        <div class="field">
-          <label>Join Date</label>
-          <input id="personJoinDate" type="date">
-        </div>
-
-        <div class="field">
-          <label>
-            Leave Date
-            <span class="optional-label">(optional)</span>
-          </label>
-          <input id="personLeaveDate" type="date">
-        </div>
-
+      <div class="field">
+        <label>Join Date</label>
+        <input id="personJoinDate" type="date">
       </div>
 
-      <label class="unexpected-leave-option">
-        <input id="personUnexpectedLeave" type="checkbox">
-        <span>Unexpected Leave</span>
-      </label>
+      <div class="item-meta" style="margin-top:-2px;">
+        Leave Date Can Be Set Later From The Participant Card.
+      </div>
+
+      <input id="leaveDatePicker"
+             type="date"
+             aria-hidden="true"
+             tabindex="-1"
+             style="position:fixed; width:1px; height:1px; opacity:0; pointer-events:none; left:-10px; top:-10px;">
 
       <button class="btn" id="addPersonBtn">
         Add Participant
@@ -1179,11 +1172,10 @@ const personName =
 const personJoinDate =
   document.getElementById("personJoinDate");
 
-const personLeaveDate =
-  document.getElementById("personLeaveDate");
+const leaveDatePicker =
+  document.getElementById("leaveDatePicker");
 
-const personUnexpectedLeave =
-  document.getElementById("personUnexpectedLeave");
+let leaveDatePersonId = null;
 
 const addPersonBtn =
   document.getElementById("addPersonBtn");
@@ -1813,17 +1805,6 @@ addPersonBtn.addEventListener(
       personJoinDate.value ||
       today();
 
-    const unexpectedLeave =
-      personUnexpectedLeave.checked;
-
-    const leaveDate =
-      personLeaveDate.value ||
-      (
-        unexpectedLeave
-          ? today()
-          : ""
-      );
-
 
     if (!name) {
 
@@ -1833,22 +1814,6 @@ addPersonBtn.addEventListener(
       );
 
       personName.focus();
-
-      return;
-    }
-
-
-    if (
-      leaveDate &&
-      leaveDate < joinDate
-    ) {
-
-      showToast(
-        "Leave Date Cannot Be Before Join Date.",
-        "error"
-      );
-
-      personLeaveDate.focus();
 
       return;
     }
@@ -1868,12 +1833,6 @@ addPersonBtn.addEventListener(
 
         person.joinDate =
           joinDate;
-
-        person.leaveDate =
-          leaveDate;
-
-        person.unexpectedLeave =
-          unexpectedLeave;
       }
 
       clearPersonEdit();
@@ -1910,9 +1869,7 @@ addPersonBtn.addEventListener(
 
         joinDate,
 
-        leaveDate,
-
-        unexpectedLeave
+        leaveDate: ""
 
       });
 
@@ -1956,13 +1913,6 @@ function editPerson(id) {
     person.joinDate ||
     today();
 
-  personLeaveDate.value =
-    person.leaveDate ||
-    "";
-
-  personUnexpectedLeave.checked =
-    Boolean(person.unexpectedLeave);
-
   personFormTitle.textContent =
     "Edit Participant";
 
@@ -1991,11 +1941,6 @@ function clearPersonEdit() {
   personJoinDate.value =
     today();
 
-  personLeaveDate.value = "";
-
-  personUnexpectedLeave.checked =
-    false;
-
   personFormTitle.textContent =
     "Add Participant";
 
@@ -2004,6 +1949,111 @@ function clearPersonEdit() {
 
   cancelPersonEditBtn.style.display =
     "none";
+}
+
+
+function setParticipantLeaveDate(id) {
+
+  const person =
+    people.find(p => p.id === id);
+
+  if (!person) return;
+
+  leaveDatePersonId = id;
+
+  leaveDatePicker.min =
+    person.joinDate || "";
+
+  leaveDatePicker.value =
+    person.leaveDate ||
+    person.joinDate ||
+    today();
+
+  try {
+    if (typeof leaveDatePicker.showPicker === "function") {
+      leaveDatePicker.showPicker();
+    } else {
+      leaveDatePicker.click();
+    }
+  } catch {
+    leaveDatePicker.click();
+  }
+}
+
+
+leaveDatePicker.addEventListener(
+  "change",
+  async () => {
+
+    if (!leaveDatePersonId) return;
+
+    const person =
+      people.find(p => p.id === leaveDatePersonId);
+
+    if (!person) {
+      leaveDatePersonId = null;
+      return;
+    }
+
+    const date =
+      leaveDatePicker.value;
+
+    if (!date) return;
+
+    if (
+      person.joinDate &&
+      date < person.joinDate
+    ) {
+      showToast(
+        "Leave Date Cannot Be Before Join Date.",
+        "error"
+      );
+      leaveDatePicker.value =
+        person.leaveDate || person.joinDate;
+      return;
+    }
+
+    person.leaveDate = date;
+
+    await saveAll();
+
+    updateAll();
+
+    showToast(
+      `${person.name} Leave Date Set To ${formatDate(date)}.`,
+      "success"
+    );
+
+    leaveDatePersonId = null;
+  }
+);
+
+
+async function clearParticipantLeaveDate(id) {
+
+  const person =
+    people.find(p => p.id === id);
+
+  if (!person || !person.leaveDate) return;
+
+  const ok =
+    await showConfirm(
+      `Remove The Leave Date For ${person.name}?`,
+      "Clear Leave Date",
+      "Clear"
+    );
+
+  if (!ok) return;
+
+  person.leaveDate = "";
+
+  await saveAll();
+  updateAll();
+
+  showToast(
+    "Leave Date Cleared.",
+    "success"
+  );
 }
 
 
@@ -2900,94 +2950,75 @@ function calculateBalances() {
   This makes the final balances sum to zero.
 */
 
-function getFundAdjustmentByPerson() {
+function allocateFundAmountByContribution() {
 
   const totalContributions =
     getTotalContributions();
 
   const fundBalance =
-    calculateFundBalance();
+    roundMoney(calculateFundBalance());
 
   const result =
-    new Map(
-      people.map(
-        person => [person.id, 0]
-      )
-    );
-
+    new Map(people.map(person => [person.id, 0]));
 
   if (
     people.length === 0 ||
     Math.abs(fundBalance) <= 0.005
   ) {
-
     return result;
   }
 
-
-  /*
-    If there are no contributions but
-    somehow a fund balance exists, split
-    it equally rather than producing NaN.
-  */
-
-  if (
-    totalContributions <= 0.005
-  ) {
-
-    const equalAdjustment =
-      fundBalance /
-      people.length;
-
+  if (totalContributions <= 0.005) {
+    const cents = Math.round(Math.abs(fundBalance) * 100);
+    const base = Math.floor(cents / people.length);
+    let remainder = cents - base * people.length;
 
     people.forEach(person => {
-
+      const amountCents = base + (remainder-- > 0 ? 1 : 0);
       result.set(
         person.id,
-        equalAdjustment
+        fundBalance < 0 ? -amountCents / 100 : amountCents / 100
       );
-
     });
 
     return result;
   }
 
-
-  people.forEach(person => {
-
-    const contribution =
-      getPersonContribution(
-        person.id
-      );
-
-
-    const ratio =
-      contribution /
-      totalContributions;
-
-
-    /*
-      Positive fund balance:
-        +adjustment means money returned.
-
-      Negative fund balance:
-        adjustment becomes negative,
-        meaning money must be collected.
-
-      Final balance subtracts this value.
-    */
-
-    result.set(
-      person.id,
-      fundBalance * ratio
-    );
-
+  const cents = Math.round(Math.abs(fundBalance) * 100);
+  const raw = people.map(person => {
+    const contribution = getPersonContribution(person.id);
+    const exactCents = cents * contribution / totalContributions;
+    return { person, exactCents, floorCents: Math.floor(exactCents), remainder: exactCents - Math.floor(exactCents) };
   });
 
+  let remaining =
+    cents -
+    raw.reduce((sum, item) => sum + item.floorCents, 0);
+
+  raw
+    .sort((a, b) => b.remainder - a.remainder)
+    .forEach(item => {
+      if (remaining > 0) {
+        item.floorCents += 1;
+        remaining -= 1;
+      }
+    });
+
+  raw.forEach(item => {
+    const amount = item.floorCents / 100;
+    result.set(
+      item.person.id,
+      fundBalance < 0 ? -amount : amount
+    );
+  });
 
   return result;
 }
 
+
+function getFundAdjustmentByPerson() {
+  return allocateFundAmountByContribution();
+}
 
 /* =========================================================
    FINAL BALANCES
@@ -3031,8 +3062,10 @@ function calculateFinalBalances() {
     */
 
     const finalBalance =
-      balance.balance -
-      fundAdjustment;
+      roundMoney(
+        balance.balance -
+        fundAdjustment
+      );
 
 
     return {
@@ -3058,76 +3091,24 @@ function calculateFundAction() {
   const fundBalance =
     calculateFundBalance();
 
-  const totalContributions =
-    getTotalContributions();
-
-
   if (
     Math.abs(fundBalance) <= 0.005 ||
     people.length === 0
   ) {
-
     return [];
   }
 
-
-  if (
-    totalContributions <= 0.005
-  ) {
-
-    const equalAmount =
-      Math.abs(fundBalance) /
-      people.length;
-
-
-    return people.map(person => ({
-
-      personId: person.id,
-
-      name: person.name,
-
-      amount: equalAmount
-
-    }));
-
-  }
-
+  const adjustments =
+    allocateFundAmountByContribution();
 
   return people
-
-    .map(person => {
-
-      const contribution =
-        getPersonContribution(
-          person.id
-        );
-
-
-      const ratio =
-        contribution /
-        totalContributions;
-
-
-      return {
-
-        personId: person.id,
-
-        name: person.name,
-
-        amount:
-          Math.abs(fundBalance) *
-          ratio
-
-      };
-
-    })
-
-    .filter(
-      entry =>
-        entry.amount > 0.005
-    );
+    .map(person => ({
+      personId: person.id,
+      name: person.name,
+      amount: Math.abs(adjustments.get(person.id) || 0)
+    }))
+    .filter(entry => entry.amount > 0.005);
 }
-
 
 /* =========================================================
    FINAL SETTLEMENT TRANSACTIONS
@@ -3213,9 +3194,11 @@ function createSettlementTransactions() {
   ) {
 
     const amount =
-      Math.min(
-        debtors[i].amount,
-        creditors[j].amount
+      roundMoney(
+        Math.min(
+          debtors[i].amount,
+          creditors[j].amount
+        )
       );
 
 
@@ -3449,6 +3432,20 @@ function renderPeople() {
               </button>
 
               <button
+                class="small-btn"
+                data-leave-person="${person.id}">
+                ${person.leaveDate ? "Change Leave" : "Set Leave"}
+              </button>
+
+              ${person.leaveDate ? `
+                <button
+                  class="small-btn"
+                  data-clear-leave-person="${person.id}">
+                  Clear Leave
+                </button>
+              ` : ""}
+
+              <button
                 class="small-btn delete"
                 data-delete-person="${person.id}">
                 Remove
@@ -3472,17 +3469,6 @@ function renderPeople() {
                    }`
 
                 : "Dates Not Recorded"
-            }
-
-            ${
-              person.unexpectedLeave
-
-                ? ` &nbsp;·&nbsp;
-                    <span class="unexpected-badge">
-                      Unexpected Leave
-                    </span>`
-
-                : ""
             }
 
           </div>
@@ -3522,6 +3508,40 @@ function renderPeople() {
         () =>
           editPerson(
             button.dataset.editPerson
+          )
+      );
+
+    });
+
+
+  peopleList
+    .querySelectorAll(
+      "[data-leave-person]"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () =>
+          setParticipantLeaveDate(
+            button.dataset.leavePerson
+          )
+      );
+
+    });
+
+
+  peopleList
+    .querySelectorAll(
+      "[data-clear-leave-person]"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () =>
+          clearParticipantLeaveDate(
+            button.dataset.clearLeavePerson
           )
       );
 
@@ -5889,9 +5909,6 @@ function updateAll() {
 
   personJoinDate.value =
     today();
-
-  personLeaveDate.value =
-    "";
 
   contributionDate.value =
     today();
