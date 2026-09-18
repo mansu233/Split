@@ -438,6 +438,9 @@
   .panel{ padding:9px; margin-bottom:6px; }
   .panel-title{ font-size:14px; margin-bottom:8px; }
   .field{ margin-bottom:7px; }
+  .member-date-row{ gap:6px; }
+  .member-date-row input{ font-size:12px; padding-left:7px; padding-right:7px; }
+  .optional-label{ color:var(--gold-dim); font-size:9px; }
   input,select{ min-height:38px; padding:7px 10px; font-size:13.5px; }
   .btn{ min-height:38px; font-size:12.5px; }
   .btn-danger{ margin-top:7px; }

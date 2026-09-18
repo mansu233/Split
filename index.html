@@ -102,6 +102,16 @@
         <label>Name</label>
         <input id="personName" type="text" placeholder="Enter Name" autocomplete="off">
       </div>
+      <div class="row member-date-row">
+        <div class="field">
+          <label>Join Date</label>
+          <input id="personJoinDate" type="date">
+        </div>
+        <div class="field">
+          <label>Leave Date <span class="optional-label">(optional)</span></label>
+          <input id="personLeaveDate" type="date">
+        </div>
+      </div>
       <button class="btn" id="addPersonBtn">Add Participant</button>
       <button class="btn btn-secondary" id="cancelPersonEditBtn" style="display:none; margin-top:8px;">Cancel Edit</button>
     </div>
@@ -512,6 +522,8 @@ const purposeInput = document.getElementById("purposeInput");
 const currencySelect = document.getElementById("currencySelect");
 
 const personName = document.getElementById("personName");
+const personJoinDate = document.getElementById("personJoinDate");
+const personLeaveDate = document.getElementById("personLeaveDate");
 const addPersonBtn = document.getElementById("addPersonBtn");
 const cancelPersonEditBtn = document.getElementById("cancelPersonEditBtn");
 const personFormTitle = document.getElementById("personFormTitle");
@@ -722,11 +734,18 @@ currencySelect.addEventListener("change", () => {
 /* ---------------- PARTICIPANTS ---------------- */
 addPersonBtn.addEventListener("click", async () => {
   const name = personName.value.trim();
+  const joinDate = personJoinDate.value || today();
+  const leaveDate = personLeaveDate.value || "";
   if (!name) { showToast("Enter A Participant Name.", "error"); personName.focus(); return; }
+  if (leaveDate && leaveDate < joinDate) { showToast("Leave Date Cannot Be Before Join Date.", "error"); personLeaveDate.focus(); return; }
 
   if (editingPersonId) {
     const person = people.find(p => p.id === editingPersonId);
-    if (person) person.name = titleCase(name);
+    if (person) {
+      person.name = titleCase(name);
+      person.joinDate = joinDate;
+      person.leaveDate = leaveDate;
+    }
     clearPersonEdit();
     showToast("Participant Updated.", "success");
   } else {
@@ -734,7 +753,7 @@ addPersonBtn.addEventListener("click", async () => {
       showToast("This Participant Already Exists.", "error");
       return;
     }
-    people.push({ id: makeId(), name: titleCase(name) });
+    people.push({ id: makeId(), name: titleCase(name), joinDate, leaveDate });
     personName.value = "";
     showToast("Participant Added.", "success");
   }
@@ -750,6 +769,8 @@ function editPerson(id) {
   if (!person) return;
   editingPersonId = id;
   personName.value = person.name;
+  personJoinDate.value = person.joinDate || today();
+  personLeaveDate.value = person.leaveDate || "";
   personFormTitle.textContent = "Edit Participant";
   addPersonBtn.textContent = "Save Changes";
   cancelPersonEditBtn.style.display = "block";
@@ -760,6 +781,8 @@ cancelPersonEditBtn.addEventListener("click", clearPersonEdit);
 function clearPersonEdit() {
   editingPersonId = null;
   personName.value = "";
+  personJoinDate.value = today();
+  personLeaveDate.value = "";
   personFormTitle.textContent = "Add Participant";
   addPersonBtn.textContent = "Add Participant";
   cancelPersonEditBtn.style.display = "none";
@@ -974,6 +997,7 @@ function renderPeople() {
             <button class="small-btn delete" data-delete-person="${person.id}">Remove</button>
           </div>
         </div>
+        <div class="item-meta">${person.joinDate ? `Active ${formatDate(person.joinDate)}${person.leaveDate ? ` – ${formatDate(person.leaveDate)}` : " – Present"}` : "Dates not recorded"}</div>
         <div class="item-meta">Contributed <span class="mono">${money(contribution)}</span> &nbsp;·&nbsp; Paid Directly <span class="mono">${money(personalPaid)}</span></div>
       </div>`;
   }).join("");
@@ -1512,6 +1536,8 @@ function updateAll() {
 }
 
 (async function init() {
+  personJoinDate.value = today();
+  personLeaveDate.value = "";
   contributionDate.value = today();
   expenseDate.value = today();
   await loadAll();
