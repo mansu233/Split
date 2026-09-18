@@ -182,8 +182,8 @@
   .purpose-input::placeholder{ color:#4d5c5f; font-weight:400; }
 
   /* ---------- SCREENS ---------- */
-  .screen{ display:none; height:auto; min-height:0; overflow-y:auto; padding:0 14px 78px; overscroll-behavior:contain; scrollbar-width:thin; }
-  .screen.active{ display:block; flex:1; min-height:0; animation:fadein .18s ease; }
+  .screen{ display:none; height:0; min-height:0; overflow-y:auto; padding:0 14px 96px; overscroll-behavior-y:contain; -webkit-overflow-scrolling:touch; touch-action:pan-y; scrollbar-width:thin; }
+  .screen.active{ display:block; flex:1 1 auto; height:0; min-height:0; overflow-y:auto; animation:fadein .18s ease; }
   @media (max-width:480px){ .screen.active{ animation:none; } }
   @keyframes fadein{ from{opacity:0; transform:translateY(3px);} to{opacity:1; transform:none;} }
 
@@ -1027,7 +1027,7 @@ function renderAuthStatus() {
   const signedIn = !!currentUser;
   const appAccess = signedIn || guestMode;
   loginGate.style.display = appAccess ? "none" : "flex";
-  appShell.style.display = appAccess ? "block" : "none";
+  appShell.style.display = appAccess ? "flex" : "none";
   if (!appAccess) loginGateStatus.textContent = "Your data stays private to your Firebase account.";
   authStatus.className = "notice" + (signedIn ? " good" : "");
   authStatus.innerHTML = signedIn
@@ -1962,7 +1962,7 @@ function updateAll() {
 <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("service-worker.js?v=20260917-2251").catch(() => { /* offline support unavailable */ });
+      navigator.serviceWorker.register("service-worker.js?v=20260918-0645").catch(() => { /* offline support unavailable */ });
     });
   }
 </script>
