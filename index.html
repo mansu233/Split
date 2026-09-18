@@ -60,14 +60,17 @@
     max-width:480px;
     margin:auto;
     height:100dvh;
+    display:flex;
+    flex-direction:column;
     overflow:hidden;
-    padding-bottom:64px;
+    padding-bottom:0;
   }
 
   /* ---------- HEADER ---------- */
   .header{
-    padding:26px 18px 14px;
+    padding:12px 18px 8px;
     text-align:center;
+    flex-shrink:0;
   }
   .brand-mark{
     display:inline-flex;
@@ -94,29 +97,29 @@
   }
   .brand{
     font-family:var(--serif);
-    font-size:26px;
+    font-size:23px;
     font-weight:600;
     letter-spacing:.2px;
     color:var(--paper);
   }
   .brand-accent{ color:var(--gold); }
   .tagline{
-    margin-top:4px;
+    margin-top:2px;
     font-size:11.5px;
     color:var(--muted);
     letter-spacing:.2px;
   }
   .header-rule{
     height:1px;
-    margin:16px auto 0;
+    margin:8px auto 0;
     width:64px;
     background:linear-gradient(90deg, transparent, var(--gold-dim), transparent);
   }
 
   /* ---------- PROFILE SWITCHER ---------- */
   .profile-row{
-    margin:16px 14px 10px;
-    padding:11px 13px;
+    margin:8px 14px 6px;
+    padding:8px 11px;
     background:var(--panel);
     border:1px solid rgba(127,169,141,.26);
     border-radius:6px;
@@ -124,6 +127,7 @@
     align-items:flex-end;
     gap:10px;
     justify-content:space-between;
+    flex-shrink:0;
   }
   .profile-box{ flex:1; min-width:0; }
   .profile-label{
@@ -149,7 +153,8 @@
     display:grid;
     grid-template-columns:1fr 96px;
     gap:8px;
-    margin:0 14px 16px;
+    margin:0 14px 8px;
+    flex-shrink:0;
   }
   .purpose-box, .currency-box{
     padding:11px 13px;
@@ -177,8 +182,9 @@
   .purpose-input::placeholder{ color:#4d5c5f; font-weight:400; }
 
   /* ---------- SCREENS ---------- */
-  .screen{ display:none; height:calc(100dvh - 164px); overflow-y:auto; padding:0 14px 12px; overscroll-behavior:contain; scrollbar-width:thin; }
-  .screen.active{ display:block; animation:fadein .18s ease; }
+  .screen{ display:none; height:auto; min-height:0; overflow-y:auto; padding:0 14px 78px; overscroll-behavior:contain; scrollbar-width:thin; }
+  .screen.active{ display:block; flex:1; min-height:0; animation:fadein .18s ease; }
+  @media (max-width:480px){ .screen.active{ animation:none; } }
   @keyframes fadein{ from{opacity:0; transform:translateY(3px);} to{opacity:1; transform:none;} }
 
   .panel{
@@ -533,6 +539,11 @@
       <div id="peopleList"></div>
     </div>
 
+  </div>
+
+  <!-- SCREEN 5: CONTRIBUTIONS -->
+  <div class="screen" id="screen5">
+
     <div class="panel accent">
       <div class="panel-title" id="contributionFormTitle">Add Contribution</div>
       <div class="field">
@@ -692,6 +703,10 @@
     <button class="nav-item active" data-target="screen1">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c0-4.1 3.4-6.5 7.5-6.5s7.5 2.4 7.5 6.5"/></svg>
       <span>People</span>
+    </button>
+    <button class="nav-item" data-target="screen5">
+      <svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>
+      <span>Contrib.</span>
     </button>
     <button class="nav-item" data-target="screen2">
       <svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>
