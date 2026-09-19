@@ -112,10 +112,6 @@
           <input id="personLeaveDate" type="date">
         </div>
       </div>
-      <label class="unexpected-leave-option">
-        <input id="personUnexpectedLeave" type="checkbox">
-        <span>Unexpected leave</span>
-      </label>
       <button class="btn" id="addPersonBtn">Add Participant</button>
       <button class="btn btn-secondary" id="cancelPersonEditBtn" style="display:none; margin-top:8px;">Cancel Edit</button>
     </div>
@@ -533,7 +529,6 @@ const currencySelect = document.getElementById("currencySelect");
 const personName = document.getElementById("personName");
 const personJoinDate = document.getElementById("personJoinDate");
 const personLeaveDate = document.getElementById("personLeaveDate");
-const personUnexpectedLeave = document.getElementById("personUnexpectedLeave");
 const addPersonBtn = document.getElementById("addPersonBtn");
 const cancelPersonEditBtn = document.getElementById("cancelPersonEditBtn");
 const personFormTitle = document.getElementById("personFormTitle");
@@ -746,8 +741,7 @@ currencySelect.addEventListener("change", () => {
 addPersonBtn.addEventListener("click", async () => {
   const name = personName.value.trim();
   const joinDate = personJoinDate.value || today();
-  const unexpectedLeave = personUnexpectedLeave.checked;
-  const leaveDate = personLeaveDate.value || (unexpectedLeave ? today() : "");
+  const leaveDate = personLeaveDate.value || "";
   if (!name) { showToast("Enter A Participant Name.", "error"); personName.focus(); return; }
   if (leaveDate && leaveDate < joinDate) { showToast("Leave Date Cannot Be Before Join Date.", "error"); personLeaveDate.focus(); return; }
 
@@ -757,7 +751,6 @@ addPersonBtn.addEventListener("click", async () => {
       person.name = titleCase(name);
       person.joinDate = joinDate;
       person.leaveDate = leaveDate;
-      person.unexpectedLeave = unexpectedLeave;
     }
     clearPersonEdit();
     showToast("Participant Updated.", "success");
@@ -766,7 +759,7 @@ addPersonBtn.addEventListener("click", async () => {
       showToast("This Participant Already Exists.", "error");
       return;
     }
-    people.push({ id: makeId(), name: titleCase(name), joinDate, leaveDate, unexpectedLeave });
+    people.push({ id: makeId(), name: titleCase(name), joinDate, leaveDate });
     personName.value = "";
     showToast("Participant Added.", "success");
   }
@@ -784,7 +777,6 @@ function editPerson(id) {
   personName.value = person.name;
   personJoinDate.value = person.joinDate || today();
   personLeaveDate.value = person.leaveDate || "";
-  personUnexpectedLeave.checked = Boolean(person.unexpectedLeave);
   personFormTitle.textContent = "Edit Participant";
   addPersonBtn.textContent = "Save Changes";
   cancelPersonEditBtn.style.display = "block";
@@ -797,7 +789,6 @@ function clearPersonEdit() {
   personName.value = "";
   personJoinDate.value = today();
   personLeaveDate.value = "";
-  personUnexpectedLeave.checked = false;
   personFormTitle.textContent = "Add Participant";
   addPersonBtn.textContent = "Add Participant";
   cancelPersonEditBtn.style.display = "none";
@@ -1045,7 +1036,7 @@ function renderPeople() {
             <button class="small-btn delete" data-delete-person="${person.id}">Remove</button>
           </div>
         </div>
-        <div class="item-meta">${person.joinDate ? `Active ${formatDate(person.joinDate)}${person.leaveDate ? ` – ${formatDate(person.leaveDate)}` : " – Present"}` : "Dates not recorded"}${person.unexpectedLeave ? ` &nbsp;·&nbsp; <span class="unexpected-badge">Unexpected Leave</span>` : ""}</div>
+        <div class="item-meta">${person.joinDate ? `Active ${formatDate(person.joinDate)}${person.leaveDate ? ` – ${formatDate(person.leaveDate)}` : " – Present"}` : "Dates not recorded"}</div>
         <div class="item-meta">Contributed <span class="mono">${money(contribution)}</span> &nbsp;·&nbsp; Paid Directly <span class="mono">${money(personalPaid)}</span></div>
       </div>`;
   }).join("");
