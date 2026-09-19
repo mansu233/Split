@@ -1,8 +1,10 @@
-const CACHE_NAME = "manskit-split-v3-login";
+const CACHE_NAME = "manskit-split-v4-pwa";
 const APP_SHELL = [
   "./",
   "./index.html",
+  "./styles.css",
   "./manifest.json",
+  "./screenshots/mobile-login.png",
   "./icons/icon-192.png",
   "./icons/icon-512.png"
 ];
