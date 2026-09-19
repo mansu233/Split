@@ -4,457 +4,1640 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0c1416">
-<title>MANSKIT SPLIT</title>
-<style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;padding:0;background:#0c1416;color:#f2f5f5;font-family:Arial,sans-serif;font-size:14px}
-.app{max-width:650px;margin:auto;min-height:100vh;background:#101b1e}
-header{position:sticky;top:0;z-index:20;background:#0c1416;border-bottom:1px solid #26383c;padding:15px}
-.header-title{font-size:20px;font-weight:800;letter-spacing:.5px}.header-sub{font-size:11px;color:#8fa2a6;margin-top:3px}
-main{padding:14px;padding-bottom:40px}.card{background:#152326;border:1px solid #26383c;border-radius:12px;padding:14px;margin-bottom:12px}
-.section-title{font-size:15px;font-weight:700;margin-bottom:12px}label{display:block;color:#9fb0b4;font-size:12px;margin-bottom:5px}
-input,select,button{width:100%;min-height:42px;border-radius:8px;border:1px solid #344b50;background:#0e181a;color:#f4f7f7;padding:9px 11px;font-size:14px;outline:none}
-input:focus,select:focus{border-color:#6f9299}button{background:#dce9ea;color:#0d1719;border:none;font-weight:700;cursor:pointer}button.secondary{background:#25373b;color:#e8eeee}button.danger{background:#4a292d;color:#ffdadd}button.small{width:auto;min-height:34px;padding:6px 10px;font-size:12px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.full{grid-column:1/-1}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
-.muted{color:#91a4a8}.hint{color:#8da0a4;font-size:11px;line-height:1.5;margin-top:7px}.item{background:#0f191b;border:1px solid #2b4044;border-radius:10px;padding:11px;margin-bottom:8px}.item:last-child{margin-bottom:0}
-.item-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.item-name{font-weight:700}.amount{font-weight:700;white-space:nowrap}.meta{color:#91a4a8;font-size:11px;margin-top:5px;line-height:1.5}.actions{display:flex;gap:6px;margin-top:9px}.actions button{flex:0 0 auto}
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stat{background:#0e181a;border:1px solid #293e42;border-radius:9px;padding:11px}.stat-label{font-size:10px;color:#8fa3a7}.stat-value{margin-top:5px;font-size:16px;font-weight:800}
-.breakdown{border-top:1px solid #293e42;padding-top:11px;margin-top:11px}.breakdown:first-child{border-top:none;padding-top:0;margin-top:0}
-.status-receive{color:#bfe8c5;font-weight:700}.status-pay{color:#ffd0d0;font-weight:700}.status-settled{color:#c9d9dc;font-weight:700}
-.badge{display:inline-block;font-size:10px;padding:4px 7px;border-radius:20px;background:#263a3e;color:#b8cacc;margin-top:5px}.badge-left{background:#3b2e30;color:#ffd4d4}.badge-active{background:#263a3e;color:#c5d8dc}
-.empty{color:#7f9296;text-align:center;padding:14px 5px;font-size:12px}.share-box{white-space:pre-wrap;word-break:break-word;background:#0b1315;border:1px solid #293e42;border-radius:9px;padding:12px;font-family:monospace;font-size:12px;line-height:1.55;max-height:500px;overflow:auto}
-.note{background:#1d3034;border-left:3px solid #8da9ae;padding:9px 10px;border-radius:5px;font-size:11px;line-height:1.5;color:#c2d0d2}.warning{background:#3a3020;border-left-color:#c6a56a;color:#eadbbd}.success{background:#1c3223;border-left-color:#7fb38a;color:#cfe7d2}
-hr{border:0;border-top:1px solid #293e42;margin:12px 0}.lock{font-size:11px;color:#b8cacc}.small-gap{margin-top:8px}.hidden{display:none!important}
-@media(max-width:430px){body{font-size:13px}.grid,.stat-grid{grid-template-columns:1fr 1fr}}
-</style>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>MANSKIT — Split</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-<div class="app">
-<header><div class="header-title">MANSKIT SPLIT</div><div class="header-sub">Collection & Settlement</div></header>
-<main>
 
-<div class="card">
-<div class="section-title">Collection</div>
-<div class="grid">
-<div class="full"><label>What Are We Collecting Money For?</label><input id="headline" type="text" placeholder="Example: Manali Trip"></div>
-<div><label>Profile</label><select id="profile"><option value="My Collection">My Collection</option></select></div>
-</div>
-<div style="margin-top:10px"><button onclick="saveCollection()">Save Collection</button></div>
+<section id="loginGate" aria-label="Sign in to MANSKIT Split">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-mark">
+        <img class="brand-logo" src="icons/icon.svg" alt="">
+        <span class="brand">MANSKIT<span class="brand-accent">.</span></span>
+      </div>
+      <div class="login-title">Split</div>
+    </div>
+    <p class="login-note">Sign in to access your private cloud backup and Split ledger.</p>
+    <div class="field">
+      <label>Email Address</label>
+      <input id="gateEmail" type="email" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <div class="password-wrap">
+        <input id="gatePassword" type="password" placeholder="At least 6 characters" autocomplete="current-password">
+        <button type="button" class="show-password-btn" id="gateTogglePasswordBtn">Show</button>
+      </div>
+    </div>
+    <div class="login-actions">
+      <button class="btn" id="gateSignInBtn">Sign In</button>
+      <button class="btn btn-secondary" id="gateSignUpBtn">Create Account</button>
+    </div>
+    <button class="btn btn-secondary guest-action" id="continueGuestBtn">Continue Without Sign In</button>
+    <div class="login-links"><button class="text-btn" id="gateForgotPasswordBtn">Forgot Password?</button></div>
+    <div id="loginGateStatus" class="notice login-status">Your data stays private to your Firebase account.</div>
+  </div>
+</section>
+
+<div class="app" id="appShell">
+
+  <div class="header">
+    <div class="brand-mark">
+      <img class="brand-logo" src="icons/icon.svg" alt="">
+      <span class="brand">MANSKIT<span class="brand-accent">.</span></span>
+    </div>
+    <div class="tagline">Split</div>
+    <div class="app-version">v1.0.0</div>
+    <div class="header-rule"></div>
+  </div>
+
+  <div class="profile-row">
+    <div class="profile-box">
+      <label class="profile-label">Profile</label>
+      <select id="profileSelect" class="profile-select"></select>
+    </div>
+    <div class="profile-actions">
+      <button class="small-btn" id="newProfileBtn">New</button>
+      <button class="small-btn edit" id="renameProfileBtn">Rename</button>
+      <button class="small-btn delete" id="deleteProfileBtn">Delete</button>
+    </div>
+  </div>
+
+  <div class="purpose-row">
+    <div class="purpose-box">
+      <label class="purpose-label">What's This Collection For?</label>
+      <input id="purposeInput" class="purpose-input" type="text" placeholder="E.g. Manali Trip" autocomplete="off">
+    </div>
+    <div class="currency-box">
+      <label class="purpose-label">Currency</label>
+      <select id="currencySelect" class="currency-select">
+        <option value="₹">₹ INR</option>
+        <option value="$">$ USD</option>
+        <option value="€">€ EUR</option>
+        <option value="£">£ GBP</option>
+        <option value="﷼">﷼ SAR</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- SCREEN 1: PARTICIPANTS & CONTRIBUTIONS -->
+  <div class="screen active" id="screen1">
+
+    <div class="panel accent">
+      <div class="panel-title" id="personFormTitle">Add Participant</div>
+      <div class="field">
+        <label>Name</label>
+        <input id="personName" type="text" placeholder="Enter Name" autocomplete="off">
+      </div>
+      <div class="row member-date-row">
+        <div class="field">
+          <label>Join Date</label>
+          <input id="personJoinDate" type="date">
+        </div>
+        <div class="field">
+          <label>Leave Date <span class="optional-label">(optional)</span></label>
+          <input id="personLeaveDate" type="date">
+        </div>
+      </div>
+      <label class="unexpected-leave-option">
+        <input id="personUnexpectedLeave" type="checkbox">
+        <span>Unexpected leave</span>
+      </label>
+      <button class="btn" id="addPersonBtn">Add Participant</button>
+      <button class="btn btn-secondary" id="cancelPersonEditBtn" style="display:none; margin-top:8px;">Cancel Edit</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Participants</div>
+      <div id="peopleList"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Share Report</div>
+      <textarea id="shareText" class="share-text" readonly></textarea>
+      <button class="btn" id="shareBtn">Share Report</button>
+      <button class="btn btn-danger" id="resetBtn">Reset All Data</button>
+    </div>
+
+  </div>
+
+  <!-- SCREEN 5: CONTRIBUTIONS -->
+  <div class="screen" id="screen5">
+
+    <div class="panel accent">
+      <div class="panel-title" id="contributionFormTitle">Add Contribution</div>
+      <div class="field">
+        <label>Participant</label>
+        <select id="contributionPerson"></select>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Amount</label>
+          <input id="contributionAmount" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00">
+        </div>
+        <div class="field">
+          <label>Date</label>
+          <input id="contributionDate" type="date">
+        </div>
+      </div>
+      <button class="btn" id="addContributionBtn">Add Contribution</button>
+      <button class="btn btn-secondary" id="cancelContributionEditBtn" style="display:none; margin-top:8px;">Cancel Edit</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Contribution History</div>
+      <div id="contributionList"></div>
+    </div>
+
+  </div>
+
+  <!-- SCREEN 2: EXPENSES -->
+  <div class="screen" id="screen2">
+
+    <div class="panel accent">
+      <div class="panel-title" id="expenseFormTitle">Log Expense</div>
+      <div class="field">
+        <label>What Was It For?</label>
+        <input id="expenseTitle" type="text" placeholder="E.g. Hotel, Fuel, Dinner" autocomplete="off">
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Amount</label>
+          <input id="expenseAmount" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00">
+        </div>
+        <div class="field">
+          <label>Date</label>
+          <input id="expenseDate" type="date">
+        </div>
+      </div>
+      <div class="field">
+        <label>Paid By</label>
+        <select id="expensePayer">
+          <option value="fund">Common Fund</option>
+        </select>
+      </div>
+      <div class="field expense-participants-field">
+        <label>Included Participants <span class="optional-label">(uncheck anyone excluded)</span></label>
+        <div id="expenseParticipants" class="expense-participants"></div>
+      </div>
+
+      <div id="fundStatus" class="notice"></div>
+
+      <button class="btn" id="addExpenseBtn">Add Expense</button>
+      <button class="btn btn-secondary" id="cancelExpenseEditBtn" style="display:none; margin-top:8px;">Cancel Edit</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Expense History</div>
+      <div id="expenseList"></div>
+    </div>
+
+  </div>
+
+  <!-- SCREEN 3: SETTLEMENT & BACKUP -->
+  <div class="screen" id="screen3">
+
+    <div class="panel">
+      <div class="panel-title">Overview</div>
+      <div class="summary-grid">
+        <div class="summary">
+          <div class="summary-label">Total Contributions</div>
+          <div class="summary-value" id="totalContributions">0.00</div>
+        </div>
+        <div class="summary">
+          <div class="summary-label">Total Expenses</div>
+          <div class="summary-value" id="totalExpenses">0.00</div>
+        </div>
+        <div class="summary">
+          <div class="summary-label">Fund Spent</div>
+          <div class="summary-value" id="fundSpent">0.00</div>
+        </div>
+        <div class="summary">
+          <div class="summary-label">Fund Balance</div>
+          <div class="summary-value" id="fundBalance">0.00</div>
+        </div>
+      </div>
+      <div id="settlementNotice"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Participant Breakdown</div>
+      <div id="balanceList"></div>
+    </div>
+
+    <div class="panel accent">
+      <div class="panel-title">Who Pays Whom</div>
+      <div id="settlementList"></div>
+    </div>
+
+  </div>
+
+  <!-- SCREEN 4: ACCOUNT & BACKUP -->
+  <div class="screen" id="screen4">
+
+    <div class="panel accent">
+      <div class="panel-title">Cloud Account</div>
+      <div class="field" id="authEmailField">
+        <label>Email Address</label>
+        <input id="authEmail" class="auth-email" type="email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field" id="authPasswordField">
+        <label>Password</label>
+        <div class="password-wrap">
+          <input id="authPassword" class="auth-email" type="password" placeholder="At least 6 characters" autocomplete="current-password">
+          <button type="button" class="show-password-btn" id="togglePasswordBtn" aria-label="Show password">Show</button>
+        </div>
+      </div>
+      <div class="auth-actions">
+        <button class="btn" id="signInBtn">Sign In</button>
+        <button class="btn btn-secondary" id="signUpBtn">Create Account</button>
+      </div>
+      <div class="auth-links">
+        <button class="text-btn" id="forgotPasswordBtn">Forgot Password?</button>
+        <button class="text-btn" id="signOutBtn" style="display:none;">Sign Out</button>
+      </div>
+      <div id="authStatus" class="notice">Not signed in — cloud backup is locked.</div>
+    </div>
+
+    <div class="panel accent">
+      <div class="panel-title">Cloud Backup</div>
+      <div id="firebaseStatus" class="notice"></div>
+      <button class="btn" id="cloudBackupBtn" style="margin-top:10px;">Back Up To Cloud</button>
+      <button class="btn btn-secondary" id="cloudRestoreBtn" style="margin-top:8px;">Restore From Cloud</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Offline Copy</div>
+      <button class="btn btn-secondary" id="exportBackupBtn">Export Backup (JSON)</button>
+      <button class="btn btn-secondary" id="importBackupBtn" style="margin-top:8px;">Restore From Backup</button>
+      <input type="file" id="restoreFile" accept=".json">
+    </div>
+
+
+  </div>
+
+  <nav class="nav-bar">
+    <button class="nav-item active" data-target="screen1">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c0-4.1 3.4-6.5 7.5-6.5s7.5 2.4 7.5 6.5"/></svg>
+      <span>People</span>
+    </button>
+    <button class="nav-item" data-target="screen5">
+      <svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>
+      <span>Contrib.</span>
+    </button>
+    <button class="nav-item" data-target="screen2">
+      <svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>
+      <span>Expenses</span>
+    </button>
+    <button class="nav-item" data-target="screen3">
+      <svg viewBox="0 0 24 24"><path d="M4 19V10M11 19V5M18 19v-7"/></svg>
+      <span>Settlement</span>
+    </button>
+    <button class="nav-item" data-target="screen4">
+      <svg viewBox="0 0 24 24"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><path d="M7 9h10M7 13h6"/></svg>
+      <span>Backup</span>
+    </button>
+  </nav>
+
 </div>
 
-<div class="card">
-<div class="section-title">Participants</div>
-<div class="grid">
-<div><label>Name</label><input id="participantName" type="text" placeholder="Participant Name"></div>
-<div><label>Join Date</label><input id="participantJoinDate" type="date"></div>
-<div class="full"><label>Leave Date <span class="muted">(Optional — Can Be Added Later)</span></label><input id="participantLeaveDate" type="date"></div>
-</div>
-<div class="hint">A New Person Can Join At Any Time By Adding Them With Their Actual Join Date. A Leave Date Can Be Added Later. An Expense Includes A Participant Only When: Join Date ≤ Expense Date ≤ Leave Date. If Leave Date Is Blank, The Participant Remains Active.</div>
-<div style="margin-top:10px"><button id="participantSaveBtn" onclick="addParticipant()">Add Participant</button></div>
-<div id="participantCancelWrap" class="hidden" style="margin-top:8px"><button class="secondary" onclick="cancelParticipantEdit()">Cancel Edit</button></div>
-<div id="participantsList" style="margin-top:12px"></div>
-</div>
+<div class="toast-stack" id="toastStack"></div>
 
-<div class="card">
-<div class="section-title">Contributions</div>
-<div class="grid">
-<div><label>Participant</label><select id="contributionParticipant"></select></div>
-<div><label>Amount</label><input id="contributionAmount" type="number" min="0" step="0.01" placeholder="100"></div>
-<div class="full"><label>Contribution Date</label><input id="contributionDate" type="date"></div>
-</div>
-<div style="margin-top:10px"><button onclick="addContribution()">Add Contribution</button></div>
-<div class="hint">A Participant Can Contribute Any Number Of Times. Existing Contribution Logs Cannot Be Directly Deleted.</div>
-<div id="contributionsList" style="margin-top:12px"></div>
-</div>
-
-<div class="card">
-<div class="section-title">Expenses</div>
-<div class="grid">
-<div><label>Expense Name</label><input id="expenseName" type="text" placeholder="Food"></div>
-<div><label>Amount</label><input id="expenseAmount" type="number" min="0" step="0.01" placeholder="100"></div>
-<div><label>Expense Date</label><input id="expenseDate" type="date"></div>
-<div><label>Paid By</label><select id="expensePaidBy"><option value="common">From Advance / Common Fund</option></select></div>
-</div>
-<div style="margin-top:10px"><button onclick="addExpense()">Add Expense</button></div>
-<div class="hint">The Expense Date Controls Who Shares The Expense. Existing Expense Logs Cannot Be Directly Deleted.</div>
-<div id="expensesList" style="margin-top:12px"></div>
-</div>
-
-<div class="card">
-<div class="section-title">Security</div>
-<div id="securityStatus" class="note"></div>
-<div style="margin-top:10px" class="grid">
-<div><label>Security PIN</label><input id="securityPin" type="password" inputmode="numeric" maxlength="8" placeholder="4–8 Digits"></div>
-<div><label>Confirm PIN</label><input id="securityPinConfirm" type="password" inputmode="numeric" maxlength="8" placeholder="Repeat PIN"></div>
-</div>
-<div class="hint">The PIN Protects Participant Corrections And Financial Log Corrections. There Is No Normal Delete Button For Historical Contributions Or Expenses.</div>
-<div style="margin-top:10px"><button class="secondary" onclick="setSecurityPin()">Set / Change PIN</button></div>
-</div>
-
-<div class="card">
-<div class="section-title">Summary</div>
-<div id="calculationWarnings"></div>
-<div class="stat-grid">
-<div class="stat"><div class="stat-label">Total Contributions</div><div class="stat-value" id="totalContributions">₹0.00</div></div>
-<div class="stat"><div class="stat-label">Total Expenses</div><div class="stat-value" id="totalExpenses">₹0.00</div></div>
-<div class="stat"><div class="stat-label">Fund Spent</div><div class="stat-value" id="fundSpent">₹0.00</div></div>
-<div class="stat"><div class="stat-label">Fund Balance</div><div class="stat-value" id="fundBalance">₹0.00</div></div>
-</div>
-</div>
-
-<div class="card">
-<div class="section-title">Participant Breakdown</div>
-<div id="breakdown"></div>
-</div>
-
-<div class="card">
-<div class="section-title">Settlement</div>
-<div id="settlement"></div>
-</div>
-
-<div class="card">
-<div class="section-title">Share Summary</div>
-<div id="shareText" class="share-box"></div>
-<div style="margin-top:10px" class="row"><button onclick="copySummary()">Copy Summary</button><button class="secondary" onclick="shareSummary()">Share</button></div>
-</div>
-
-</main>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-card">
+    <div class="modal-title" id="modalTitle">Confirm</div>
+    <div class="modal-message" id="modalMessage"></div>
+    <input type="text" id="modalPromptInput" class="modal-input" style="display:none;" placeholder="Enter A Name">
+    <div class="modal-actions">
+      <button class="btn-secondary" id="modalCancelBtn" style="flex:1; border-radius:6px; min-height:44px; cursor:pointer;">Cancel</button>
+      <button class="btn" id="modalConfirmBtn" style="flex:1;">Confirm</button>
+    </div>
+  </div>
 </div>
 
 <script>
-/* =========================================================
-   MANSKIT SPLIT — DATE-BASED PARTICIPATION + PROTECTED LOGS
-   ========================================================= */
-const STORAGE_KEY = "manskit_split_data_v2";
-const OLD_STORAGE_KEY = "manskit_split_data";
-let data = {headline:"", profile:"My Collection", participants:[], contributions:[], expenses:[], security:{pinHash:""}};
-let participantEditId = null;
+"use strict";
 
-function moneyCents(cents){return "₹"+(Number(cents||0)/100).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});}
-function toCents(value){const n=Number(value);return Number.isFinite(n)&&n>0?Math.round(n*100):0;}
-function dateText(date){if(!date)return "Not Set";const p=date.split("-");return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:date;}
-function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
-function escapeHtml(text){return String(text??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
-function uid(prefix="id"){return prefix+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
-function participantById(id){return data.participants.find(p=>p.id===id);}
+const STORAGE_KEY = "manskit_split_profiles_v1";
 
-function saveData(){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}
-function loadData(){
-  let saved=localStorage.getItem(STORAGE_KEY);
-  if(!saved) saved=localStorage.getItem(OLD_STORAGE_KEY);
-  if(!saved) return;
-  try{
-    const parsed=JSON.parse(saved);
-    if(parsed&&typeof parsed==="object"){
-      data={
-        headline:parsed.headline||"",
-        profile:parsed.profile||"My Collection",
-        participants:Array.isArray(parsed.participants)?parsed.participants:[],
-        contributions:Array.isArray(parsed.contributions)?parsed.contributions:[],
-        expenses:Array.isArray(parsed.expenses)?parsed.expenses:[],
-        security:parsed.security&&typeof parsed.security==="object"?parsed.security:{pinHash:""}
-      };
-      data.participants=data.participants.map(p=>({id:p.id||uid("p"),name:p.name||"",joinDate:p.joinDate||today(),leaveDate:p.leaveDate||""}));
-      data.contributions=data.contributions.map(c=>({id:c.id||uid("c"),participantId:c.participantId,amount:Number(c.amount||0),date:c.date||today(),createdAt:c.createdAt||Date.now()}));
-      data.expenses=data.expenses.map(e=>({id:e.id||uid("e"),name:e.name||"Expense",amount:Number(e.amount||0),date:e.date||today(),paidBy:e.paidBy||"common",createdAt:e.createdAt||Date.now()}));
+let profiles = [];
+let activeProfileId = null;
+
+let people = [];
+let contributions = [];
+let expenses = [];
+let purpose = "";
+let currency = "₹";
+
+let editingPersonId = null;
+let editingContributionId = null;
+let editingExpenseId = null;
+let selectedExpenseParticipantIds = null;
+
+/* ---------------- STORAGE (persistent, per-user) ---------------- */
+function loadActiveProfileIntoGlobals() {
+  let profile = profiles.find(p => p.id === activeProfileId);
+  if (!profile) profile = profiles[0];
+  activeProfileId = profile.id;
+  purpose = profile.purpose || "";
+  currency = profile.currency || "₹";
+  people = Array.isArray(profile.people) ? profile.people : [];
+  contributions = Array.isArray(profile.contributions) ? profile.contributions : [];
+  expenses = Array.isArray(profile.expenses) ? profile.expenses : [];
+}
+
+function syncGlobalsIntoActiveProfile() {
+  const profile = profiles.find(p => p.id === activeProfileId);
+  if (!profile) return;
+  profile.purpose = purpose;
+  profile.currency = currency;
+  profile.people = people;
+  profile.contributions = contributions;
+  profile.expenses = expenses;
+}
+
+async function loadAll() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (Array.isArray(data.profiles) && data.profiles.length > 0) {
+        profiles = data.profiles;
+        activeProfileId = data.activeProfileId || profiles[0].id;
+      }
     }
-  }catch(e){console.error(e);}
-}
-
-/* ---------- Security ---------- */
-function simpleHash(text){
-  let h=2166136261;
-  for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619);}
-  return (h>>>0).toString(16);
-}
-function hasPin(){return !!(data.security&&data.security.pinHash);}
-function setSecurityPin(){
-  const pin=document.getElementById("securityPin").value.trim();
-  const confirmPin=document.getElementById("securityPinConfirm").value.trim();
-  if(!/^\d{4,8}$/.test(pin)){alert("PIN Must Be 4 To 8 Digits.");return;}
-  if(pin!==confirmPin){alert("PIN Confirmation Does Not Match.");return;}
-  data.security={pinHash:simpleHash(pin)};saveData();
-  document.getElementById("securityPin").value="";document.getElementById("securityPinConfirm").value="";
-  renderSecurity();alert("Security PIN Saved.");
-}
-function verifyPin(){
-  if(!hasPin()){alert("Set A Security PIN First.");return false;}
-  const pin=prompt("Enter Security PIN To Continue:");
-  if(pin===null)return false;
-  if(simpleHash(pin.trim())!==data.security.pinHash){alert("Incorrect Security PIN.");return false;}
-  return true;
-}
-function renderSecurity(){
-  document.getElementById("securityStatus").innerHTML=hasPin()?"🔐 <strong>Protected:</strong> Security PIN Is Active. Historical Financial Logs Cannot Be Directly Deleted.":"🔓 <strong>PIN Not Set:</strong> Set A Security PIN Before Making Participant Corrections.";
-}
-
-/* ---------- Collection ---------- */
-function saveCollection(){
-  data.headline=document.getElementById("headline").value.trim();
-  data.profile=document.getElementById("profile").value;
-  saveData();renderAll();
-}
-
-/* ---------- Participants ---------- */
-function addParticipant(){
-  const name=document.getElementById("participantName").value.trim();
-  const joinDate=document.getElementById("participantJoinDate").value;
-  const leaveDate=document.getElementById("participantLeaveDate").value;
-  if(!name){alert("Please Enter Participant Name.");return;}
-  if(!joinDate){alert("Please Select Join Date.");return;}
-  if(leaveDate&&leaveDate<joinDate){alert("Leave Date Cannot Be Before Join Date.");return;}
-
-  if(participantEditId){
-    if(!verifyPin())return;
-    const p=participantById(participantEditId);if(!p)return;
-    p.name=name;p.joinDate=joinDate;p.leaveDate=leaveDate||"";
-    participantEditId=null;
-    document.getElementById("participantSaveBtn").textContent="Add Participant";
-    document.getElementById("participantCancelWrap").classList.add("hidden");
-  }else{
-    data.participants.push({id:uid("p"),name,joinDate,leaveDate:leaveDate||"",createdAt:Date.now()});
+  } catch (error) {
+    // No saved ledger yet — start fresh.
   }
-  saveData();
-  document.getElementById("participantName").value="";
-  document.getElementById("participantJoinDate").value=today();
-  document.getElementById("participantLeaveDate").value="";
-  renderAll();
+  if (profiles.length === 0) {
+    const fresh = { id: makeId(), name: "My Collection", purpose: "", currency: "₹", people: [], contributions: [], expenses: [] };
+    profiles = [fresh];
+    activeProfileId = fresh.id;
+  }
+  loadActiveProfileIntoGlobals();
 }
-function editParticipant(id){
-  if(!verifyPin())return;
-  const p=participantById(id);if(!p)return;
-  participantEditId=id;
-  document.getElementById("participantName").value=p.name;
-  document.getElementById("participantJoinDate").value=p.joinDate||"";
-  document.getElementById("participantLeaveDate").value=p.leaveDate||"";
-  document.getElementById("participantSaveBtn").textContent="Update Participant";
-  document.getElementById("participantCancelWrap").classList.remove("hidden");
-  document.getElementById("participantName").scrollIntoView({behavior:"smooth",block:"center"});
+
+async function saveAll() {
+  syncGlobalsIntoActiveProfile();
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ activeProfileId, profiles }));
+  } catch (error) {
+    showToast("Could Not Save — Your Last Change May Not Persist.", "error");
+  }
 }
-function cancelParticipantEdit(){
-  participantEditId=null;
-  document.getElementById("participantName").value="";
-  document.getElementById("participantJoinDate").value=today();
-  document.getElementById("participantLeaveDate").value="";
-  document.getElementById("participantSaveBtn").textContent="Add Participant";
-  document.getElementById("participantCancelWrap").classList.add("hidden");
+
+async function clearAllStorage() {
+  try { localStorage.removeItem(STORAGE_KEY); } catch (error) { /* nothing to clear */ }
 }
-function participantActiveOnDate(p,date){
-  if(!p||!date||!p.joinDate)return false;
-  if(date<p.joinDate)return false;
-  if(p.leaveDate&&date>p.leaveDate)return false;
+
+/* ---------------- HELPERS ---------------- */
+function makeId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+
+function today() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function money(value) {
+  const number = Number(value) || 0;
+  return currency + number.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function escapeHTML(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function titleCase(text) {
+  return String(text || "").trim().toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function liveTitleCase(text) {
+  return String(text || "").toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function applyLiveTitleCase(inputEl) {
+  const pos = inputEl.selectionStart;
+  const transformed = liveTitleCase(inputEl.value);
+  if (transformed !== inputEl.value) {
+    inputEl.value = transformed;
+    inputEl.setSelectionRange(pos, pos);
+  }
+}
+
+function formatDate(dateString) {
+  if (!dateString) return "No Date Recorded";
+  const parts = dateString.split("-");
+  if (parts.length !== 3) return dateString;
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+
+/* ---------------- TOASTS ---------------- */
+function showToast(message, type = "info") {
+  const stack = document.getElementById("toastStack");
+  const toast = document.createElement("div");
+  toast.className = "toast " + type;
+  toast.textContent = message;
+  stack.appendChild(toast);
+  setTimeout(() => {
+    toast.style.transition = "opacity .2s ease";
+    toast.style.opacity = "0";
+    setTimeout(() => toast.remove(), 200);
+  }, 3200);
+}
+
+/* ---------------- MODAL (confirm / prompt dialog) ---------------- */
+const modalOverlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalMessage = document.getElementById("modalMessage");
+const modalPromptInput = document.getElementById("modalPromptInput");
+const modalCancelBtn = document.getElementById("modalCancelBtn");
+const modalConfirmBtn = document.getElementById("modalConfirmBtn");
+let modalResolve = null;
+let modalIsPrompt = false;
+
+function showConfirm(message, title = "Please Confirm", confirmLabel = "Confirm") {
+  modalIsPrompt = false;
+  modalPromptInput.style.display = "none";
+  modalTitle.textContent = title;
+  modalMessage.textContent = message;
+  modalConfirmBtn.textContent = confirmLabel;
+  modalOverlay.classList.add("open");
+  return new Promise(resolve => { modalResolve = resolve; });
+}
+
+function showPrompt(message, title = "Enter A Name", defaultValue = "", confirmLabel = "Save", placeholder = "Enter A Name") {
+  modalIsPrompt = true;
+  modalPromptInput.style.display = "block";
+  modalPromptInput.value = defaultValue;
+  modalPromptInput.placeholder = placeholder;
+  modalTitle.textContent = title;
+  modalMessage.textContent = message;
+  modalConfirmBtn.textContent = confirmLabel;
+  modalOverlay.classList.add("open");
+  setTimeout(() => { modalPromptInput.focus(); modalPromptInput.select(); }, 60);
+  return new Promise(resolve => { modalResolve = resolve; });
+}
+
+function closeModal(result) {
+  modalOverlay.classList.remove("open");
+  if (modalResolve) {
+    if (modalIsPrompt) modalResolve(result ? modalPromptInput.value.trim() : null);
+    else modalResolve(result);
+    modalResolve = null;
+  }
+}
+
+modalCancelBtn.addEventListener("click", () => closeModal(false));
+modalConfirmBtn.addEventListener("click", () => closeModal(true));
+modalOverlay.addEventListener("click", e => { if (e.target === modalOverlay) closeModal(false); });
+modalPromptInput.addEventListener("keydown", e => { if (e.key === "Enter") closeModal(true); });
+
+/* ---------------- NAVIGATION ---------------- */
+document.querySelectorAll(".nav-item").forEach(button => {
+  button.addEventListener("click", () => {
+    const target = button.dataset.target;
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+    document.getElementById(target).classList.add("active");
+    button.classList.add("active");
+    window.scrollTo(0, 0);
+  });
+});
+
+/* ---------------- DOM REFERENCES ---------------- */
+const profileSelect = document.getElementById("profileSelect");
+const newProfileBtn = document.getElementById("newProfileBtn");
+const renameProfileBtn = document.getElementById("renameProfileBtn");
+const deleteProfileBtn = document.getElementById("deleteProfileBtn");
+
+const purposeInput = document.getElementById("purposeInput");
+const currencySelect = document.getElementById("currencySelect");
+
+const personName = document.getElementById("personName");
+const personJoinDate = document.getElementById("personJoinDate");
+const personLeaveDate = document.getElementById("personLeaveDate");
+const personUnexpectedLeave = document.getElementById("personUnexpectedLeave");
+const addPersonBtn = document.getElementById("addPersonBtn");
+const cancelPersonEditBtn = document.getElementById("cancelPersonEditBtn");
+const personFormTitle = document.getElementById("personFormTitle");
+const peopleList = document.getElementById("peopleList");
+
+const contributionPerson = document.getElementById("contributionPerson");
+const contributionAmount = document.getElementById("contributionAmount");
+const contributionDate = document.getElementById("contributionDate");
+const addContributionBtn = document.getElementById("addContributionBtn");
+const cancelContributionEditBtn = document.getElementById("cancelContributionEditBtn");
+const contributionFormTitle = document.getElementById("contributionFormTitle");
+const contributionList = document.getElementById("contributionList");
+
+const expenseTitle = document.getElementById("expenseTitle");
+const expenseAmount = document.getElementById("expenseAmount");
+const expenseDate = document.getElementById("expenseDate");
+const expensePayer = document.getElementById("expensePayer");
+const expenseParticipants = document.getElementById("expenseParticipants");
+const addExpenseBtn = document.getElementById("addExpenseBtn");
+const cancelExpenseEditBtn = document.getElementById("cancelExpenseEditBtn");
+const expenseFormTitle = document.getElementById("expenseFormTitle");
+const expenseList = document.getElementById("expenseList");
+
+const fundStatus = document.getElementById("fundStatus");
+const totalContributionsEl = document.getElementById("totalContributions");
+const totalExpensesEl = document.getElementById("totalExpenses");
+const fundSpentEl = document.getElementById("fundSpent");
+const fundBalanceEl = document.getElementById("fundBalance");
+const balanceList = document.getElementById("balanceList");
+const settlementList = document.getElementById("settlementList");
+const settlementNotice = document.getElementById("settlementNotice");
+const shareText = document.getElementById("shareText");
+const shareBtn = document.getElementById("shareBtn");
+const resetBtn = document.getElementById("resetBtn");
+
+const exportBackupBtn = document.getElementById("exportBackupBtn");
+const importBackupBtn = document.getElementById("importBackupBtn");
+const restoreFile = document.getElementById("restoreFile");
+
+const firebaseStatus = document.getElementById("firebaseStatus");
+const cloudBackupBtn = document.getElementById("cloudBackupBtn");
+const cloudRestoreBtn = document.getElementById("cloudRestoreBtn");
+const authEmailInput = document.getElementById("authEmail");
+const authPasswordInput = document.getElementById("authPassword");
+const togglePasswordBtn = document.getElementById("togglePasswordBtn");
+const loginGate = document.getElementById("loginGate");
+const appShell = document.getElementById("appShell");
+const gateEmailInput = document.getElementById("gateEmail");
+const gatePasswordInput = document.getElementById("gatePassword");
+const gateTogglePasswordBtn = document.getElementById("gateTogglePasswordBtn");
+const gateSignInBtn = document.getElementById("gateSignInBtn");
+const gateSignUpBtn = document.getElementById("gateSignUpBtn");
+const continueGuestBtn = document.getElementById("continueGuestBtn");
+const gateForgotPasswordBtn = document.getElementById("gateForgotPasswordBtn");
+const loginGateStatus = document.getElementById("loginGateStatus");
+const authEmailField = document.getElementById("authEmailField");
+const authPasswordField = document.getElementById("authPasswordField");
+const signInBtn = document.getElementById("signInBtn");
+const signUpBtn = document.getElementById("signUpBtn");
+const forgotPasswordBtn = document.getElementById("forgotPasswordBtn");
+const signOutBtn = document.getElementById("signOutBtn");
+const authStatus = document.getElementById("authStatus");
+
+togglePasswordBtn.addEventListener("click", () => {
+  const showing = authPasswordInput.type === "text";
+  authPasswordInput.type = showing ? "password" : "text";
+  togglePasswordBtn.textContent = showing ? "Show" : "Hide";
+  togglePasswordBtn.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+});
+gateTogglePasswordBtn.addEventListener("click", () => {
+  const showing = gatePasswordInput.type === "text";
+  gatePasswordInput.type = showing ? "password" : "text";
+  gateTogglePasswordBtn.textContent = showing ? "Show" : "Hide";
+});
+continueGuestBtn.addEventListener("click", () => {
+  currentUser = null;
+  guestMode = true;
+  loginGate.style.display = "none";
+  appShell.style.display = "block";
+  renderAuthStatus();
+  renderFirebaseStatus();
+  showToast("Guest mode enabled. Cloud backup requires sign in.", "info");
+});
+
+function renderAuthStatus() {
+  const signedIn = !!currentUser;
+  const appAccess = signedIn || guestMode;
+  loginGate.style.display = appAccess ? "none" : "flex";
+  appShell.style.display = appAccess ? "flex" : "none";
+  if (!appAccess) loginGateStatus.textContent = "Your data stays private to your Firebase account.";
+  authStatus.className = "notice" + (signedIn ? " good" : "");
+  authStatus.innerHTML = signedIn
+    ? `Signed in as <strong>${escapeHTML(currentUser.email || "your account")}</strong>`
+    : "Guest mode — local data only. Sign in to enable cloud backup.";
+  authEmailField.style.display = "block";
+  authPasswordField.style.display = signedIn ? "none" : "block";
+  signInBtn.style.display = signedIn ? "none" : "block";
+  signUpBtn.style.display = signedIn ? "none" : "block";
+  forgotPasswordBtn.style.display = "block";
+  if (signedIn) authEmailInput.value = currentUser.email || "";
+  signOutBtn.style.display = signedIn ? "block" : "none";
+  cloudBackupBtn.disabled = !signedIn;
+  cloudRestoreBtn.disabled = !signedIn;
+}
+
+/* ---------------- LIVE CAPITALIZATION ---------------- */
+[personName, expenseTitle, modalPromptInput].forEach(el => {
+  el.addEventListener("input", () => applyLiveTitleCase(el));
+});
+
+/* ---------------- PROFILES ---------------- */
+function renderProfileSelect() {
+  profileSelect.innerHTML = "";
+  profiles.forEach(profile => {
+    const option = document.createElement("option");
+    option.value = profile.id;
+    option.textContent = profile.name;
+    profileSelect.appendChild(option);
+  });
+  profileSelect.value = activeProfileId;
+}
+
+profileSelect.addEventListener("change", async () => {
+  await saveAll();
+  activeProfileId = profileSelect.value;
+  loadActiveProfileIntoGlobals();
+  clearPersonEdit();
+  clearContributionEdit();
+  clearExpenseEdit();
+  purposeInput.value = purpose;
+  currencySelect.value = currency;
+  updateAll();
+});
+
+newProfileBtn.addEventListener("click", async () => {
+  const raw = await showPrompt("Name One Or More Collections, Separated By Commas.", "New Profile", "", "Create", "E.g. Goa Trip, Flat Rent");
+  if (!raw) return;
+  const names = raw.split(",").map(n => n.trim()).filter(Boolean);
+  if (names.length === 0) return;
+  await saveAll();
+  let lastCreated = null;
+  names.forEach(name => {
+    const fresh = { id: makeId(), name: titleCase(name), purpose: "", currency: "₹", people: [], contributions: [], expenses: [] };
+    profiles.push(fresh);
+    lastCreated = fresh;
+  });
+  activeProfileId = lastCreated.id;
+  loadActiveProfileIntoGlobals();
+  clearPersonEdit(); clearContributionEdit(); clearExpenseEdit();
+  purposeInput.value = purpose;
+  currencySelect.value = currency;
+  await saveAll();
+  updateAll();
+  showToast(names.length > 1 ? `${names.length} Profiles Created.` : "Profile Created.", "success");
+});
+
+renameProfileBtn.addEventListener("click", async () => {
+  const profile = profiles.find(p => p.id === activeProfileId);
+  if (!profile) return;
+  const name = await showPrompt("Rename This Collection.", "Rename Profile", profile.name, "Save");
+  if (!name) return;
+  profile.name = titleCase(name);
+  await saveAll();
+  renderProfileSelect();
+  showToast("Profile Renamed.", "success");
+});
+
+deleteProfileBtn.addEventListener("click", async () => {
+  if (profiles.length <= 1) {
+    showToast("Keep At Least One Profile.", "error");
+    return;
+  }
+  const profile = profiles.find(p => p.id === activeProfileId);
+  if (!profile) return;
+  const ok = await showConfirm(`This Permanently Deletes "${profile.name}" And Everything In It.`, "Delete Profile", "Delete");
+  if (!ok) return;
+  profiles = profiles.filter(p => p.id !== activeProfileId);
+  activeProfileId = profiles[0].id;
+  loadActiveProfileIntoGlobals();
+  clearPersonEdit(); clearContributionEdit(); clearExpenseEdit();
+  purposeInput.value = purpose;
+  currencySelect.value = currency;
+  await saveAll();
+  updateAll();
+  showToast("Profile Deleted.", "success");
+});
+
+purposeInput.addEventListener("input", () => {
+  applyLiveTitleCase(purposeInput);
+  purpose = purposeInput.value;
+  saveAll();
+  updateShareText();
+});
+
+purposeInput.addEventListener("blur", () => {
+  const capitalized = titleCase(purposeInput.value);
+  purposeInput.value = capitalized;
+  purpose = capitalized;
+  saveAll();
+  updateShareText();
+});
+
+currencySelect.addEventListener("change", () => {
+  currency = currencySelect.value;
+  saveAll();
+  updateAll();
+});
+
+/* ---------------- PARTICIPANTS ---------------- */
+addPersonBtn.addEventListener("click", async () => {
+  const name = personName.value.trim();
+  const joinDate = personJoinDate.value || today();
+  const unexpectedLeave = personUnexpectedLeave.checked;
+  const leaveDate = personLeaveDate.value || (unexpectedLeave ? today() : "");
+  if (!name) { showToast("Enter A Participant Name.", "error"); personName.focus(); return; }
+  if (leaveDate && leaveDate < joinDate) { showToast("Leave Date Cannot Be Before Join Date.", "error"); personLeaveDate.focus(); return; }
+
+  if (editingPersonId) {
+    const person = people.find(p => p.id === editingPersonId);
+    if (person) {
+      person.name = titleCase(name);
+      person.joinDate = joinDate;
+      person.leaveDate = leaveDate;
+      person.unexpectedLeave = unexpectedLeave;
+    }
+    clearPersonEdit();
+    showToast("Participant Updated.", "success");
+  } else {
+    if (people.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+      showToast("This Participant Already Exists.", "error");
+      return;
+    }
+    people.push({ id: makeId(), name: titleCase(name), joinDate, leaveDate, unexpectedLeave });
+    personName.value = "";
+    showToast("Participant Added.", "success");
+  }
+  await saveAll();
+  updateAll();
+  contributionPerson.value = "";
+  contributionAmount.value = "";
+  contributionDate.value = today();
+});
+
+function editPerson(id) {
+  const person = people.find(p => p.id === id);
+  if (!person) return;
+  editingPersonId = id;
+  personName.value = person.name;
+  personJoinDate.value = person.joinDate || today();
+  personLeaveDate.value = person.leaveDate || "";
+  personUnexpectedLeave.checked = Boolean(person.unexpectedLeave);
+  personFormTitle.textContent = "Edit Participant";
+  addPersonBtn.textContent = "Save Changes";
+  cancelPersonEditBtn.style.display = "block";
+  personName.focus();
+}
+
+cancelPersonEditBtn.addEventListener("click", clearPersonEdit);
+function clearPersonEdit() {
+  editingPersonId = null;
+  personName.value = "";
+  personJoinDate.value = today();
+  personLeaveDate.value = "";
+  personUnexpectedLeave.checked = false;
+  personFormTitle.textContent = "Add Participant";
+  addPersonBtn.textContent = "Add Participant";
+  cancelPersonEditBtn.style.display = "none";
+}
+
+async function deletePerson(id) {
+  const person = people.find(p => p.id === id);
+  if (!person) return;
+  if (contributions.some(c => c.personId === id) || expenses.some(e => e.payerType === "person" && e.payerId === id)) {
+    showToast("Remove This Participant's Contributions And Expenses First.", "error");
+    return;
+  }
+  const ok = await showConfirm(`This Removes ${person.name} From The Ledger.`, "Remove Participant", "Remove");
+  if (!ok) return;
+  people = people.filter(p => p.id !== id);
+  await saveAll();
+  updateAll();
+  showToast("Participant Removed.", "success");
+}
+
+/* ---------------- CONTRIBUTIONS ---------------- */
+addContributionBtn.addEventListener("click", async () => {
+  if (people.length === 0) { showToast("Add Participants First.", "error"); return; }
+  const personId = contributionPerson.value;
+  const amount = Number(contributionAmount.value);
+  const date = contributionDate.value;
+
+  if (!personId) { showToast("Select A Participant.", "error"); return; }
+  if (!amount || amount <= 0) { showToast("Enter A Valid Amount.", "error"); return; }
+  if (!date) { showToast("Select A Date.", "error"); return; }
+
+  if (editingContributionId) {
+    const contribution = contributions.find(c => c.id === editingContributionId);
+    if (contribution) { contribution.personId = personId; contribution.amount = amount; contribution.date = date; }
+    clearContributionEdit();
+    showToast("Contribution Updated.", "success");
+  } else {
+    contributions.push({ id: makeId(), personId, amount, date });
+    contributionAmount.value = "";
+    contributionDate.value = today();
+    showToast("Contribution Recorded.", "success");
+  }
+  await saveAll();
+  updateAll();
+});
+
+function editContribution(id) {
+  const contribution = contributions.find(c => c.id === id);
+  if (!contribution) return;
+  editingContributionId = id;
+  contributionPerson.value = contribution.personId;
+  contributionAmount.value = contribution.amount;
+  contributionDate.value = contribution.date || today();
+  contributionFormTitle.textContent = "Edit Contribution";
+  addContributionBtn.textContent = "Save Changes";
+  cancelContributionEditBtn.style.display = "block";
+}
+
+cancelContributionEditBtn.addEventListener("click", clearContributionEdit);
+function clearContributionEdit() {
+  editingContributionId = null;
+  contributionAmount.value = "";
+  contributionDate.value = today();
+  contributionFormTitle.textContent = "Add Contribution";
+  addContributionBtn.textContent = "Add Contribution";
+  cancelContributionEditBtn.style.display = "none";
+}
+
+async function deleteContribution(id) {
+  const ok = await showConfirm("This Contribution Will Be Permanently Removed.", "Delete Contribution", "Delete");
+  if (!ok) return;
+  contributions = contributions.filter(c => c.id !== id);
+  await saveAll();
+  updateAll();
+  showToast("Contribution Deleted.", "success");
+}
+
+/* ---------------- EXPENSES ---------------- */
+function renderExpenseParticipantList() {
+  if (people.length === 0) {
+    expenseParticipants.innerHTML = `<div class="empty">Add Participants First.</div>`;
+    return;
+  }
+  const date = expenseDate.value || today();
+  const defaultIds = people.filter(person => isPersonActiveOnDate(person, date)).map(person => person.id);
+  const includedIds = Array.isArray(selectedExpenseParticipantIds)
+    ? selectedExpenseParticipantIds
+    : defaultIds;
+  expenseParticipants.innerHTML = people.map(person => {
+    const checked = includedIds.includes(person.id) ? " checked" : "";
+    const active = isPersonActiveOnDate(person, date);
+    return `<label class="expense-participant-option">
+      <input type="checkbox" value="${person.id}"${checked}>
+      <span>${escapeHTML(person.name)}${active ? "" : " (outside dates)"}</span>
+    </label>`;
+  }).join("");
+}
+
+expenseDate.addEventListener("change", () => {
+  if (!editingExpenseId) selectedExpenseParticipantIds = null;
+  renderExpenseParticipantList();
+});
+
+addExpenseBtn.addEventListener("click", async () => {
+  const title = expenseTitle.value.trim();
+  const amount = Number(expenseAmount.value);
+  const date = expenseDate.value;
+  const payer = expensePayer.value;
+  const participantIds = [...expenseParticipants.querySelectorAll("input:checked")].map(input => input.value);
+
+  if (!title) { showToast("Describe What The Expense Was For.", "error"); return; }
+  if (!amount || amount <= 0) { showToast("Enter A Valid Amount.", "error"); return; }
+  if (!date) { showToast("Select A Date.", "error"); return; }
+  if (!payer) { showToast("Select Who Paid.", "error"); return; }
+  if (participantIds.length === 0) { showToast("Include At Least One Participant.", "error"); return; }
+
+  let payerType = "fund", payerId = null;
+  if (payer.startsWith("person:")) { payerType = "person"; payerId = payer.replace("person:", ""); }
+
+  if (payerType === "fund") {
+    let currentFund = calculateFundBalance();
+    if (editingExpenseId) {
+      const oldExp = expenses.find(e => e.id === editingExpenseId);
+      if (oldExp && oldExp.payerType === "fund") currentFund += Number(oldExp.amount);
+    }
+    if (amount > currentFund + 0.000001) {
+      showToast(`Common Fund Only Has ${money(currentFund)} Available.`, "error");
+      return;
+    }
+  }
+
+  if (editingExpenseId) {
+    const expense = expenses.find(e => e.id === editingExpenseId);
+    if (expense) {
+      expense.title = titleCase(title); expense.amount = amount; expense.date = date;
+      expense.payerType = payerType; expense.payerId = payerId;
+      expense.participantIds = participantIds;
+    }
+    clearExpenseEdit();
+    showToast("Expense Updated.", "success");
+  } else {
+    expenses.push({ id: makeId(), title: titleCase(title), amount, date, payerType, payerId, participantIds });
+    selectedExpenseParticipantIds = null;
+    expenseTitle.value = ""; expenseAmount.value = ""; expenseDate.value = today(); expensePayer.value = "fund";
+    showToast("Expense Logged.", "success");
+  }
+  await saveAll();
+  updateAll();
+});
+
+function editExpense(id) {
+  const expense = expenses.find(e => e.id === id);
+  if (!expense) return;
+  editingExpenseId = id;
+  expenseTitle.value = expense.title;
+  expenseAmount.value = expense.amount;
+  expenseDate.value = expense.date || today();
+  expensePayer.value = expense.payerType === "person" ? "person:" + expense.payerId : "fund";
+  selectedExpenseParticipantIds = Array.isArray(expense.participantIds) ? [...expense.participantIds] : null;
+  renderExpenseParticipantList();
+  expenseFormTitle.textContent = "Edit Expense";
+  addExpenseBtn.textContent = "Save Changes";
+  cancelExpenseEditBtn.style.display = "block";
+}
+
+cancelExpenseEditBtn.addEventListener("click", clearExpenseEdit);
+function clearExpenseEdit() {
+  editingExpenseId = null;
+  selectedExpenseParticipantIds = null;
+  expenseTitle.value = ""; expenseAmount.value = ""; expenseDate.value = today(); expensePayer.value = "fund";
+  renderExpenseParticipantList();
+  expenseFormTitle.textContent = "Log Expense";
+  addExpenseBtn.textContent = "Add Expense";
+  cancelExpenseEditBtn.style.display = "none";
+}
+
+async function deleteExpense(id) {
+  const ok = await showConfirm("This Expense Will Be Permanently Removed.", "Delete Expense", "Delete");
+  if (!ok) return;
+  expenses = expenses.filter(e => e.id !== id);
+  await saveAll();
+  updateAll();
+  showToast("Expense Deleted.", "success");
+}
+
+/* ---------------- CALCULATIONS ---------------- */
+function getTotalContributions() { return contributions.reduce((t, c) => t + Number(c.amount || 0), 0); }
+function getFundSpent() { return expenses.filter(e => e.payerType === "fund").reduce((t, e) => t + Number(e.amount || 0), 0); }
+function getPersonalPaid(personId) { return expenses.filter(e => e.payerType === "person" && e.payerId === personId).reduce((t, e) => t + Number(e.amount || 0), 0); }
+function getPersonContribution(personId) { return contributions.filter(c => c.personId === personId).reduce((t, c) => t + Number(c.amount || 0), 0); }
+function calculateFundBalance() { return getTotalContributions() - getFundSpent(); }
+function getTotalExpenses() { return expenses.reduce((t, e) => t + Number(e.amount || 0), 0); }
+
+/* ---------------- RENDERING ---------------- */
+function renderParticipantSelect() {
+  const currentValue = contributionPerson.value;
+  contributionPerson.innerHTML = "";
+  if (people.length === 0) {
+    const option = document.createElement("option");
+    option.value = ""; option.textContent = "Add Participants First";
+    contributionPerson.appendChild(option);
+    return;
+  }
+  const placeholder = document.createElement("option");
+  placeholder.value = ""; placeholder.textContent = "Select Participant";
+  placeholder.disabled = true;
+  contributionPerson.appendChild(placeholder);
+  people.forEach(person => {
+    const option = document.createElement("option");
+    option.value = person.id; option.textContent = person.name;
+    contributionPerson.appendChild(option);
+  });
+  if (people.some(p => p.id === currentValue)) contributionPerson.value = currentValue;
+}
+
+function renderPayerSelect() {
+  const currentValue = expensePayer.value || "fund";
+  expensePayer.innerHTML = "";
+  const fundOption = document.createElement("option");
+  fundOption.value = "fund"; fundOption.textContent = "Common Fund";
+  expensePayer.appendChild(fundOption);
+  people.forEach(person => {
+    const option = document.createElement("option");
+    option.value = "person:" + person.id; option.textContent = person.name;
+    expensePayer.appendChild(option);
+  });
+  const exists = Array.from(expensePayer.options).some(o => o.value === currentValue);
+  expensePayer.value = exists ? currentValue : "fund";
+}
+
+function renderPeople() {
+  if (people.length === 0) {
+    peopleList.innerHTML = `<div class="empty">No Participants Yet — Add The First One Above.</div>`;
+    return;
+  }
+  peopleList.innerHTML = people.map(person => {
+    const contribution = getPersonContribution(person.id);
+    const personalPaid = getPersonalPaid(person.id);
+    return `
+      <div class="person">
+        <div class="item-top">
+          <div class="item-name">${escapeHTML(person.name)}</div>
+          <div class="action-group">
+            <button class="small-btn edit" data-edit-person="${person.id}">Edit</button>
+            <button class="small-btn delete" data-delete-person="${person.id}">Remove</button>
+          </div>
+        </div>
+        <div class="item-meta">${person.joinDate ? `Active ${formatDate(person.joinDate)}${person.leaveDate ? ` – ${formatDate(person.leaveDate)}` : " – Present"}` : "Dates not recorded"}${person.unexpectedLeave ? ` &nbsp;·&nbsp; <span class="unexpected-badge">Unexpected Leave</span>` : ""}</div>
+        <div class="item-meta">Contributed <span class="mono">${money(contribution)}</span> &nbsp;·&nbsp; Paid Directly <span class="mono">${money(personalPaid)}</span></div>
+      </div>`;
+  }).join("");
+
+  peopleList.querySelectorAll("[data-edit-person]").forEach(b => b.addEventListener("click", () => editPerson(b.dataset.editPerson)));
+  peopleList.querySelectorAll("[data-delete-person]").forEach(b => b.addEventListener("click", () => deletePerson(b.dataset.deletePerson)));
+}
+
+function renderContributions() {
+  if (contributions.length === 0) {
+    contributionList.innerHTML = `<div class="empty">No Contributions Recorded Yet.</div>`;
+    return;
+  }
+  const sorted = [...contributions].sort((a, b) => (!a.date ? 1 : !b.date ? -1 : b.date.localeCompare(a.date)));
+  contributionList.innerHTML = sorted.map(c => {
+    const person = people.find(p => p.id === c.personId);
+    const name = person ? person.name : "Unknown Participant";
+    return `
+      <div class="transaction">
+        <div class="item-top">
+          <div class="item-name">${escapeHTML(name)}</div>
+          <div class="amount pos">${money(c.amount)}</div>
+        </div>
+        <div class="item-meta">${formatDate(c.date)}</div>
+        <div class="action-group">
+          <button class="small-btn edit" data-edit-contribution="${c.id}">Edit</button>
+          <button class="small-btn delete" data-delete-contribution="${c.id}">Delete</button>
+        </div>
+      </div>`;
+  }).join("");
+
+  contributionList.querySelectorAll("[data-edit-contribution]").forEach(b => b.addEventListener("click", () => editContribution(b.dataset.editContribution)));
+  contributionList.querySelectorAll("[data-delete-contribution]").forEach(b => b.addEventListener("click", () => deleteContribution(b.dataset.deleteContribution)));
+}
+
+function renderExpenses() {
+  if (expenses.length === 0) {
+    expenseList.innerHTML = `<div class="empty">No Expenses Logged Yet.</div>`;
+    return;
+  }
+  const sorted = [...expenses].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+  expenseList.innerHTML = sorted.map(e => {
+    let payerName = "Common Fund";
+    if (e.payerType === "person") {
+      const person = people.find(p => p.id === e.payerId);
+      payerName = person ? person.name : "Unknown Participant";
+    }
+    return `
+      <div class="expense">
+        <div class="item-top">
+          <div class="item-name">${escapeHTML(e.title)}</div>
+          <div class="amount neg">${money(e.amount)}</div>
+        </div>
+        <div class="item-meta">${formatDate(e.date)} &nbsp;·&nbsp; Paid By ${escapeHTML(payerName)}</div>
+        ${Array.isArray(e.participantIds) ? `<div class="item-meta">Included: ${e.participantIds.map(id => people.find(p => p.id === id)?.name).filter(Boolean).map(escapeHTML).join(", ") || "None"}</div>` : ""}
+        <div class="action-group">
+          <button class="small-btn edit" data-edit-expense="${e.id}">Edit</button>
+          <button class="small-btn delete" data-delete-expense="${e.id}">Delete</button>
+        </div>
+      </div>`;
+  }).join("");
+
+  expenseList.querySelectorAll("[data-edit-expense]").forEach(b => b.addEventListener("click", () => editExpense(b.dataset.editExpense)));
+  expenseList.querySelectorAll("[data-delete-expense]").forEach(b => b.addEventListener("click", () => deleteExpense(b.dataset.deleteExpense)));
+}
+
+function isPersonActiveOnDate(person, expenseDate) {
+  // Older records have no dates; keep them active for backward compatibility.
+  if (!expenseDate || !person.joinDate) return true;
+  if (expenseDate < person.joinDate) return false;
+  if (person.leaveDate && expenseDate > person.leaveDate) return false;
   return true;
 }
-function markParticipantLeft(id){
-  if(!verifyPin())return;
-  const p=participantById(id);if(!p)return;
-  const chosen=prompt(`Leave Date For ${p.name} (YYYY-MM-DD):`,p.leaveDate||today());
-  if(chosen===null)return;
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(chosen)){alert("Please Enter A Valid Date In YYYY-MM-DD Format.");return;}
-  if(chosen<p.joinDate){alert("Leave Date Cannot Be Before Join Date.");return;}
-  p.leaveDate=chosen;saveData();renderAll();
-}
-function reopenParticipant(id){
-  if(!verifyPin())return;
-  const p=participantById(id);if(!p)return;
-  p.leaveDate="";saveData();renderAll();
-}
 
-/* ---------- Contributions ---------- */
-function addContribution(){
-  const participantId=document.getElementById("contributionParticipant").value;
-  const amount=toCents(document.getElementById("contributionAmount").value);
-  const date=document.getElementById("contributionDate").value;
-  const p=participantById(participantId);
-  if(!p){alert("Please Add A Participant First.");return;}
-  if(amount<=0){alert("Please Enter A Valid Contribution Amount.");return;}
-  if(!date){alert("Please Select Contribution Date.");return;}
-  if(!participantActiveOnDate(p,date)){alert(`${p.name} Was Not An Active Participant On ${dateText(date)}.`);return;}
-  data.contributions.push({id:uid("c"),participantId,amount:amount/100,date,createdAt:Date.now()});
-  saveData();document.getElementById("contributionAmount").value="";document.getElementById("contributionDate").value=today();renderAll();
+function calculateDateAwareShares() {
+  const shares = new Map(people.map(person => [person.id, 0]));
+  expenses.forEach(expense => {
+    const amount = Number(expense.amount || 0);
+    if (!amount) return;
+    let activePeople = Array.isArray(expense.participantIds)
+      ? people.filter(person => expense.participantIds.includes(person.id))
+      : people.filter(person => isPersonActiveOnDate(person, expense.date));
+    // If an old or malformed expense has no matching active members, do not lose it.
+    if (activePeople.length === 0) activePeople = people;
+    if (activePeople.length === 0) return;
+    const share = amount / activePeople.length;
+    activePeople.forEach(person => shares.set(person.id, (shares.get(person.id) || 0) + share));
+  });
+  return shares;
 }
 
-/* ---------- Expenses ---------- */
-function addExpense(){
-  const name=document.getElementById("expenseName").value.trim();
-  const amount=toCents(document.getElementById("expenseAmount").value);
-  const date=document.getElementById("expenseDate").value;
-  const paidBy=document.getElementById("expensePaidBy").value;
-  if(!name){alert("Please Enter Expense Name.");return;}
-  if(amount<=0){alert("Please Enter A Valid Expense Amount.");return;}
-  if(!date){alert("Please Select Expense Date.");return;}
-  if(paidBy!=="common"&&!participantById(paidBy)){alert("Selected Payer Is No Longer Available.");return;}
-  data.expenses.push({id:uid("e"),name,amount:amount/100,date,paidBy,createdAt:Date.now()});
-  saveData();document.getElementById("expenseName").value="";document.getElementById("expenseAmount").value="";document.getElementById("expenseDate").value=today();document.getElementById("expensePaidBy").value="common";renderAll();
+function calculateBalances() {
+  if (people.length === 0) return [];
+  const shares = calculateDateAwareShares();
+  return people.map(person => {
+    const contribution = getPersonContribution(person.id);
+    const personalPaid = getPersonalPaid(person.id);
+    const totalPaid = contribution + personalPaid;
+    const share = shares.get(person.id) || 0;
+    return { personId: person.id, name: person.name, contribution, personalPaid, totalPaid, share, balance: totalPaid - share };
+  });
 }
 
-/* ---------- Protected logs: NO DELETE ---------- */
-function requestLogCorrection(type,id){
-  if(!verifyPin())return;
-  alert("Historical Financial Logs Are Protected From Direct Deletion. A Correction Workflow Can Be Added Here Without Destroying The Original Log.");
+function calculateFundAction() {
+  const fundB = calculateFundBalance();
+  if (Math.abs(fundB) <= 0.005 || people.length === 0) return [];
+  const amount = Math.abs(fundB);
+  const totalC = getTotalContributions();
+  if (totalC <= 0.005) {
+    const evenShare = amount / people.length;
+    return people.map(p => ({ name: p.name, amount: evenShare }));
+  }
+  return people
+    .map(p => ({ name: p.name, amount: (getPersonContribution(p.id) / totalC) * amount }))
+    .filter(entry => entry.amount > 0.005);
 }
 
-/* ---------- Exact rounding ---------- */
-function balanceRounded(rawValues,targetInteger){
-  const base=rawValues.map(v=>Math.floor(v));
-  let diff=Math.round(targetInteger-base.reduce((a,b)=>a+b,0));
-  const order=rawValues.map((v,i)=>({i,frac:v-Math.floor(v),value:v})).sort((a,b)=>b.frac-a.frac||b.value-a.value||a.i-b.i);
-  for(let k=0;k<diff;k++){base[order[k%order.length].i]++;}
-  return base;
+function createSettlementTransactions() {
+  const balances = calculateBalances();
+  const fundBal = calculateFundBalance();
+  if (Math.abs(fundBal) > 0.005) return [];
+
+  const debtors = balances.filter(b => b.balance < -0.005).map(b => ({ ...b, amount: Math.abs(b.balance) })).sort((a, b) => b.amount - a.amount);
+  const creditors = balances.filter(b => b.balance > 0.005).map(b => ({ ...b, amount: b.balance })).sort((a, b) => b.amount - a.amount);
+
+  const transactions = [];
+  let i = 0, j = 0;
+  while (i < debtors.length && j < creditors.length) {
+    const amount = Math.min(debtors[i].amount, creditors[j].amount);
+    transactions.push({ from: debtors[i].name, to: creditors[j].name, amount });
+    debtors[i].amount -= amount; creditors[j].amount -= amount;
+    if (debtors[i].amount <= 0.005) i++;
+    if (creditors[j].amount <= 0.005) j++;
+  }
+  return transactions;
 }
 
-/* ---------- Calculation engine ---------- */
-function calculate(){
-  const n=data.participants.length;
-  const ids=data.participants.map(p=>p.id);
-  const contributionCents={};const directPaidCents={};const commonShareRaw={};const directShareRaw={};const fairShareRaw={};
-  ids.forEach(id=>{contributionCents[id]=0;directPaidCents[id]=0;commonShareRaw[id]=0;directShareRaw[id]=0;fairShareRaw[id]=0;});
+function renderSettlement() {
+  const totalC = getTotalContributions();
+  const totalE = getTotalExpenses();
+  const fundS = getFundSpent();
+  const fundB = calculateFundBalance();
 
-  let totalContributions=0,totalExpenses=0,commonFundExpenses=0,directExpenses=0,allocatedCommon=0,allocatedDirect=0;
-  data.contributions.forEach(c=>{const cents=toCents(c.amount);totalContributions+=cents;if(contributionCents[c.participantId]!==undefined)contributionCents[c.participantId]+=cents;});
-  data.expenses.forEach(e=>{
-    const cents=toCents(e.amount);totalExpenses+=cents;
-    if(e.paidBy==="common")commonFundExpenses+=cents;else{directExpenses+=cents;if(directPaidCents[e.paidBy]!==undefined)directPaidCents[e.paidBy]+=cents;}
-    const active=data.participants.filter(p=>participantActiveOnDate(p,e.date));
-    if(!active.length)return;
-    const each=cents/active.length;
-    active.forEach(p=>{fairShareRaw[p.id]+=each;if(e.paidBy==="common")commonShareRaw[p.id]+=each;else directShareRaw[p.id]+=each;});
-    if(e.paidBy==="common")allocatedCommon+=cents;else allocatedDirect+=cents;
+  totalContributionsEl.textContent = money(totalC);
+  totalExpensesEl.textContent = money(totalE);
+  fundSpentEl.textContent = money(fundS);
+  fundBalanceEl.textContent = money(fundB);
+
+  if (Math.abs(fundB) <= 0.005) {
+    fundStatus.className = "notice";
+    fundStatus.innerHTML = `Common Fund Available: <strong>${money(0)}</strong>`;
+  } else if (fundB > 0) {
+    fundStatus.className = "notice";
+    fundStatus.innerHTML = `Common Fund Available: <strong>${money(fundB)}</strong>`;
+  } else {
+    fundStatus.className = "notice warning";
+    fundStatus.innerHTML = `Common Fund Is Overdrawn By <strong>${money(Math.abs(fundB))}</strong>`;
+  }
+
+  const balances = calculateBalances();
+  if (balances.length === 0) {
+    balanceList.innerHTML = `<div class="empty">Add Participants To See The Breakdown.</div>`;
+  } else {
+    balanceList.innerHTML = balances.map(b => {
+      let statusHTML;
+      if (b.balance > 0.005) statusHTML = `<strong class="receive">Receives ${money(Math.abs(b.balance))}</strong>`;
+      else if (b.balance < -0.005) statusHTML = `<strong class="pay">Pays ${money(Math.abs(b.balance))}</strong>`;
+      else statusHTML = `<span class="settled-tag">Settled</span>`;
+      return `
+        <div class="balance">
+          <div class="balance-main">
+            <span class="item-name">${escapeHTML(b.name)}</span>
+            ${statusHTML}
+          </div>
+          <div class="item-meta">Fair Share <span class="mono">${money(b.share)}</span> &nbsp;·&nbsp; Contributed <span class="mono">${money(b.contribution)}</span> &nbsp;·&nbsp; Paid Directly <span class="mono">${money(b.personalPaid)}</span></div>
+        </div>`;
+    }).join("");
+  }
+
+  const transactions = createSettlementTransactions();
+  if (people.length < 2) {
+    settlementList.innerHTML = `<div class="empty">Add At Least Two Participants To Calculate A Settlement.</div>`;
+  } else if (Math.abs(fundB) > 0.005) {
+    const fundAction = calculateFundAction();
+    const verb = fundB > 0 ? "Return" : "Collect";
+    const reason = fundB > 0
+      ? `The Common Fund Has <strong>${money(fundB)}</strong> Left Over. Return It By Each Person's Contribution Share Before The Final Settlement.`
+      : `The Common Fund Is Short By <strong>${money(Math.abs(fundB))}</strong>. Collect It By Each Person's Contribution Share Before The Final Settlement.`;
+    settlementList.innerHTML = `
+      <div class="notice warning">${reason}</div>
+      <div class="settlement-box">
+        ${fundAction.map(entry => `
+          <div class="balance">
+            <div class="balance-main">
+              <span class="item-name">${verb} ${escapeHTML(entry.name)}</span>
+              <strong class="mono" style="color:var(--paper)">${money(entry.amount)}</strong>
+            </div>
+          </div>`).join("")}
+      </div>`;
+  } else if (transactions.length === 0) {
+    settlementList.innerHTML = `<div class="empty">Everyone Is Settled — No Payments Needed.</div>`;
+  } else {
+    settlementList.innerHTML = `
+      <div class="settlement-box">
+        ${transactions.map(t => `
+          <div class="balance">
+            <div class="balance-main">
+              <span class="item-name">${escapeHTML(t.from)} Pays ${escapeHTML(t.to)}</span>
+              <strong class="mono" style="color:var(--paper)">${money(t.amount)}</strong>
+            </div>
+          </div>`).join("")}
+      </div>`;
+  }
+
+  if (people.length > 0 && totalE > 0) {
+    if (Math.abs(fundB) > 0.005) {
+      settlementNotice.innerHTML = `<div class="notice warning">There's Still Money In The Common Fund. Use It For Remaining Expenses Or Return It Before Final Settlement.</div>`;
+    } else {
+      settlementNotice.innerHTML = `<div class="notice good">The Common Fund Has Been Fully Used. Personal Expenses And Contributions Are Included Below.</div>`;
+    }
+  } else {
+    settlementNotice.innerHTML = "";
+  }
+}
+
+/* ---------------- CLOUD ACCOUNT + BACKUP (FIREBASE AUTH + REALTIME DATABASE) ---------------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyCtAv-26Sg-L4DQNd02_hBa47tvrny8pSU",
+  authDomain: "manskit-23d9f.firebaseapp.com",
+  databaseURL: "https://manskit-23d9f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "manskit-23d9f",
+  storageBucket: "manskit-23d9f.firebasestorage.app",
+  messagingSenderId: "504036502314",
+  appId: "1:504036502314:web:87f06fe37d9d5488a3cc53"
+};
+
+const CLOUD_PATH = "manskit_split_backups";
+let fbApp = null;
+let fbDb = null;
+let fbAuth = null;
+let fbSdkLoaded = false;
+let currentUser = null;
+let guestMode = false;
+
+function normalizeAuthEmail(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function renderFirebaseStatus() {
+  const signedIn = !!currentUser;
+  firebaseStatus.className = "notice" + (signedIn ? " good" : "");
+  firebaseStatus.innerHTML = signedIn
+    ? "Ready — your backup is private to this signed-in account."
+    : "Sign in above to enable private cloud backup.";
+}
+function loadScriptOnce(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
+    const script = document.createElement("script"); script.src = src;
+    script.onload = () => resolve(); script.onerror = () => reject(new Error("Failed to load Firebase SDK"));
+    document.head.appendChild(script);
+  });
+}
+async function ensureFirebaseReady(requireAuth = true) {
+  try {
+    if (!fbSdkLoaded || !window.firebase || !firebase.database) {
+      await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
+      await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js");
+      await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js");
+      fbSdkLoaded = true;
+    }
+    if (!fbApp) fbApp = firebase.apps.length ? firebase.apps[0] : firebase.initializeApp(firebaseConfig);
+    fbAuth = firebase.auth();
+    await fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    fbDb = firebase.database();
+    if (!fbDb) throw new Error("Firebase Realtime Database SDK is unavailable");
+    if (!currentUser && fbAuth.currentUser) {
+      currentUser = fbAuth.currentUser;
+      renderAuthStatus();
+      renderFirebaseStatus();
+    }
+    if (requireAuth && !currentUser) { showToast("Sign in before using cloud backup.", "error"); return false; }
+    return true;
+  } catch (error) { showToast("Couldn't connect to Firebase. Check your internet connection.", "error"); return false; }
+}
+function userCloudRef() { return fbDb.ref(`${CLOUD_PATH}/${currentUser.uid}/default`); }
+
+gateSignInBtn.addEventListener("click", async () => {
+  const email = normalizeAuthEmail(gateEmailInput.value), password = gatePasswordInput.value;
+  if (!email || !password) { loginGateStatus.textContent = "Enter your email and password."; return; }
+  if (!(await ensureFirebaseReady(false))) return;
+  try {
+    const credential = await fbAuth.signInWithEmailAndPassword(email, password);
+    currentUser = credential.user;
+    authEmailInput.value = email;
+    renderAuthStatus(); renderFirebaseStatus();
+    showToast("Signed in successfully.", "success");
+  } catch (error) {
+    loginGateStatus.textContent = ["auth/invalid-credential", "auth/user-not-found", "auth/wrong-password"].includes(error.code)
+      ? "Email or password is incorrect."
+      : (error.message || "Sign in failed.");
+  }
+});
+gateSignUpBtn.addEventListener("click", async () => {
+  const email = normalizeAuthEmail(gateEmailInput.value), password = gatePasswordInput.value;
+  if (!email || password.length < 6) { loginGateStatus.textContent = "Use a valid email and a password of at least 6 characters."; return; }
+  if (!(await ensureFirebaseReady(false))) return;
+  try {
+    const credential = await fbAuth.createUserWithEmailAndPassword(email, password);
+    currentUser = credential.user;
+    authEmailInput.value = email;
+    renderAuthStatus(); renderFirebaseStatus();
+    showToast("Account created and signed in.", "success");
+  } catch (error) { loginGateStatus.textContent = error.message || "Account creation failed."; }
+});
+gateForgotPasswordBtn.addEventListener("click", async () => {
+  const email = normalizeAuthEmail(gateEmailInput.value);
+  if (!email) { loginGateStatus.textContent = "Enter your email address first."; gateEmailInput.focus(); return; }
+  if (!(await ensureFirebaseReady(false))) return;
+  try { await fbAuth.sendPasswordResetEmail(email); loginGateStatus.textContent = "Password reset email sent."; }
+  catch (error) { loginGateStatus.textContent = "Couldn't send the reset email. Check the email address."; }
+});
+
+signInBtn.addEventListener("click", async () => {
+  const email = normalizeAuthEmail(authEmailInput.value), password = authPasswordInput.value;
+  if (!email || !password) { showToast("Enter your email and password.", "error"); return; }
+  if (!(await ensureFirebaseReady(false))) return;
+  try {
+    const credential = await fbAuth.signInWithEmailAndPassword(email, password);
+    currentUser = credential.user;
+    renderAuthStatus();
+    renderFirebaseStatus();
+    showToast("Signed in successfully.", "success");
+  }
+  catch (error) {
+    const known = ["auth/invalid-credential", "auth/user-not-found", "auth/wrong-password"];
+    showToast(known.includes(error.code) ? "Email or password is incorrect. Confirm this account exists in the same Firebase project." : (error.message || "Sign in failed."), "error");
+  }
+});
+signUpBtn.addEventListener("click", async () => {
+  const email = normalizeAuthEmail(authEmailInput.value), password = authPasswordInput.value;
+  if (!email || password.length < 6) { showToast("Use a valid email and a password of at least 6 characters.", "error"); return; }
+  if (!(await ensureFirebaseReady(false))) return;
+  try {
+    const credential = await fbAuth.createUserWithEmailAndPassword(email, password);
+    currentUser = credential.user;
+    renderAuthStatus();
+    renderFirebaseStatus();
+    showToast("Account created and signed in.", "success");
+  }
+  catch (error) { showToast(error.code === "auth/email-already-in-use" ? "That email already has an account. Sign in instead." : (error.message || "Account creation failed."), "error"); }
+});
+forgotPasswordBtn.addEventListener("click", async () => {
+  const email = normalizeAuthEmail(authEmailInput.value);
+  if (!email) { showToast("Enter your email address first.", "error"); authEmailInput.focus(); return; }
+  if (!(await ensureFirebaseReady(false))) return;
+  try { await fbAuth.sendPasswordResetEmail(email); showToast("Password reset email sent.", "success"); }
+  catch (error) { showToast("Couldn't send the reset email. Check the address and Firebase email settings.", "error"); }
+});
+signOutBtn.addEventListener("click", async () => {
+  try {
+    await fbAuth.signOut();
+    currentUser = null;
+    gatePasswordInput.value = "";
+    renderAuthStatus();
+    renderFirebaseStatus();
+    showToast("Signed out.", "success");
+  } catch (error) { showToast("Couldn't sign out.", "error"); }
+});
+cloudBackupBtn.addEventListener("click", async () => {
+  if (!(await ensureFirebaseReady())) return;
+  try { syncGlobalsIntoActiveProfile(); await userCloudRef().set({ version: "v7", activeProfileId, profiles, updatedAt: new Date().toISOString() }); showToast("Backed up privately to the cloud.", "success"); }
+  catch (error) { showToast("Cloud backup failed. Check Firebase Realtime Database rules.", "error"); }
+});
+cloudRestoreBtn.addEventListener("click", async () => {
+  if (!(await ensureFirebaseReady())) return;
+  try {
+    const snapshot = await userCloudRef().once("value");
+    if (!snapshot.exists()) { showToast("No cloud backup found for this account.", "error"); return; }
+    if (!(await showConfirm("Restoring will replace all current data with this cloud backup.", "Restore From Cloud", "Restore"))) return;
+    const data = snapshot.val();
+    if (!Array.isArray(data.profiles) || !data.profiles.length) { showToast("That cloud backup looks invalid.", "error"); return; }
+    profiles = data.profiles; activeProfileId = data.activeProfileId || profiles[0].id;
+    loadActiveProfileIntoGlobals(); purposeInput.value = purpose; currencySelect.value = currency;
+    clearPersonEdit(); clearContributionEdit(); clearExpenseEdit(); await saveAll(); updateAll();
+    showToast("Restored from the cloud.", "success");
+  } catch (error) { showToast("Cloud restore failed. Check Firebase Realtime Database rules.", "error"); }
+});
+
+/* ---------------- BACKUP & RESTORE (LOCAL) ---------------- */
+exportBackupBtn.addEventListener("click", () => {
+  syncGlobalsIntoActiveProfile();
+  const data = { version: "v6", activeProfileId, profiles, exportedAt: new Date().toISOString() };
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+  const a = document.createElement("a");
+  a.setAttribute("href", dataStr);
+  a.setAttribute("download", `manskit-backup-${today()}.json`);
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  showToast("Backup Downloaded.", "success");
+});
+
+importBackupBtn.addEventListener("click", () => restoreFile.click());
+
+restoreFile.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async (event) => {
+    try {
+      const backup = JSON.parse(event.target.result);
+      let restoredProfiles = null;
+      let restoredActiveId = null;
+
+      if (Array.isArray(backup.profiles) && backup.profiles.length > 0) {
+        restoredProfiles = backup.profiles;
+        restoredActiveId = backup.activeProfileId || restoredProfiles[0].id;
+      } else if (Array.isArray(backup.people)) {
+        const wrapped = {
+          id: makeId(), name: "Restored Collection",
+          purpose: backup.purpose || "", currency: backup.currency || "₹",
+          people: backup.people || [], contributions: backup.contributions || [], expenses: backup.expenses || []
+        };
+        restoredProfiles = [wrapped];
+        restoredActiveId = wrapped.id;
+      } else {
+        showToast("That File Isn't A Valid MANSKIT Backup.", "error");
+        return;
+      }
+
+      const ok = await showConfirm("Restoring Will Replace All Current Data With This Backup.", "Restore From Backup", "Restore");
+      if (!ok) return;
+
+      profiles = restoredProfiles;
+      activeProfileId = restoredActiveId;
+      loadActiveProfileIntoGlobals();
+      purposeInput.value = purpose;
+      currencySelect.value = currency;
+      clearPersonEdit(); clearContributionEdit(); clearExpenseEdit();
+      await saveAll();
+      updateAll();
+      showToast("Data Restored.", "success");
+    } catch (err) {
+      showToast("Couldn't Read That Backup File.", "error");
+    }
+  };
+  reader.readAsText(file);
+  restoreFile.value = "";
+});
+
+/* ---------------- SHARE REPORT ---------------- */
+function buildShareReport() {
+  const totalC = getTotalContributions();
+  const totalE = getTotalExpenses();
+  const fundS = getFundSpent();
+  const fundB = calculateFundBalance();
+  const balances = calculateBalances();
+  const transactions = createSettlementTransactions();
+  const profile = profiles.find(p => p.id === activeProfileId);
+
+  let text = "MANSKIT SPLIT\n==============================\n";
+  text += purpose.trim() ? `${purpose.trim().toUpperCase()}\n==============================\n\n` : "\n";
+  text += `Profile: ${profile ? profile.name : "My Collection"}\n`;
+  text += "\n";
+
+  text += "Participants\n------------------------------\n";
+  text += people.length === 0 ? "No Participants\n" : people.map((p, i) => `${i + 1}. ${p.name}`).join("\n") + "\n";
+  text += "\n";
+
+  text += "Contributions\n------------------------------\n";
+  if (contributions.length === 0) text += "No Contributions\n";
+  else contributions.forEach(c => {
+    const person = people.find(p => p.id === c.personId);
+    text += `${person ? person.name : "Unknown"} — ${money(c.amount)} — ${formatDate(c.date)}\n`;
+  });
+  text += "\n";
+
+  text += "Expenses\n------------------------------\n";
+  if (expenses.length === 0) text += "No Expenses\n";
+  else expenses.forEach(e => {
+    let payer = "Common Fund";
+    if (e.payerType === "person") { const person = people.find(p => p.id === e.payerId); payer = person ? person.name : "Unknown"; }
+    text += `${e.title} — ${money(e.amount)}\nDate: ${formatDate(e.date)}\nPaid By: ${payer}\n\n`;
   });
 
-  const commonRounded=balanceRounded(ids.map(id=>commonShareRaw[id]),allocatedCommon);
-  const directRounded=balanceRounded(ids.map(id=>directShareRaw[id]),allocatedDirect);
-  const fairRounded=ids.map((id,i)=>commonRounded[i]+directRounded[i]);
-  const commonPositionRaw=ids.map(id=>contributionCents[id]-commonShareRaw[id]);
-  const directPositionRaw=ids.map(id=>directPaidCents[id]-directShareRaw[id]);
-  const fundBalance=totalContributions-commonFundExpenses;
-  const allAllocated=(allocatedCommon===commonFundExpenses&&allocatedDirect===directExpenses);
-  const commonPositionRounded=allAllocated?balanceRounded(commonPositionRaw,fundBalance):commonPositionRaw.map(v=>Math.round(v));
-  const directPositionRounded=allAllocated?balanceRounded(directPositionRaw,0):directPositionRaw.map(v=>Math.round(v));
-  const netRaw=ids.map((id,i)=>commonPositionRaw[i]+directPositionRaw[i]);
-  const netRounded=allAllocated?balanceRounded(netRaw,fundBalance):netRaw.map(v=>Math.round(v));
+  text += "Summary\n------------------------------\n";
+  text += `Total Contributions: ${money(totalC)}\nTotal Expenses: ${money(totalE)}\nFund Spent: ${money(fundS)}\nFund Balance: ${money(fundB)}\n\n`;
 
-  const warnings=[];
-  data.expenses.forEach(e=>{if(!data.participants.some(p=>participantActiveOnDate(p,e.date)))warnings.push(`${e.name} On ${dateText(e.date)} Has No Active Participants And Is Not Included In Anyone's Fair Share.`);});
-  return {ids,totalContributions,totalExpenses,commonFundExpenses,directExpenses,allocatedCommon,allocatedDirect,fundBalance,contributionCents,directPaidCents,commonShareRaw,directShareRaw,fairShareRaw,commonRounded,directRounded,fairRounded,commonPositionRounded,directPositionRounded,netRaw,netRounded,warnings,allAllocated};
-}
+  text += "Participant Breakdown\n------------------------------\n";
+  balances.forEach(b => {
+    const status = b.balance > 0.005 ? `Receives ${money(b.balance)}` : b.balance < -0.005 ? `Pays ${money(Math.abs(b.balance))}` : "Settled";
+    text += `${b.name}: ${status}\nShare: ${money(b.share)}\nContributions: ${money(b.contribution)}\nPaid Directly: ${money(b.personalPaid)}\n\n`;
+  });
 
-/* ---------- Render participants ---------- */
-function renderParticipants(){
-  const box=document.getElementById("participantsList");
-  if(!data.participants.length){box.innerHTML='<div class="empty">No Participants Added.</div>';return;}
-  box.innerHTML=data.participants.map((p,i)=>{
-    const left=!!p.leaveDate;
-    return `<div class="item"><div class="item-top"><div><div class="item-name">${i+1}. ${escapeHtml(p.name)}</div><div class="meta">Join Date: ${dateText(p.joinDate)}<br>${left?`Leave Date: ${dateText(p.leaveDate)}`:"Leave Date: Still Active"}</div><span class="badge ${left?"badge-left":"badge-active"}">${left?"Left":"Active"}</span></div></div><div class="actions"><button class="small secondary" onclick="editParticipant('${p.id}')">Edit Dates</button>${left?`<button class="small secondary" onclick="reopenParticipant('${p.id}')">Reopen</button>`:`<button class="small" onclick="markParticipantLeft('${p.id}')">Mark As Left</button>`}</div><div class="hint">Participant History Is Kept. There Is No Delete Participant Button.</div></div>`;
-  }).join("");
-}
-
-function renderContributions(){
-  const box=document.getElementById("contributionsList");
-  if(!data.contributions.length){box.innerHTML='<div class="empty">No Contributions Added.</div>';return;}
-  box.innerHTML=[...data.contributions].sort((a,b)=>a.date.localeCompare(b.date)||a.createdAt-b.createdAt).map(c=>{const p=participantById(c.participantId);return `<div class="item"><div class="item-top"><div><div class="item-name">${escapeHtml(p?p.name:"Unknown Participant")}</div><div class="meta">Contribution Date: ${dateText(c.date)}</div></div><div class="amount">${moneyCents(toCents(c.amount))}</div></div><div class="actions"><button class="small secondary" onclick="requestLogCorrection('contribution','${c.id}')">🔐 Correction</button></div></div>`;}).join("");
-}
-function renderExpenses(){
-  const box=document.getElementById("expensesList");
-  if(!data.expenses.length){box.innerHTML='<div class="empty">No Expenses Added.</div>';return;}
-  box.innerHTML=[...data.expenses].sort((a,b)=>a.date.localeCompare(b.date)||a.createdAt-b.createdAt).map(e=>{let payer="From Advance / Common Fund";if(e.paidBy!=="common"){const p=participantById(e.paidBy);payer=p?p.name:"Unknown Participant";}const active=data.participants.filter(p=>participantActiveOnDate(p,e.date));return `<div class="item"><div class="item-top"><div><div class="item-name">${escapeHtml(e.name)}</div><div class="meta">Date: ${dateText(e.date)}<br>Paid By: ${escapeHtml(payer)}<br>Active Participants: ${active.length?active.map(p=>escapeHtml(p.name)).join(", "):"None"}</div></div><div class="amount">${moneyCents(toCents(e.amount))}</div></div><div class="actions"><button class="small secondary" onclick="requestLogCorrection('expense','${e.id}')">🔐 Correction</button></div></div>`;}).join("");
-}
-
-function renderParticipantDropdowns(){
-  const c=document.getElementById("contributionParticipant"),e=document.getElementById("expensePaidBy");
-  const oldC=c.value,oldE=e.value;
-  c.innerHTML=data.participants.map(p=>`<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
-  if(data.participants.some(p=>p.id===oldC))c.value=oldC;
-  e.innerHTML=`<option value="common">From Advance / Common Fund</option>${data.participants.map(p=>`<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("")}`;
-  if(oldE==="common"||data.participants.some(p=>p.id===oldE))e.value=oldE;
-}
-
-function renderSummary(){
-  const r=calculate();
-  document.getElementById("totalContributions").textContent=moneyCents(r.totalContributions);
-  document.getElementById("totalExpenses").textContent=moneyCents(r.totalExpenses);
-  document.getElementById("fundSpent").textContent=moneyCents(r.commonFundExpenses);
-  document.getElementById("fundBalance").textContent=moneyCents(r.fundBalance);
-  document.getElementById("calculationWarnings").innerHTML=r.warnings.length?`<div class="note warning"><strong>Calculation Warning</strong><br>${r.warnings.map(escapeHtml).join("<br>")}</div><div style="height:8px"></div>`:"";
-}
-
-function renderBreakdown(){
-  const r=calculate(),box=document.getElementById("breakdown");
-  if(!data.participants.length){box.innerHTML='<div class="empty">Add Participants To See Calculation.</div>';return;}
-  box.innerHTML=data.participants.map((p,i)=>{
-    const share=r.fairRounded[i]||0,contribution=r.contributionCents[p.id]||0,direct=r.directPaidCents[p.id]||0,net=r.netRounded[i]||0;
-    const commonPos=r.commonPositionRounded[i]||0,directPos=r.directPositionRounded[i]||0;
-    let status=net>0?`<div class="status-receive">Receives ${moneyCents(net)}</div>`:net<0?`<div class="status-pay">Pays ${moneyCents(Math.abs(net))}</div>`:`<div class="status-settled">Settled</div>`;
-    return `<div class="breakdown">${status}<div class="item-name" style="margin-top:6px">${i+1}. ${escapeHtml(p.name)}</div><div class="meta">Join Date: ${dateText(p.joinDate)}<br>Leave Date: ${p.leaveDate?dateText(p.leaveDate):"Still Active"}<br>Fair Share: ${moneyCents(share)}<br>Contributions: ${moneyCents(contribution)}<br>Paid Directly: ${moneyCents(direct)}<br>Common Fund Position: ${moneyCents(commonPos)}<br>Direct Expense Position: ${moneyCents(directPos)}</div></div>`;
-  }).join("");
-}
-
-function matchTransfers(balances){
-  const receivers=[],payers=[];
-  balances.forEach((c,i)=>{if(c>0)receivers.push({i,c});else if(c<0)payers.push({i,c:-c});});
-  const transfers=[];let a=0,b=0;
-  while(a<receivers.length&&b<payers.length){const receive=receivers[a],pay=payers[b],amt=Math.min(receive.c,pay.c);transfers.push({from:data.participants[pay.i].name,to:data.participants[receive.i].name,amount:amt});receive.c-=amt;pay.c-=amt;if(receive.c===0)a++;if(pay.c===0)b++;}
-  return transfers;
-}
-function renderSettlement(){
-  const r=calculate(),box=document.getElementById("settlement");
-  if(!data.participants.length){box.innerHTML='<div class="empty">Add Participants To See Settlement.</div>';return;}
-  let html="";
-  if(!r.allAllocated){html+=`<div class="note warning">Some Expenses Have No Active Participants. Settlement Cannot Be Fully Reconciled Until Every Expense Has At Least One Active Participant.</div><div style="height:8px"></div>`;}
-  if(r.fundBalance===0){
-    const transfers=matchTransfers(r.netRounded);
-    if(!transfers.length)html+='<div class="note success">Everyone Is Settled.</div>';
-    else{html+='<div class="meta" style="margin-bottom:8px">Participant Transfers</div>';transfers.forEach(t=>{html+=`<div class="item"><div class="item-top"><div class="item-name">${escapeHtml(t.from)} Pays ${escapeHtml(t.to)}</div><div class="amount">${moneyCents(t.amount)}</div></div></div>`;});}
-  }else{
-    html+=`<div class="note">${r.fundBalance>0?`Common Fund Has ${moneyCents(r.fundBalance)} Left Over.`:`Common Fund Is Short By ${moneyCents(Math.abs(r.fundBalance))}.`}</div><div style="height:10px"></div>`;
-    r.commonPositionRounded.forEach((v,i)=>{if(v>0)html+=`<div class="item"><div class="item-top"><div><div class="item-name">${escapeHtml(data.participants[i].name)}</div><div class="meta">Return From Common Fund</div></div><div class="amount">${moneyCents(v)}</div></div></div>`;else if(v<0)html+=`<div class="item"><div class="item-top"><div><div class="item-name">${escapeHtml(data.participants[i].name)}</div><div class="meta">Pay Into Common Fund</div></div><div class="amount">${moneyCents(Math.abs(v))}</div></div></div>`;});
-    const directTransfers=matchTransfers(r.directPositionRounded);
-    if(directTransfers.length){html+='<div class="meta" style="margin:12px 0 8px">Direct Expense Transfers</div>';directTransfers.forEach(t=>{html+=`<div class="item"><div class="item-top"><div class="item-name">${escapeHtml(t.from)} Pays ${escapeHtml(t.to)}</div><div class="amount">${moneyCents(t.amount)}</div></div></div>`;});}
+  text += "Settlement\n------------------------------\n";
+  if (Math.abs(fundB) > 0.005) {
+    const fundAction = calculateFundAction();
+    const verb = fundB > 0 ? "Return" : "Collect";
+    text += fundB > 0
+      ? `Common Fund Has ${money(fundB)} Left Over — Return By Contribution Share:\n`
+      : `Common Fund Is Short By ${money(Math.abs(fundB))} — Collect By Contribution Share:\n`;
+    fundAction.forEach(entry => { text += `${verb} ${entry.name}: ${money(entry.amount)}\n`; });
   }
-  box.innerHTML=html||'<div class="note success">Everyone Is Settled.</div>';
-}
+  else if (transactions.length === 0) text += "Everyone Is Settled.\n";
+  else transactions.forEach(t => { text += `${t.from} Pays ${t.to}: ${money(t.amount)}\n`; });
 
-function generateShareSummary(){
-  const r=calculate();let text="";
-  text+="MANSKIT SPLIT\n==============================\n";
-  text+=(data.headline||"Collection")+"\n==============================\n\n";
-  text+="Profile: "+data.profile+"\n\n";
-  text+="Participants\n------------------------------\n";
-  if(!data.participants.length)text+="No Participants\n";
-  data.participants.forEach((p,i)=>{text+=`${i+1}. ${p.name} — Joined ${dateText(p.joinDate)} — ${p.leaveDate?`Left ${dateText(p.leaveDate)}`:"Still Active"}\n`;});
-  text+="\nContributions\n------------------------------\n";
-  if(!data.contributions.length)text+="No Contributions\n";
-  [...data.contributions].sort((a,b)=>a.date.localeCompare(b.date)||a.createdAt-b.createdAt).forEach(c=>{const p=participantById(c.participantId);text+=`${p?p.name:"Unknown"} — ${moneyCents(toCents(c.amount))} — ${dateText(c.date)}\n`;});
-  text+="\nExpenses\n------------------------------\n";
-  if(!data.expenses.length)text+="No Expenses\n";
-  [...data.expenses].sort((a,b)=>a.date.localeCompare(b.date)||a.createdAt-b.createdAt).forEach(e=>{let payer="From Advance / Common Fund";if(e.paidBy!=="common"){const p=participantById(e.paidBy);payer=p?p.name:"Unknown";}text+=`${e.name} — ${moneyCents(toCents(e.amount))}\nDate: ${dateText(e.date)}\nPaid By: ${payer}\n`;const active=data.participants.filter(p=>participantActiveOnDate(p,e.date));text+=`Shared By: ${active.length?active.map(p=>p.name).join(", "):"No Active Participants"}\n\n`;});
-  text+="Summary\n------------------------------\n";
-  text+=`Total Contributions: ${moneyCents(r.totalContributions)}\nTotal Expenses: ${moneyCents(r.totalExpenses)}\nFund Spent: ${moneyCents(r.commonFundExpenses)}\nFund Balance: ${moneyCents(r.fundBalance)}\n\n`;
-  text+="Participant Breakdown\n------------------------------\n";
-  data.participants.forEach((p,i)=>{const net=r.netRounded[i]||0;text+=`${p.name}: ${net>0?`Receives ${moneyCents(net)}`:net<0?`Pays ${moneyCents(Math.abs(net))}`:"Settled"}\nFair Share: ${moneyCents(r.fairRounded[i]||0)}\nContributions: ${moneyCents(r.contributionCents[p.id]||0)}\nPaid Directly: ${moneyCents(r.directPaidCents[p.id]||0)}\nJoin Date: ${dateText(p.joinDate)}\nLeave Date: ${p.leaveDate?dateText(p.leaveDate):"Still Active"}\n\n`;});
-  text+="Settlement\n------------------------------\n";
-  if(r.fundBalance===0){const transfers=matchTransfers(r.netRounded);if(!transfers.length)text+="Everyone Is Settled.\n";else transfers.forEach(t=>text+=`${t.from} Pays ${t.to} ${moneyCents(t.amount)}\n`);}
-  else{ text+=(r.fundBalance>0?`Common Fund Has ${moneyCents(r.fundBalance)} Left Over.\n`:`Common Fund Is Short By ${moneyCents(Math.abs(r.fundBalance))}.\n`);r.commonPositionRounded.forEach((v,i)=>{if(v>0)text+=`${data.participants[i].name} Receives From Common Fund ${moneyCents(v)}\n`;else if(v<0)text+=`${data.participants[i].name} Pays Into Common Fund ${moneyCents(Math.abs(v))}\n`;});const dt=matchTransfers(r.directPositionRounded);dt.forEach(t=>text+=`${t.from} Pays ${t.to} ${moneyCents(t.amount)}\n`);}
-  if(r.warnings.length)text+=`\nWarnings\n------------------------------\n${r.warnings.join("\n")}\n`;
-  text+="\nGenerated By MANSKIT — Split";
+  text += "\nGenerated By MANSKIT — Split";
   return text;
 }
-function renderShareSummary(){document.getElementById("shareText").textContent=generateShareSummary();}
-async function copySummary(){const text=generateShareSummary();try{await navigator.clipboard.writeText(text);alert("Summary Copied.");}catch(e){const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();alert("Summary Copied.");}}
-async function shareSummary(){const text=generateShareSummary();if(navigator.share){try{await navigator.share({title:"MANSKIT SPLIT",text});}catch(e){}}else copySummary();}
 
-function renderAll(){
-  document.getElementById("headline").value=data.headline||"";document.getElementById("profile").value=data.profile||"My Collection";
-  renderParticipantDropdowns();renderParticipants();renderContributions();renderExpenses();renderSecurity();renderSummary();renderBreakdown();renderSettlement();renderShareSummary();
+function updateShareText() { shareText.value = buildShareReport(); }
+
+shareBtn.addEventListener("click", async () => {
+  const text = buildShareReport();
+  try {
+    if (navigator.share) { await navigator.share({ title: purpose.trim() ? `MANSKIT — ${purpose.trim()}` : "MANSKIT — Split", text }); return; }
+    await copyText(text);
+    showToast("Report Copied To Clipboard.", "success");
+  } catch (error) {
+    if (error.name !== "AbortError") {
+      try { await copyText(text); showToast("Report Copied To Clipboard.", "success"); }
+      catch { showToast("Couldn't Share Or Copy The Report.", "error"); }
+    }
+  }
+});
+
+async function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return; }
+  const textarea = document.createElement("textarea");
+  textarea.value = text; textarea.style.position = "fixed"; textarea.style.left = "-9999px";
+  document.body.appendChild(textarea); textarea.select();
+  document.execCommand("copy"); textarea.remove();
 }
-function init(){
-  loadData();
-  if(!document.getElementById("participantJoinDate").value)document.getElementById("participantJoinDate").value=today();
-  if(!document.getElementById("contributionDate").value)document.getElementById("contributionDate").value=today();
-  if(!document.getElementById("expenseDate").value)document.getElementById("expenseDate").value=today();
-  renderAll();
+
+resetBtn.addEventListener("click", async () => {
+  const ok = await showConfirm("This Permanently Deletes Every Profile, Participant, Contribution And Expense.", "Reset All Data", "Reset");
+  if (!ok) return;
+  const fresh = { id: makeId(), name: "My Collection", purpose: "", currency: "₹", people: [], contributions: [], expenses: [] };
+  profiles = [fresh];
+  activeProfileId = fresh.id;
+  loadActiveProfileIntoGlobals();
+  clearPersonEdit(); clearContributionEdit(); clearExpenseEdit();
+  await clearAllStorage();
+  purposeInput.value = ""; currencySelect.value = "₹";
+  await saveAll();
+  updateAll();
+  showToast("All Data Has Been Reset.", "success");
+});
+
+/* ---------------- BOOTSTRAP ---------------- */
+function updateAll() {
+  renderProfileSelect();
+  renderParticipantSelect();
+  renderPayerSelect();
+  renderExpenseParticipantList();
+  renderPeople();
+  renderContributions();
+  renderExpenses();
+  renderSettlement();
+  updateShareText();
 }
-init();
+
+(async function init() {
+  personJoinDate.value = today();
+  personLeaveDate.value = "";
+  contributionDate.value = today();
+  expenseDate.value = today();
+  await loadAll();
+  purposeInput.value = purpose;
+  currencySelect.value = currency;
+  renderAuthStatus();
+  renderFirebaseStatus();
+  updateAll();
+  try {
+    await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
+    await loadScriptOnce("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js");
+    fbSdkLoaded = false;
+    fbApp = firebase.apps.length ? firebase.apps[0] : firebase.initializeApp(firebaseConfig);
+    fbAuth = firebase.auth();
+    fbAuth.onAuthStateChanged(user => { currentUser = user; renderAuthStatus(); renderFirebaseStatus(); });
+  } catch (error) { /* Firebase is optional until cloud backup is used. */ }
+})();
 </script>
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("service-worker.js?v=20260918-0645").catch(() => { /* offline support unavailable */ });
+    });
+  }
+</script>
+
 </body>
 </html>
